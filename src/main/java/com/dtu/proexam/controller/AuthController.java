@@ -46,7 +46,7 @@ public class AuthController {
         if (UserUtil.hasEmail(user.getUserEmail())) {
             return ResponseEntity.badRequest().body("Email already exists");
         }
-        String sql = "insert into users values(?,?,?,?)";
+        String sql = "insert into users(user_id, user_name, user_password, user_email) values(?,?,?,?)";
         String userId = GlobalUtil.getUUID();
         user.setUserId(userId);
 
@@ -74,18 +74,18 @@ public class AuthController {
         if (!UserUtil.hasEmail(user.getUserEmail())){
             return ResponseEntity.badRequest().body("Email does not exist");
         }
-        String sql = "select UserID, UserName from users where userEmail = (?)";
+        String sql = "select user_id, user_name from users where user_email = (?)";
         Users result = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             Users u = new Users();
-            u.setUserId(rs.getString("UserID"));
-            u.setUserName(rs.getString("UserName"));
+            u.setUserId(rs.getString("user_id"));
+            u.setUserName(rs.getString("user_name"));
             return u;
         }, user.getUserEmail());
         if (result == null)
             return ResponseEntity.badRequest().body("Failed to login");
         else {
             // check password
-            sql = "select userPassword from users where userEmail = (?)";
+            sql = "select user_password from users where user_email = (?)";
             String password = jdbcTemplate.queryForObject(sql, String.class, user.getUserEmail());
             if (BCrypt.checkpw(user.getUserPassword(), password)) {
                 return ResponseEntity.ok(result);

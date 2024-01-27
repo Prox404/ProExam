@@ -27,7 +27,7 @@ public final class UserUtil {
     }
 
     public static boolean hasEmail(String userEmail) {
-        String sql = "select count(1) from users where userEmail = (?)";
+        String sql = "select count(1) from users where user_email = (?)";
         int result = jdbcTemplate.queryForObject(sql, Integer.class, userEmail);
         if (result > 0)
             return true;

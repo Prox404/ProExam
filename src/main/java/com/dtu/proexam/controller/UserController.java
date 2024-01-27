@@ -22,7 +22,7 @@ public class UserController {
     
     @GetMapping("/")
     public ResponseEntity<?> getListOfUsers(@RequestParam(required = false) Integer page) {
-        String sql = "SELECT UserID, UserName FROM users";
+        String sql = "SELECT user_id, user_name FROM users";
         if (page != null && page > 0)
             sql += " LIMIT " + numberUsersPerPage + " OFFSET " + (page - 1) * numberUsersPerPage;
 
