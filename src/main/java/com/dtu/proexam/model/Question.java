@@ -1,25 +1,33 @@
 package com.dtu.proexam.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "Question")
 public class Question {
     @Id
-    private String questionID;
+    @Column(name = "question_id")
+    private String questionId;
+
+    @Column(name = "question_text")
     private String questionText;
 
     @ManyToOne
-    @JoinColumn(name = "examID")
+    @JoinColumn(name = "exam_id")
     private Exam exam;
+
+    // Constructors, getters, and setters
 
     public Question() {
     }
 
-    public Question(String questionID, String questionText, Exam exam) {
-        this.questionID = questionID;
+    public Question(String questionId, String questionText, Exam exam) {
+        this.questionId = questionId;
         this.questionText = questionText;
         this.exam = exam;
     }
@@ -29,20 +37,18 @@ public class Question {
         this.exam = exam;
     }
 
-    // Getters and setters
-
     /**
-     * @return String return the questionID
+     * @return String return the questionId
      */
-    public String getQuestionID() {
-        return questionID;
+    public String getQuestionId() {
+        return questionId;
     }
 
     /**
-     * @param questionID the questionID to set
+     * @param questionId the questionId to set
      */
-    public void setQuestionID(String questionID) {
-        this.questionID = questionID;
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
     }
 
     /**

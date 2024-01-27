@@ -1,27 +1,34 @@
 package com.dtu.proexam.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "Answer")
 public class Answer {
     @Id
-    private String answerID;
+    @Column(name = "answer_id")
+    private String answerId;
+
+    @Column(name = "answer_text")
     private String answerText;
+
+    @Column(name = "is_correct")
     private boolean isCorrect;
 
     @ManyToOne
-    @JoinColumn(name = "questionID")
+    @JoinColumn(name = "question_id")
     private Question question;
-
 
     public Answer() {
     }
 
-    public Answer(String answerID, String answerText, boolean isCorrect, Question question) {
-        this.answerID = answerID;
+    public Answer(String answerId, String answerText, boolean isCorrect, Question question) {
+        this.answerId = answerId;
         this.answerText = answerText;
         this.isCorrect = isCorrect;
         this.question = question;
@@ -36,17 +43,17 @@ public class Answer {
     // Getters and setters
 
     /**
-     * @return String return the answerID
+     * @return String return the answerId
      */
-    public String getAnswerID() {
-        return answerID;
+    public String getAnswerId() {
+        return answerId;
     }
 
     /**
-     * @param answerID the answerID to set
+     * @param answerId the answerId to set
      */
-    public void setAnswerID(String answerID) {
-        this.answerID = answerID;
+    public void setAnswerId(String answerId) {
+        this.answerId = answerId;
     }
 
     /**

@@ -2,7 +2,6 @@ package com.dtu.proexam.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +15,6 @@ public class UserController {
     private JdbcTemplate jdbcTemplate;
     private int numberUsersPerPage = 20;
 
-    @Autowired
     public UserController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

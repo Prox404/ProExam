@@ -1,74 +1,78 @@
 package com.dtu.proexam.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "History")
 public class History {
     @Id
-    private String examResultID;
+    @Column(name = "exam_result_id")
+    private String examResultId;
 
-    @ManyToOne
-    @JoinColumn(name = "selectedAnswerID")
-    private Answer selectedAnswer;
+    @Id
+    @Column(name = "selected_answer_id")
+    private String selectedAnswerId;
 
-    @ManyToOne
-    @JoinColumn(name = "questionID")
-    private Question question;
+    @Id
+    @Column(name = "question_id")
+    private String questionId;
+
+    // Constructors, getters, and setters
 
     public History() {
     }
 
-    public History(String examResultID, Answer selectedAnswer, Question question) {
-        this.examResultID = examResultID;
-        this.selectedAnswer = selectedAnswer;
-        this.question = question;
+    public History(String examResultId, String selectedAnswerId, String questionId) {
+        this.examResultId = examResultId;
+        this.selectedAnswerId = selectedAnswerId;
+        this.questionId = questionId;
     }
 
-    // Getters and setters
+    
 
     /**
-     * @return String return the examResultID
+     * @return String return the examResultId
      */
-    public String getExamResultID() {
-        return examResultID;
-    }
-
-    /**
-     * @param examResultID the examResultID to set
-     */
-    public void setExamResultID(String examResultID) {
-        this.examResultID = examResultID;
+    public String getExamResultId() {
+        return examResultId;
     }
 
     /**
-     * @return Answer return the selectedAnswer
+     * @param examResultId the examResultId to set
      */
-    public Answer getSelectedAnswer() {
-        return selectedAnswer;
+    public void setExamResultId(String examResultId) {
+        this.examResultId = examResultId;
     }
 
     /**
-     * @param selectedAnswer the selectedAnswer to set
+     * @return String return the selectedAnswerId
      */
-    public void setSelectedAnswer(Answer selectedAnswer) {
-        this.selectedAnswer = selectedAnswer;
+    public String getSelectedAnswerId() {
+        return selectedAnswerId;
     }
 
     /**
-     * @return Question return the question
+     * @param selectedAnswerId the selectedAnswerId to set
      */
-    public Question getQuestion() {
-        return question;
+    public void setSelectedAnswerId(String selectedAnswerId) {
+        this.selectedAnswerId = selectedAnswerId;
     }
 
     /**
-     * @param question the question to set
+     * @return String return the questionId
      */
-    public void setQuestion(Question question) {
-        this.question = question;
+    public String getQuestionId() {
+        return questionId;
+    }
+
+    /**
+     * @param questionId the questionId to set
+     */
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
     }
 
 }

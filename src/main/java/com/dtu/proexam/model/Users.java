@@ -1,49 +1,58 @@
 package com.dtu.proexam.model;
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.Table;
 
-@Getter
-@Setter
 @Entity
+@Table(name = "Users")
 public class Users {
     @Id
-    private String userID;
+    @Column(name = "user_id")
+    private String userId;
+
+    @Column(name = "user_name")
     private String userName;
+
+    @Column(name = "user_password")
     private String userPassword;
+
+    @Column(name = "user_email", unique = true)
     private String userEmail;
+
+    // Constructors, getters, and setters
 
     public Users() {
     }
 
-    public Users(String userID, String userName, String userPassword, String userEmail) {
-        this.userID = userID;
+    public Users(String userId, String userName, String userPassword, String userEmail) {
+        this.userId = userId;
         this.userName = userName;
         this.userPassword = userPassword;
         this.userEmail = userEmail;
     }
-    
+
     public Users(String userName, String userPassword, String userEmail) {
         this.userName = userName;
         this.userPassword = userPassword;
         this.userEmail = userEmail;
     }
 
+
     /**
-     * @return String return the userID
+     * @return String return the userId
      */
-    public String getUserID() {
-        return userID;
+    public String getUserId() {
+        return userId;
     }
 
     /**
-     * @param userID the userID to set
+     * @param userId the userId to set
      */
-    public void setUserID(String userID) {
-        this.userID = userID;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     /**

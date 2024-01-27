@@ -2,32 +2,44 @@ package com.dtu.proexam.model;
 
 import java.sql.Date;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "ExamResult")
 public class ExamResult {
     @Id
-    private String examResultID;
+    @Column(name = "exam_result_id")
+    private String examResultId;
+
+    @Column(name = "score")
     private float score;
+
+    @Column(name = "start_time")
     private Date startTime;
+
+    @Column(name = "end_time")
     private Date endTime;
 
     @ManyToOne
-    @JoinColumn(name = "userAnswerID")
+    @JoinColumn(name = "user_answer_id")
     private UserAnswer userAnswer;
 
     @ManyToOne
-    @JoinColumn(name = "examID")
+    @JoinColumn(name = "exam_id")
     private Exam exam;
+
+    // Constructors, getters, and setters
 
     public ExamResult() {
     }
 
-    public ExamResult(String examResultID, float score, Date startTime, Date endTime, UserAnswer userAnswer, Exam exam) {
-        this.examResultID = examResultID;
+    public ExamResult(String examResultId, float score, Date startTime, Date endTime, UserAnswer userAnswer, Exam exam) {
+        this.examResultId = examResultId;
         this.score = score;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -43,20 +55,18 @@ public class ExamResult {
         this.exam = exam;
     }
 
-    // Getters and setters
-
     /**
-     * @return String return the examResultID
+     * @return String return the examResultId
      */
-    public String getExamResultID() {
-        return examResultID;
+    public String getExamResultId() {
+        return examResultId;
     }
 
     /**
-     * @param examResultID the examResultID to set
+     * @param examResultId the examResultId to set
      */
-    public void setExamResultID(String examResultID) {
-        this.examResultID = examResultID;
+    public void setExamResultId(String examResultId) {
+        this.examResultId = examResultId;
     }
 
     /**

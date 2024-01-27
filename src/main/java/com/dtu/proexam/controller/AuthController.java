@@ -48,13 +48,13 @@ public class AuthController {
         }
         String sql = "insert into users values(?,?,?,?)";
         String userId = GlobalUtil.getUUID();
-        user.setUserID(userId);
+        user.setUserId(userId);
 
         // bcrypt password
         user.setUserPassword(StringUtils.trimAllWhitespace(user.getUserPassword()));
         user.setUserPassword(BCrypt.hashpw(user.getUserPassword(), BCrypt.gensalt()));
 
-        int result = jdbcTemplate.update(sql, user.getUserID(), user.getUserName(), user.getUserPassword(),
+        int result = jdbcTemplate.update(sql, user.getUserId(), user.getUserName(), user.getUserPassword(),
                 user.getUserEmail());
         if (result > 0) {
             user.setUserPassword(null);
@@ -77,7 +77,7 @@ public class AuthController {
         String sql = "select UserID, UserName from users where userEmail = (?)";
         Users result = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             Users u = new Users();
-            u.setUserID(rs.getString("UserID"));
+            u.setUserId(rs.getString("UserID"));
             u.setUserName(rs.getString("UserName"));
             return u;
         }, user.getUserEmail());

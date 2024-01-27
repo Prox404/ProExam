@@ -2,31 +2,50 @@ package com.dtu.proexam.model;
 
 import java.sql.Date;
 
+import org.apache.catalina.User;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "Exam")
 public class Exam {
     @Id
-    private String examID;
+    @Column(name = "exam_id")
+    private String examId;
+
+    @Column(name = "exam_name")
     private String examName;
+
+    @Column(name = "exam_start_time")
     private Date examStartTime;
+
+    @Column(name = "exam_end_time")
     private Date examEndTime;
+
+    @Column(name = "number_submit")
     private int numberSubmit;
+
+    @Column(name = "key_code")
     private int keyCode;
 
+    @Column(name = "is_public")
+    private int isPublic;
+
     @ManyToOne
-    @JoinColumn(name = "userID")
+    @JoinColumn(name = "user_id")
     private Users user;
 
     public Exam() {
     }
 
-    public Exam(String examID, String examName, Date examStartTime,
-            Date examEndTime, int numberSubmit, int keyCode, Users user) {
-        this.examID = examID;
+    public Exam(String examId, String examName, Date examStartTime, Date examEndTime, int numberSubmit, int keyCode,
+            Users user) {
+        this.examId = examId;
         this.examName = examName;
         this.examStartTime = examStartTime;
         this.examEndTime = examEndTime;
@@ -35,8 +54,7 @@ public class Exam {
         this.user = user;
     }
 
-    public Exam( String examName, Date examStartTime,
-            Date examEndTime, int numberSubmit, int keyCode, Users user) {
+    public Exam(String examName, Date examStartTime, Date examEndTime, int numberSubmit, int keyCode, Users user) {
         this.examName = examName;
         this.examStartTime = examStartTime;
         this.examEndTime = examEndTime;
@@ -45,19 +63,19 @@ public class Exam {
         this.user = user;
     }
 
-    // Getters and setters
+
     /**
-     * @return String return the examID
+     * @return String return the examId
      */
-    public String getExamID() {
-        return examID;
+    public String getExamId() {
+        return examId;
     }
 
     /**
-     * @param examID the examID to set
+     * @param examId the examId to set
      */
-    public void setExamID(String examID) {
-        this.examID = examID;
+    public void setExamId(String examId) {
+        this.examId = examId;
     }
 
     /**
@@ -131,7 +149,7 @@ public class Exam {
     }
 
     /**
-     * @return Users return the user
+     * @return User return the user
      */
     public Users getUser() {
         return user;
@@ -142,6 +160,21 @@ public class Exam {
      */
     public void setUser(Users user) {
         this.user = user;
+    }
+
+
+    /**
+     * @return int return the isPublic
+     */
+    public int getIsPublic() {
+        return isPublic;
+    }
+
+    /**
+     * @param isPublic the isPublic to set
+     */
+    public void setIsPublic(int isPublic) {
+        this.isPublic = isPublic;
     }
 
 }

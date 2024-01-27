@@ -1,20 +1,30 @@
 package com.dtu.proexam.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "UserAnswer")
 public class UserAnswer {
     @Id
-    private String userAnswerID;
+    @Column(name = "user_answer_id")
+    private String userAnswerId;
+
+    @Column(name = "user_answer_name")
     private String userAnswerName;
+
+    @Column(name = "user_answer_email")
     private String userAnswerEmail;
+
+    // Constructors, getters, and setters
 
     public UserAnswer() {
     }
 
-    public UserAnswer(String userAnswerID, String userAnswerName, String userAnswerEmail) {
-        this.userAnswerID = userAnswerID;
+    public UserAnswer(String userAnswerId, String userAnswerName, String userAnswerEmail) {
+        this.userAnswerId = userAnswerId;
         this.userAnswerName = userAnswerName;
         this.userAnswerEmail = userAnswerEmail;
     }
@@ -24,20 +34,18 @@ public class UserAnswer {
         this.userAnswerEmail = userAnswerEmail;
     }
 
-    // Getters and setters
-
     /**
-     * @return String return the userAnswerID
+     * @return String return the userAnswerId
      */
-    public String getUserAnswerID() {
-        return userAnswerID;
+    public String getUserAnswerId() {
+        return userAnswerId;
     }
 
     /**
-     * @param userAnswerID the userAnswerID to set
+     * @param userAnswerId the userAnswerId to set
      */
-    public void setUserAnswerID(String userAnswerID) {
-        this.userAnswerID = userAnswerID;
+    public void setUserAnswerId(String userAnswerId) {
+        this.userAnswerId = userAnswerId;
     }
 
     /**
