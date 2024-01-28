@@ -1,10 +1,19 @@
 package com.dtu.proexam.model;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,6 +30,10 @@ public class Question {
     @JoinColumn(name = "exam_id")
     private Exam exam;
 
+    @OneToMany(mappedBy = "question")
+    @JsonManagedReference
+    private List<Answer> answers = new ArrayList<>();
+
     // Constructors, getters, and setters
 
     public Question() {
@@ -35,6 +48,23 @@ public class Question {
     public Question(String questionText, Exam exam) {
         this.questionText = questionText;
         this.exam = exam;
+    }
+
+    public Question(String questionId, String questionText, Exam exam, List<Answer> answers) {
+        this.questionId = questionId;
+        this.questionText = questionText;
+        this.exam = exam;
+        if (answers != null) {
+            this.answers = answers;
+        }
+    }
+
+    public Question( String questionText, Exam exam, List<Answer> answers) {
+        this.questionText = questionText;
+        this.exam = exam;
+        if (answers != null) {
+            this.answers = answers;
+        }
     }
 
     /**
@@ -77,6 +107,25 @@ public class Question {
      */
     public void setExam(Exam exam) {
         this.exam = exam;
+    }
+
+
+    /**
+     * @return List<Answer> return the answers
+     */
+    public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    /**
+     * @param answers the answers to set
+     */
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
+    }
+
+    public String toString() {
+        return "Question [questionId=" + questionId + ", questionText=" + questionText + ", exam=" + exam + "]";
     }
 
 }
