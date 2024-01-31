@@ -20,10 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dtu.proexam.model.Answer;
 import com.dtu.proexam.model.Exam;
 import com.dtu.proexam.model.ExamResult;
-import com.dtu.proexam.model.History;
 import com.dtu.proexam.model.Question;
 import com.dtu.proexam.model.UserAnswer;
-import com.dtu.proexam.model.Users;
 import com.dtu.proexam.repository.AnswerRepository;
 import com.dtu.proexam.repository.ExamRepository;
 import com.dtu.proexam.repository.ExamResultRepository;
@@ -45,7 +43,6 @@ public class ExamController {
     private final ExamRepository examRepository;
     private QuestionRepository questionRepository;
     private AnswerRepository answerRepository;
-    private UserRepository userRepository;
     private UserAnswerRepository userAnswerRepository;
     private ExamResultRepository examResultRepository;
 
@@ -59,7 +56,6 @@ public class ExamController {
         this.examRepository = examRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
-        this.userRepository = userRepository;
         this.userAnswerRepository = userAnswerRepository;
         this.examResultRepository = examResultRepository;
     }
@@ -295,6 +291,60 @@ public class ExamController {
         return ResponseEntity.ok(takeExamResponse);
 
     }
+
+    @PostMapping("/chooseAnwser/{examResultId}")
+    public ResponseEntity<?> chooseAnwser(
+            @PathVariable(required = true) String examResultId,
+            @RequestBody ObjectNode objectNode) {
+                                                                                                                 
+        try {
+
+            String questionId = objectNode.get("questionId").asText();
+            String selectedAnswerId = objectNode.get("selectedAnswerId").asText();
+
+            loggingUntil.info("chooseAnwser", "examResultId: " + examResultId + " questionId: " + questionId
+                    + " selectedAnswerId: " + selectedAnswerId);
+
+            if (examResultId == null || examResultId.isEmpty() || questionId == null || questionId.isEmpty()
+                    || selectedAnswerId == null || selectedAnswerId.isEmpty()) {
+                return ResponseEntity.badRequest().body("Invalid Account !");
+            }
+
+            List<ExamResult> examResults = examResultRepository.findByExamResultId(examResultId);
+            loggingUntil.info("chooseAnwser", "examResults: " + examResults.size());
+            if (examResults.size() == 0) {
+                return ResponseEntity.badRequest().body("Exam not found !");
+            }
+
+            ExamResult examResult = examResults.get(0);
+
+            if (examResult == null) {
+                return ResponseEntity.badRequest().body("Exam not found !");
+            }
+
+            jdbcTemplate.execute("Exec CreateOrAlterHistory '" + examResultId + "', '" + questionId + "', '"
+                    + selectedAnswerId + "'");
+            
+            BasicResponse basicResponse = new BasicResponse();
+            basicResponse.message = "Success";
+            basicResponse.status = 200;
+
+            return ResponseEntity.ok(basicResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            BasicResponse basicResponse = new BasicResponse();
+            basicResponse.message = "Error";
+            basicResponse.status = 400;
+            return ResponseEntity.badRequest().body(basicResponse);
+        }
+    }
+
+
+    public class BasicResponse {
+        public String message;
+        public int status;
+    }
+
 
     public class TakeExamResponse {
         public String message;
