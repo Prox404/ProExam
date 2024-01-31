@@ -3,6 +3,7 @@ package com.dtu.proexam.controller;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.hwpf.HWPFDocument;
@@ -18,15 +19,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dtu.proexam.model.Answer;
 import com.dtu.proexam.model.Exam;
+import com.dtu.proexam.model.ExamResult;
 import com.dtu.proexam.model.History;
 import com.dtu.proexam.model.Question;
+import com.dtu.proexam.model.UserAnswer;
 import com.dtu.proexam.model.Users;
 import com.dtu.proexam.repository.AnswerRepository;
 import com.dtu.proexam.repository.ExamRepository;
+import com.dtu.proexam.repository.ExamResultRepository;
 import com.dtu.proexam.repository.QuestionRepository;
+import com.dtu.proexam.repository.UserAnswerRepository;
 import com.dtu.proexam.repository.UserRepository;
 import com.dtu.proexam.util.GlobalUtil;
 import com.dtu.proexam.util.LoggingUntil;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -39,17 +46,22 @@ public class ExamController {
     private QuestionRepository questionRepository;
     private AnswerRepository answerRepository;
     private UserRepository userRepository;
+    private UserAnswerRepository userAnswerRepository;
+    private ExamResultRepository examResultRepository;
 
     public ExamController(JdbcTemplate jdbcTemplate, ExamRepository examRepository,
             QuestionRepository questionRepository, AnswerRepository answerRepository,
-            UserRepository userRepository
-            ) {
+            UserRepository userRepository,
+            UserAnswerRepository userAnswerRepository,
+            ExamResultRepository examResultRepository) {
         this.jdbcTemplate = jdbcTemplate;
         loggingUntil = new LoggingUntil();
         this.examRepository = examRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
         this.userRepository = userRepository;
+        this.userAnswerRepository = userAnswerRepository;
+        this.examResultRepository = examResultRepository;
     }
 
     @PostMapping("/store")
@@ -201,26 +213,37 @@ public class ExamController {
         return questions;
     }
 
-    @PostMapping("/takeExam/{examId}")
-    public ResponseEntity<?> takeExam( 
-            @PathVariable(required = true) String examId,
-            @RequestBody(required = true) String userId,
-            @RequestBody(required = true) String keyCode
-            ) {
+    @PostMapping("/takeExam/{keyCode}")
+    public ResponseEntity<?> takeExam(
+            @PathVariable(required = true) int keyCode,
+            @RequestBody ObjectNode objectNode) {
 
-        Exam exam = examRepository.findById(examId).orElse(null);
+        String userEmail = objectNode.get("userEmail").asText();
+        String userName = objectNode.get("userName").asText();
+
+        loggingUntil.info("takeExam", "keyCode: " + keyCode + " userEmail: " + userEmail + " userName: " + userName);
+
+        if (userEmail == null || userEmail.isEmpty() || userName == null || userName.isEmpty()) {
+            return ResponseEntity.badRequest().body("Invalid Account !");
+        }
+
+        List<Exam> exams = examRepository.findByKeyCode(keyCode);
+        if (exams.size() == 0) {
+            return ResponseEntity.badRequest().body("Exam not found !");
+        }
+
+        Exam exam = exams.get(0);
+
         if (exam == null) {
             return ResponseEntity.badRequest().body("Exam not found !");
         }
-        Users user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return ResponseEntity.badRequest().body("User not found !");
-        }
-        if (exam.getKeyCode() != Integer.parseInt(keyCode)) {
-            return ResponseEntity.badRequest().body("Wrong key code !");
+
+        if (exam.getExamStartTime() == null || exam.getExamStartTime().after(new Date())
+                || exam.getExamEndTime() != null && exam.getExamEndTime().before(new Date())) {
+            return ResponseEntity.badRequest().body("Exam not started !");
         }
 
-        List<Question> questions = questionRepository.findByExamExamId(examId);
+        List<Question> questions = questionRepository.findByExamExamId(exam.getExamId());
         questions.forEach(
                 question -> {
                     List<Answer> answers = question.getAnswers();
@@ -233,9 +256,52 @@ public class ExamController {
         // random question
         Collections.shuffle(questions);
 
-        return ResponseEntity.ok(questions);
+        List<UserAnswer> userAnswers = userAnswerRepository.findByUserAnswerEmail(userEmail);
+
+        TakeExamResponse takeExamResponse = new TakeExamResponse();
+        UserAnswer userAnswer = new UserAnswer();
+
+        if (userAnswers.size() > 0) {
+            userAnswer = userAnswers.get(0);
+
+            takeExamResponse.message = "Valid Account";
+            takeExamResponse.questions = questions;
+            takeExamResponse.status = 201;
+            takeExamResponse.userAnswer = userAnswer;
+
+        } else {
+            userAnswer.setUserAnswerEmail(userEmail);
+            userAnswer.setUserAnswerName(userName);
+            userAnswer.setUserAnswerId(GlobalUtil.getUUID());
+            userAnswerRepository.save(userAnswer);
+
+            takeExamResponse.message = "Invalid Account";
+            takeExamResponse.questions = questions;
+            takeExamResponse.status = 200;
+            takeExamResponse.userAnswer = userAnswer;
+
+        }
+
+        ExamResult examResult = new ExamResult();
+        examResult.setExam(exam);
+        examResult.setExamResultId(GlobalUtil.getUUID());
+        examResult.setScore(0);
+        examResult.setStartTime(new Date());
+        examResult.setUserAnswer(userAnswer);
+
+        examResultRepository.save(examResult);
+        takeExamResponse.ExamResultId = examResult.getExamResultId();
+
+        return ResponseEntity.ok(takeExamResponse);
+
     }
 
-
+    public class TakeExamResponse {
+        public String message;
+        public List<Question> questions;
+        public int status;
+        public UserAnswer userAnswer;
+        public String ExamResultId;
+    }
 
 }
