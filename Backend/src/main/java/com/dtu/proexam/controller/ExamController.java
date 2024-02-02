@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
@@ -16,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.dtu.proexam.model.Answer;
 import com.dtu.proexam.model.Exam;
 import com.dtu.proexam.model.ExamResult;
+import com.dtu.proexam.model.History;
 import com.dtu.proexam.model.Question;
 import com.dtu.proexam.model.UserAnswer;
 import com.dtu.proexam.repository.AnswerRepository;
@@ -45,6 +46,7 @@ public class ExamController {
     private AnswerRepository answerRepository;
     private UserAnswerRepository userAnswerRepository;
     private ExamResultRepository examResultRepository;
+    private final float MAX_SCORE = 10;
 
     public ExamController(JdbcTemplate jdbcTemplate, ExamRepository examRepository,
             QuestionRepository questionRepository, AnswerRepository answerRepository,
@@ -119,6 +121,12 @@ public class ExamController {
         return ResponseEntity.ok(questions);
     }
 
+    @GetMapping("/getAnswer")
+    public ResponseEntity<?> getMethodName(@RequestParam String questionId) {
+        List<Answer> answers = answerRepository.findByQuestionQuestionId(questionId);
+        return ResponseEntity.ok(answers);
+    }
+
     @GetMapping("/getRandomQuestion")
     public ResponseEntity<?> getRandom(@RequestParam String examId) {
 
@@ -147,7 +155,6 @@ public class ExamController {
     public ResponseEntity<?> uploadQuestionList(@PathVariable String examId, @RequestParam("file") MultipartFile file) {
 
         try {
-            // Kiểm tra xem tệp có phải là tệp .doc không
             if (!file.getContentType().equals("application/msword")) {
                 return ResponseEntity.badRequest().body("Only .doc files are allowed.");
             }
@@ -157,17 +164,14 @@ public class ExamController {
                 return ResponseEntity.badRequest().body("Exam not found !");
             }
 
-            // Đọc nội dung từ tệp .doc
             InputStream inputStream = file.getInputStream();
             HWPFDocument doc = new HWPFDocument(inputStream);
             WordExtractor extractor = new WordExtractor(doc);
             String text = extractor.getText();
             extractor.close();
 
-            // Phân tích nội dung tệp .doc
             List<Question> questions = parseQuestions(text, exam);
 
-            // Trả về nội dung của tệp .doc
             return ResponseEntity.ok(questions);
         } catch (Exception e) {
             e.printStackTrace();
@@ -296,7 +300,7 @@ public class ExamController {
     public ResponseEntity<?> chooseAnwser(
             @PathVariable(required = true) String examResultId,
             @RequestBody ObjectNode objectNode) {
-                                                                                                                 
+
         try {
 
             String questionId = objectNode.get("questionId").asText();
@@ -324,7 +328,7 @@ public class ExamController {
 
             jdbcTemplate.execute("Exec CreateOrAlterHistory '" + examResultId + "', '" + questionId + "', '"
                     + selectedAnswerId + "'");
-            
+
             BasicResponse basicResponse = new BasicResponse();
             basicResponse.message = "Success";
             basicResponse.status = 200;
@@ -339,12 +343,169 @@ public class ExamController {
         }
     }
 
+    @PostMapping("/submitExam/{examResultId}")
+    public ResponseEntity<?> submitExam(
+            @PathVariable(required = true) String examResultId) {
+
+        try {
+
+            loggingUntil.info("submitExam", "examResultId: " + examResultId);
+
+            if (examResultId == null || examResultId.isEmpty()) {
+                return ResponseEntity.badRequest().body("Invalid Account !");
+            }
+
+            List<ExamResult> examResults = examResultRepository.findByExamResultId(examResultId);
+            loggingUntil.info("submitExam", "examResults: " + examResults.size());
+            if (examResults.size() == 0) {
+                return ResponseEntity.badRequest().body("Exam not found !");
+            }
+
+            ExamResult examResult = examResults.get(0);
+
+            if (examResult == null) {
+                return ResponseEntity.badRequest().body("Exam not found !");
+            }
+
+            List<Question> questions = questionRepository.findByExamExamId(examResult.getExam().getExamId());
+
+            String sqlGetHistory = "Select * from History where exam_result_id = '" + examResultId + "'";
+            List<History> histories = jdbcTemplate.query(sqlGetHistory,
+                    (rs, rowNum) -> new History(rs.getString("exam_result_id"),
+                            rs.getString("selected_answer_id"), rs.getString("question_id")));
+
+            float scorePerQuestion = MAX_SCORE / questions.size();
+            AtomicReference<Float> score = new AtomicReference<>(0.0f);
+
+            questions.forEach(question -> {
+                boolean isMultipleChoice = question.getAnswers().stream().filter(Answer::isIsCorrect).count() > 1;
+                // skip if any answer incorrect in question
+
+                if (histories.stream().anyMatch(history -> history.getQuestionId().equals(question.getQuestionId())
+                        && !question.getAnswers().stream()
+                                .filter(answer -> answer.isIsCorrect())
+                                .anyMatch(answer -> answer.getAnswerId().equals(history.getSelectedAnswerId())))) {
+                    return;
+                }
+
+                question.getAnswers().forEach(answer -> {
+                    if (isMultipleChoice) {
+                        if (answer.isIsCorrect() && histories.stream()
+                                .anyMatch(history -> history.getQuestionId().equals(question.getQuestionId())
+                                        && history.getSelectedAnswerId().equals(answer.getAnswerId()))) {
+                            score.updateAndGet(currentScore -> currentScore + scorePerQuestion);
+                        }
+                    } else {
+                        if (histories.stream()
+                                .anyMatch(history -> history.getQuestionId().equals(question.getQuestionId())
+                                        && history.getSelectedAnswerId().equals(answer.getAnswerId()))) {
+                            score.updateAndGet(currentScore -> currentScore + scorePerQuestion);
+                        }
+                    }
+                });
+            });
+
+            double finalScore = Math.round(score.get() * 100.0) / 100.0;
+            examResult.setScore((float) finalScore);
+            examResult.setEndTime(new Date());
+            examResultRepository.save(examResult);
+
+            return ResponseEntity.ok(examResult);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            BasicResponse basicResponse = new BasicResponse();
+            basicResponse.message = "Error";
+            basicResponse.status = 400;
+            return ResponseEntity.badRequest().body(basicResponse);
+        }
+    }
+
+    @GetMapping("/getExamResult/{examResultId}")
+    public ResponseEntity<?> getExamResult(
+            @PathVariable(required = true) String examResultId) {
+
+        try {
+
+            loggingUntil.info("getExamResult", "examResultId: " + examResultId);
+
+            if (examResultId == null || examResultId.isEmpty()) {
+                return ResponseEntity.badRequest().body("Invalid Account !");
+            }
+
+            List<ExamResult> examResults = examResultRepository.findByExamResultId(examResultId);
+            loggingUntil.info("getExamResult", "examResults: " + examResults.size());
+            if (examResults.size() == 0) {
+                return ResponseEntity.badRequest().body("Exam not found !");
+            }
+
+            ExamResult examResult = examResults.get(0);
+
+            if (examResult == null) {
+                return ResponseEntity.badRequest().body("Exam not found !");
+            }
+
+            Exam exam = examResult.getExam();
+            if (exam.getExamEndTime() == null || exam.getExamEndTime().after(new Date())) {
+                String sqlGetHistory = "Select * from History where exam_result_id = '" + examResultId + "'";
+                List<History> histories = jdbcTemplate.query(sqlGetHistory,
+                        (rs, rowNum) -> new History(rs.getString("exam_result_id"),
+                                rs.getString("selected_answer_id"), rs.getString("question_id")));
+                
+                ExamResultResponse examResultResponse = new ExamResultResponse();
+                examResultResponse.message = "Success";
+                examResultResponse.status = 200;
+                examResultResponse.examResult = examResult;
+                examResultResponse.questions = questionRepository.findByExamExamId(exam.getExamId());
+                examResultResponse.histories = histories;
+                return ResponseEntity.ok(examResultResponse);
+
+            } else {
+                BasicResponse basicResponse = new BasicResponse();
+                basicResponse.message = "Exam is not ended";
+                basicResponse.status = 400;
+                return ResponseEntity.badRequest().body(basicResponse);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            BasicResponse basicResponse = new BasicResponse();
+            basicResponse.message = "Error";
+            basicResponse.status = 400;
+            return ResponseEntity.badRequest().body(basicResponse);
+        }
+    }
+
+    public class AnswerWithQuestion extends Answer {
+        private String questionId;
+
+        public AnswerWithQuestion(String answerId, String answerText, boolean isCorrect, String questionId) {
+            super(answerId, answerText, isCorrect);
+            this.questionId = questionId;
+        }
+
+        public String getQuestionId() {
+            return questionId;
+        }
+
+        public void setQuestionId(String questionId) {
+            this.questionId = questionId;
+        }
+
+    }
+
+    public class ExamResultResponse {
+        public String message;
+        public int status;
+        public ExamResult examResult;
+        public List<Question> questions;
+        public List<History> histories;
+    }
 
     public class BasicResponse {
         public String message;
         public int status;
     }
-
 
     public class TakeExamResponse {
         public String message;

@@ -15,7 +15,7 @@ public class UserAnswer {
     @Column(name = "user_answer_name")
     private String userAnswerName;
 
-    @Column(name = "user_answer_email")
+    @Column(name = "user_answer_email", unique = true)
     private String userAnswerEmail;
 
     // Constructors, getters, and setters

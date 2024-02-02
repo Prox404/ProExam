@@ -48,6 +48,12 @@ public class Answer {
         this.isCorrect = isCorrect;
     }
 
+    public Answer(String answerId, String answerText, boolean isCorrect) {
+        this.answerText = answerText;
+        this.isCorrect = isCorrect;
+        this.answerId = answerId;
+    }
+
     // Getters and setters
 
     /**

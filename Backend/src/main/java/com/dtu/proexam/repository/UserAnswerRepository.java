@@ -9,5 +9,7 @@ import com.dtu.proexam.model.UserAnswer;
 public interface UserAnswerRepository extends JpaRepository<UserAnswer, String> {
 
     List<UserAnswer> findByUserAnswerEmail(String email);
+
+    List<UserAnswer> findByUserAnswerId(String userAnswerId);
     
 }
