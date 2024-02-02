@@ -1,12 +1,15 @@
 package com.dtu.proexam.model;
 
-import java.sql.Date;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,6 +35,9 @@ public class ExamResult {
     @ManyToOne
     @JoinColumn(name = "exam_id")
     private Exam exam;
+
+    @OneToMany(mappedBy = "examResult")
+    private Set<ExamResultCheating> examResultCheatings = new HashSet<ExamResultCheating>();
 
     // Constructors, getters, and setters
 

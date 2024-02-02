@@ -1,0 +1,167 @@
+                        _ooOoo_
+                       o8888888o
+                       88" . "88
+                       (| -_- |)
+                       O\  =  /O
+                    ____/`---'\____
+                  .'  \\|     |//  `.
+                 /  \\|||  :  |||//  \
+                /  _||||| -:- |||||_  \
+                |   | \\\  -  /'| |   |
+                | \_|  `\`---'//  |_/ |
+                \  .-\__ `-. -'__/-.  /
+              ___`. .'  /--.--\  `. .'___
+           ."" '<  `.___\_<|>_/___.' _> \"".
+          | | :  `- \`. ;`. _/; .'/ /  .' ; |
+          \  \ `-.   \_\_`. _.'_/_/  -' _.' /
+===========`-.`___`-.__\ \___  /__.-'_.'_.-'================
+
+                      PRO EXAM API
+
+============================================================
+
+#Pool--
+GET localhost:8080/
+
+---------------------------Auth-----------------------------
+
+#Login--
+POST localhost:8080/auth/login
+
+Body:
+{
+    "userEmail": "email@example.com",
+    "userPassword": "yourscretpassword"
+}
+
+#Register--
+POST localhost:8080/auth/register
+Body:
+{
+    "userName": "prox",
+    "userPassword": "0000",
+    "userEmail": "pro3@gmail.com"
+}
+
+---------------------------Exam-----------------------------
+
+#Create Exam--
+POST localhost:8080/exam/store
+
+Body:
+{
+    "examName": "Siuuu",
+    "examStartTime": null,
+    "examEndTime": null,
+    "numberSubmit": null,
+    "keyCode": 123456,
+    "user": {
+        "userId": "8b366c8c-57f1-4571-9c47-abf7493e9085"
+    }
+}
+
+#Store question--
+
+POST localhost:8080/exam/storeQuestions/{examId}
+
+Body
+[
+    {
+        "questionText": "What is 2 + 2?",
+        "exam": {
+            "examId": "16d61ff7-f2c1-4739-bfaf-c048239cc860",
+            "examName": "Siuuu",
+            "examStartTime": null,
+            "examEndTime": null,
+            "numberSubmit": null,
+            "keyCode": 123456,
+            "user": {
+                "userId": "8b366c8c-57f1-4571-9c47-abf7493e9085"
+            }
+        },
+        "answers": [
+            {
+                "answerText": "1",
+                "isCorrect": false
+            },
+            {
+                "answerText": "2",
+                "isCorrect": false
+            },
+            {
+                "answerText": "3",
+                "isCorrect": false
+            },
+            {
+                "answerText": "4",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "questionText": "What is the capital of France?",
+        "exam": {
+            "examId": "16d61ff7-f2c1-4739-bfaf-c048239cc860",
+            "examName": "Siuuu",
+            "examStartTime": null,
+            "examEndTime": null,
+            "numberSubmit": null,
+            "keyCode": 123456,
+            "user": {
+                "userId": "8b366c8c-57f1-4571-9c47-abf7493e9085"
+            }
+        },
+        "answers": [
+            {
+                "answerText": "London",
+                "isCorrect": false
+            },
+            {
+                "answerText": "Berlin",
+                "isCorrect": false
+            },
+            {
+                "answerText": "Paris",
+                "isCorrect": true
+            },
+            {
+                "answerText": "Madrid",
+                "isCorrect": false
+            }
+        ]
+    }
+]
+
+#Get Random question--
+GET localhost:8080/exam/getRandomQuestion?examId={examId}
+
+#Upload question--
+POST localhost:8080/exam/uploadQuestionList/{examId}
+
+Body: file
+
+#Take exam--
+POST localhost:8080/exam/takeExam/{examKeycode}
+
+Body:
+{
+    "userEmail": "prox@gmail.com",
+    "userName": "Prox Da God"
+}
+
+#Answer question--
+POST localhost:8080/exam/chooseAnwser/{examResultId}
+
+{
+    "questionId": "63694032-08cd-4ab6-ae54-3748eed84ea6",
+    "selectedAnswerId": "7de2f998-99e2-4f07-8fb4-74d7b887a56e"
+}
+
+-------------------------Cheating---------------------------
+#Detected Cheating
+POST localhost:8080/cheating/detected
+Body
+{
+    "cheatingCode": 1001,
+    "examResultId": "53d4d27c-21b9-4f86-92d7-90e6ac33040d"
+}

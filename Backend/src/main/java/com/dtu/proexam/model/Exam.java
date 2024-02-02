@@ -1,8 +1,7 @@
 package com.dtu.proexam.model;
 
-import java.sql.Date;
+import java.util.Date;
 
-import org.apache.catalina.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
