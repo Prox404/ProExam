@@ -1,11 +1,12 @@
 import config from '~/config';
+import { lazy } from 'react';
 
 // Layouts
 import { BlankLayout } from '~/layouts';
 
 // Pages
-import Home from '~/pages/Home';
-import TakeExam from '~/pages/TakeExam';
+const Home = lazy(() => import('~/pages/Home'));
+const TakeExam = lazy(() => import('~/pages/TakeExam'));
 
 // Public routes
 const publicRoutes = [
