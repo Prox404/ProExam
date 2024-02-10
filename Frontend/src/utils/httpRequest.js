@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const httpRequest = axios.create({
-    baseURL: process.env.REACT_APP_BASE_URL,
+    baseURL: import.meta.env.REACT_APP_BASE_URL,
 });
 
 export const get = async (path, options = {}) => {
@@ -24,13 +24,13 @@ export const del = async (path, options = {}) => {
     return response.data;
 };
 
-httpRequest.interceptors.request.use(function (config) {
-    const token =
-        "Bearer " + JSON.parse(localStorage.getItem("token"))?.token;
-    if (token) {
-        config.headers.Authorization = token;
-    }
-    return config;
-});
+// httpRequest.interceptors.request.use(function (config) {
+//     const token =
+//         "Bearer " + JSON.parse(localStorage.getItem("token"))?.token;
+//     if (token) {
+//         config.headers.Authorization = token;
+//     }
+//     return config;
+// });
 
 export default httpRequest;

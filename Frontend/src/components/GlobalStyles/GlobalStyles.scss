@@ -1,0 +1,11 @@
+:root{
+    --primary-color: #364c98;
+    --secondary-color: #f5f5f5;
+    --header-height: 56px;
+}
+
+@media screen and (min-width: 600px) {
+    :root{
+        --header-height: 64px;
+    }
+}
