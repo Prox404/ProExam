@@ -1,17 +1,19 @@
 import config from '~/config';
-import { lazy } from 'react';
 
 // Layouts
 import { BlankLayout } from '~/layouts';
 
 // Pages
-const Home = lazy(() => import('~/pages/Home'));
-const TakeExam = lazy(() => import('~/pages/TakeExam'));
+import Home from '~/pages/Home';
+import TakeExam from '~/pages/TakeExam';
+import NotFound from '~/pages/NotFound';
+
 
 // Public routes
 const publicRoutes = [
     { path: config.routes.home, component: Home },
     { path: config.routes.takeExam, component: TakeExam, layout: BlankLayout },
+    { path: '*', component: NotFound, layout: BlankLayout },
 ];
 
 const privateRoutes = [];
