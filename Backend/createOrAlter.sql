@@ -23,3 +23,17 @@ as
 					print'Success'
 				end
 	end
+
+
+CREATE OR ALTER TRIGGER update_question_type ON answer AFTER INSERT 
+AS 
+BEGIN 
+    IF (SELECT COUNT(*) FROM answer WHERE question_id = (SELECT question_id FROM inserted) and is_correct = 1) > 1
+    BEGIN
+        UPDATE question SET question_type = 'MULTIPLE_CHOICE' WHERE question_id = (SELECT question_id FROM inserted)
+    END
+    ELSE
+    BEGIN
+        UPDATE question SET question_type = 'SINGLE_CHOICE' WHERE question_id = (SELECT question_id FROM inserted)
+    END
+END

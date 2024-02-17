@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -25,6 +27,15 @@ public class Question {
     @Column(name = "question_text")
     private String questionText;
 
+    //Enum for question type
+    public enum QuestionType {
+        MULTIPLE_CHOICE, SINGLE_CHOICE
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "question_type")
+    private QuestionType questionType;
+
     @ManyToOne
     @JoinColumn(name = "exam_id")
     private Exam exam;
@@ -36,23 +47,27 @@ public class Question {
     // Constructors, getters, and setters
 
     public Question() {
+        this.questionType = QuestionType.SINGLE_CHOICE;
     }
 
     public Question(String questionId, String questionText, Exam exam) {
         this.questionId = questionId;
         this.questionText = questionText;
         this.exam = exam;
+        this.questionType = QuestionType.SINGLE_CHOICE;
     }
 
     public Question(String questionText, Exam exam) {
         this.questionText = questionText;
         this.exam = exam;
+        this.questionType = QuestionType.SINGLE_CHOICE;
     }
 
     public Question(String questionId, String questionText, Exam exam, List<Answer> answers) {
         this.questionId = questionId;
         this.questionText = questionText;
         this.exam = exam;
+        this.questionType = QuestionType.SINGLE_CHOICE;
         if (answers != null) {
             this.answers = answers;
         }
@@ -61,6 +76,7 @@ public class Question {
     public Question( String questionText, Exam exam, List<Answer> answers) {
         this.questionText = questionText;
         this.exam = exam;
+        this.questionType = QuestionType.SINGLE_CHOICE;
         if (answers != null) {
             this.answers = answers;
         }
@@ -125,6 +141,21 @@ public class Question {
 
     public String toString() {
         return "Question [questionId=" + questionId + ", questionText=" + questionText + ", exam=" + exam + "]";
+    }
+
+
+    /**
+     * @return QuestionType return the questionType
+     */
+    public QuestionType getQuestionType() {
+        return questionType;
+    }
+
+    /**
+     * @param questionType the questionType to set
+     */
+    public void setQuestionType(QuestionType questionType) {
+        this.questionType = questionType;
     }
 
 }
