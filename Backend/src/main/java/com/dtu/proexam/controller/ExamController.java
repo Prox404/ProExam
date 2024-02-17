@@ -106,6 +106,15 @@ public class ExamController {
             if (question.getQuestionId() == null || question.getQuestionId().isEmpty()) {
                 question.setQuestionId(GlobalUtil.getUUID());
             }
+            // check if number of correct answer is valid
+            long correctAnswerCount = question.getAnswers().stream().filter(Answer::isIsCorrect).count();
+            if (correctAnswerCount == 0) {
+                return ResponseEntity.badRequest().body("Invalid number of correct answer !");
+            }
+            // set MULTIPLE_CHOICE if number of correct answer > 1
+            if (correctAnswerCount > 1) {
+                question.setQuestionType(Question.QuestionType.MULTIPLE_CHOICE);
+            }
 
             Question savedQuestion = questionRepository.save(question);
 
