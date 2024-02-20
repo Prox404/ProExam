@@ -59,7 +59,7 @@ const steps = [
     }}>
         <img src={get_started_no_copy} alt="Get started" style={{width: '100%', maxWidth: '300px'}} />
         <Typography variant='h5' marginTop={'20px'}>
-            Don't copy or paste content
+            Don&apos;t copy or paste content
         </Typography>
         <Typography variant='body1' marginTop={'10px'} textAlign={'center'}>
             You are not allowed to copy or paste content from the exam. If you do, we will determine that you have cheated.
@@ -96,7 +96,7 @@ const steps = [
             Stay on the tab
         </Typography>
         <Typography variant='body1' marginTop={'10px'} textAlign={'center'}>
-            Don't leave the tab during the test. If you do, we will determine that you have cheated.
+            Don&apos;t leave the tab during the test. If you do, we will determine that you have cheated.
         </Typography>
     </Box> 
     },
@@ -231,11 +231,11 @@ export default function StartedExam() {
                             Back
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        {isStepOptional(activeStep) && (
+                        {/* {isStepOptional(activeStep) && (
                             <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
                                 Skip
                             </Button>
-                        )}
+                        )} */}
 
                         <Button onClick={handleNext}>
                             {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
