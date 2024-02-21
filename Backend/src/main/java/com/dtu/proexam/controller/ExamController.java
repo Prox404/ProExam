@@ -62,12 +62,20 @@ public class ExamController {
         this.examResultRepository = examResultRepository;
     }
 
+    private boolean isUniqueKeyCode(int keyCode) {
+        return examRepository.findByKeyCode(keyCode).size() == 0;
+    }
+
     @PostMapping("/store")
     public ResponseEntity<?> storeExam(@RequestBody Exam exam) {
         if (exam.getUser() == null || exam.getUser().getUserId() == null
                 || exam.getExamName() == null || exam.getExamName().isEmpty()
                 || exam.getKeyCode() < 100000 || exam.getKeyCode() > 999999) {
             return ResponseEntity.badRequest().body("Unstable data !");
+        }
+
+        if (!isUniqueKeyCode(exam.getKeyCode())) {
+            return ResponseEntity.badRequest().body("Key code is not unique !");
         }
 
         String uuid = GlobalUtil.getUUID();

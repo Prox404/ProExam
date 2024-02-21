@@ -29,7 +29,7 @@ public class Exam {
     @Column(name = "number_submit")
     private int numberSubmit;
 
-    @Column(name = "key_code")
+    @Column(name = "key_code", unique = true)
     private int keyCode;
 
     @Column(name = "is_public")
