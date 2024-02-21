@@ -35,6 +35,9 @@ public class Exam {
     @Column(name = "is_public")
     private int isPublic;
 
+    @Column(name = "duration")
+    private int duration;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;
@@ -174,6 +177,21 @@ public class Exam {
      */
     public void setIsPublic(int isPublic) {
         this.isPublic = isPublic;
+    }
+
+
+    /**
+     * @return int return the duration
+     */
+    public int getDuration() {
+        return duration;
+    }
+
+    /**
+     * @param duration the duration to set
+     */
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
 }
