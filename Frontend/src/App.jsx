@@ -33,8 +33,10 @@ function App() {
           textWhite: mode ? '#000' : '#fff',
           defaultBackground: mode ? '#121212' : '#fff',
           cardBackground: mode ? '#202020' : '#fff',
+          cardSecondaryBackground: mode ? '#3a3a3a' : '#f5f5f5',
           textColor: mode ? '#fff' : '#000',
           textColorSecondary: mode ? '#fff' : '#000',
+          lineColor: mode ? '#3a3a3a' : '#C1C1C1',
         },
       })
 

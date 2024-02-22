@@ -1,0 +1,12 @@
+.timing-img{
+    width: 30px;
+    height: 30px;
+    color: blue;
+}
+
+.answer-list{
+
+    .answer-item:not(:last-child){
+        margin-bottom: 10px;
+    }
+}
