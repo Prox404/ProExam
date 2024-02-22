@@ -10,8 +10,13 @@ input[type=number] {
     height: calc(100% - var(--header-height));
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (max-width: 600px) {
     input[type=number] {
         min-width: 300px;
     }
 }
+
+
+
+
+
