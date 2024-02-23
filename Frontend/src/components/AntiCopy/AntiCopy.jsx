@@ -20,6 +20,8 @@ function AntiCopy({children}) {
     return (
         <div style={{
             userSelect: 'none',
+            height: '100%',
+
         }}>
             {children}
         </div>
