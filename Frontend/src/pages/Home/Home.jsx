@@ -1,16 +1,66 @@
 
 import 'animate.css';
-import { Box, Button, Typography, TextField } from '@mui/material';
+import { Box, Button, Typography, TextField, Snackbar, Alert } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Item from '@mui/material/Grid';
 import home_cover from '~/assets/home_cover.svg';
 import styles from './Home.module.scss';
 import { useState } from 'react';
+import 'animate.css';
+import * as examService from '~/services/examService';
 
 function Home() {
     const [isOpen, setIsOpen] = useState(false);
     const theme = useTheme();
+    const [keyCode, setKeyCode] = useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
+    const [content, setContent] = useState('');
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+    const handleShowSnackBar = (content) => {
+        setContent(content);
+        setSnackbarOpen(true);
+    };
+
+    const handleCloseSnackBar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setSnackbarOpen(false);
+    };
+
+
+    const handleStart = async () => {
+        console.log(keyCode);
+        if (!keyCode || keyCode < 100000 || keyCode > 999999) {
+            handleShowSnackBar('Please input valid exam code!');
+        } else {
+            const res = await examService.isValidKeyCode(keyCode);
+            console.log(res);
+            if (res.status === 200) {
+                setIsOpen(true);
+            } else {
+                handleShowSnackBar('Invalid exam code!');
+            }
+        }
+    }
+
+    const handleEnterExam = () => {
+        if (!name || !email || !emailRegex.test(email)) {
+            handleShowSnackBar('Please input valid name and email!');
+        } else {
+            const examInfo = {
+                name: name,
+                email: email,
+                keyCode: keyCode,
+            };
+            localStorage.setItem('examInfo', JSON.stringify(examInfo));
+        }
+    }
 
     return <>
 
@@ -50,7 +100,12 @@ function Home() {
                                 sm: 'flex-start',
                             },
                         }} >
-                            <input className={styles['code-input']} type='number' placeholder='Enter your exam code' min={100000} max={999999} />
+                            <input
+                                className={styles['code-input']}
+                                onChange={(e) => setKeyCode(e.target.value)}
+                                type='number'
+                                placeholder='Enter your exam code'
+                                min={100000} max={999999} />
                             <Button variant='contained' sx={{
                                 borderRadius: '10px',
                                 padding: '13px 26px',
@@ -58,7 +113,7 @@ function Home() {
                                 marginLeft: { xs: '5px' },
                                 textTransform: 'none'
                             }}
-                                onClick={() => { setIsOpen(true) }}
+                                onClick={handleStart}
                             >
                                 Start
                             </Button>
@@ -82,107 +137,168 @@ function Home() {
             </Grid>
         </Box>
         <Box
+            className='animate__animated animate__fadeIn'
             sx={{
                 height: 'fit-content',
+                minHeight: '40vh',
                 width: {
-                    xs: '100%',
-                    sm: '600px', 
-                    md: '700px'
+                    xs: '95%',
+                    sm: '500px',
+                    md: '500px'
                 },
                 backgroundColor: theme.palette.cardBackground,
-                borderRadius: '30px',
+                borderRadius: '20px',
+                animationDuration: '0.3s',
                 position: 'fixed',
                 zIndex: 0,
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                padding: '20px 15px'
+                padding: '20px 15px',
+                flexDirection: 'column',
             }}
-            display={isOpen ? 'block' : 'none'}>
+
+            display={isOpen ? 'flex' : 'none'}>
             <Typography
                 sx={{
                     fontSize: '21px',
                     color: '#364B98',
                     fontWeight: 'bold',
-                    paddingLeft: '50px'
+                    textAlign: 'center',
+                    paddingLeft: {
+                        xs: '0px',
+                        sm: '0'
+                    }
                 }}
             >Input Information</Typography>
             <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    padding: '0px 30%'
+                    padding: {
+                        xs: '15px',
+                        sm: '0px 20%'
+                    },
+                    justifyContent: 'center',
+                    flex: 1,
                 }}
-                >
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="name"
-                    label="Name"
-                    type="text"
-                    id="name"
-
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="email"
-                    label="Email"
-                    type="email"
-                    id="email"
-                />
-                <Button
-                    sx={{
-                        background: 'linear-gradient(to right, #3D5AF1, #22D1EE)',
-                        color: '#fff',
-                        padding: '10px',
-                        borderRadius: '15px',
-                        marginTop: '15px'
-                    }}>Enter The Exam</Button>
-                <Button
-                    sx={{
-                        background: 'linear-gradient(to right, #3D5AF1, #22D1EE)',
-                        color: '#fff',
-                        padding: '10px',
-                        borderRadius: '15px',
-                        marginTop: '15px'
-                    }}
-                    onClick={() => { setIsOpen(false) }}
-                >Back</Button>
+            >
+                <Box>
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="name"
+                        label="Name"
+                        type="text"
+                        id="name"
+                        size='small'
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="email"
+                        label="Email"
+                        type="email"
+                        id="email"
+                        size='small'
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </Box>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginTop: '20px',
+                }}>
+                    <Button
+                        sx={{
+                            background: 'linear-gradient(to right, #3D5AF1, #22D1EE)',
+                            color: '#fff',
+                            padding: '7px 10px',
+                            borderRadius: '10px',
+                            marginTop: '20px',
+                            textTransform: 'none'
+                        }}
+                        size='small'
+                        onClick={handleEnterExam}
+                    >Enter The Exam
+                    </Button>
+                    <Button
+                        sx={{
+                            background: 'linear-gradient(to right, #3D5AF1, #22D1EE)',
+                            color: '#fff',
+                            padding: '7px 10px',
+                            borderRadius: '10px',
+                            marginTop: '15px',
+                            textTransform: 'none'
+                        }}
+                        onClick={() => { setIsOpen(false) }}
+                        size='small'
+                    >Back</Button>
+                </Box>
             </Box>
-            <Box 
-            sx={{
-                height: '10vh',
-                width: '10vh',
-                background: 'linear-gradient(to top, #3D5AF1, #22D1EE)',
-                borderRadius: '50%',
-                position: 'absolute',
-                top: '15%',
-                left: '-3%'
-            }}
+            <Box
+                className='animate__animated animate__fadeInUp'
+                sx={{
+                    height: '10vh',
+                    width: '10vh',
+                    background: 'linear-gradient(to top, #3D5AF1, #22D1EE)',
+                    borderRadius: '50%',
+                    position: 'absolute',
+                    animationDelay: '0.3s',
+                    animationDuration: '0.3s',
+                    top: {
+                        xs: '-15%',
+                        sm: '15%'
+
+                    },
+                    left: {
+                        xs: '3%',
+                        sm: '-5%',
+
+                    }
+                }}
             ></Box>
-            <Box 
-            sx={{
-                height: {
-                    xs: '60px',
-                    sm: '70px',
-                    md: '90px'
-                },
-                width: {
-                    xs: '60px',
-                    sm: '70px',
-                    md: '90px'  
-                },
-                background: 'linear-gradient(to top, #3D5AF1, #22D1EE)',
-                borderRadius: '50%',
-                position: 'absolute',
-                bottom: '-10%',
-                right: '10%'
-            }}
+            <Box
+                className='animate__animated animate__fadeInUp'
+                sx={{
+                    height: {
+                        xs: '60px',
+                        sm: '70px',
+                        md: '90px'
+                    },
+                    width: {
+                        xs: '60px',
+                        sm: '70px',
+                        md: '90px'
+                    },
+                    background: 'linear-gradient(to top, #3D5AF1, #22D1EE)',
+                    borderRadius: '50%',
+                    position: 'absolute',
+                    animationDelay: '0.2s',
+                    animationDuration: '0.3s',
+                    bottom: {
+                        xs: '-13%',
+                        sm: '-15%'
+                    },
+                    right: '3%'
+                }}
             ></Box>
         </Box>
+        <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar} >
+            <Alert
+                onClose={handleCloseSnackBar}
+                severity="error"
+                variant="filled"
+                sx={{ width: '100%' }}
+            >
+                {content ? content : 'Invalid input'}
+            </Alert>
+        </Snackbar>
     </>;
 }
 

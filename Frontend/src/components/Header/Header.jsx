@@ -10,6 +10,8 @@ import styles from './Header.module.scss';
 import ReactModal from '~/components/Modal/ReactModal';
 import login_cover from '~/assets/login_cover.svg';
 import CloseIcon from '@mui/icons-material/Close';
+import { Alert, Snackbar } from '@mui/material';
+import * as authService from '~/services/authService';
 import {
     TextField,
     InputBase,
@@ -23,6 +25,7 @@ import {
     Menu,
     useTheme
 } from '@mui/material';
+import * as validate from '~/utils/validateData';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -66,6 +69,63 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
+function Login({ handleLogin, theme }) {
+    const [loginEmail, setLoginEmail] = useState('');
+    const [loginPassword, setLoginPassword] = useState('');
+
+    return <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        width: '100%',
+    }}>
+        <img className={styles['login-cover']} src={login_cover} alt="login_cover" />
+        <Typography sx={{
+            fontWeight: '500', color: {
+                light: theme.palette.textBlack,
+                dark: theme.palette.textWhite,
+            },
+            marginTop: '20px',
+        }} variant='h5'>Welcome to ProExam</Typography>
+        <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="loginEmail"
+            label="Email Address"
+            name="loginEmail"
+            autoComplete="email"
+            autoFocus
+            value={loginEmail}
+            onChange={(e) => setLoginEmail(e.target.value)}
+        />
+        <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="loginPassword"
+            label="Password"
+            type="password"
+            id="loginPassword"
+            autoComplete="current-password"
+            value={loginPassword}
+            onChange={(e) => setLoginPassword(e.target.value)}
+        />
+
+        <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            onClick={() => handleLogin(loginEmail, loginPassword)}
+        >
+            Sign In
+        </Button>
+    </Box>
+}
+
 export default function Header({ ...props }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -74,8 +134,18 @@ export default function Header({ ...props }) {
     const [modal, setModal] = useState(<></>);
     const theme = useTheme();
 
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [content, setContent] = useState('');
+    const [severity, setSeverity] = useState('error');
+
+    const [registerName, setRegisterName] = useState('');
+    const [registerEmail, setRegisterEmail] = useState('');
+    const [registerPassword, setRegisterPassword] = useState('');
+    const [registerRePassword, setRegisterRePassword] = useState('');
+
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -94,7 +164,50 @@ export default function Header({ ...props }) {
         setMobileMoreAnchorEl(event.currentTarget);
     };
 
-    const modalLogin = <>
+    const handleLogin = async (loginEmail, loginPassword) => {
+        if (!validate.validateEmail(loginEmail)) {
+            handleShowSnackBar('Please enter a valid email address', 'warning');
+            return;
+        }
+        if (!validate.validatePassword(loginPassword)) {
+            handleShowSnackBar('Please enter a valid password', 'warning');
+            return;
+        }
+        const res = await authService.login({
+            email: loginEmail,
+            password: loginPassword
+        })
+
+        console.log(res);
+
+        if (res.status === 200) {
+            handleShowSnackBar('Login successfully', 'success');
+            localStorage.setItem('user', JSON.stringify(res.data));
+        } else {
+            // console.log(res.data);
+            handleShowSnackBar('Login failed', 'error');
+        }
+    }
+
+    const handleShowSnackBar = (content, severity) => {
+        setContent(content);
+        setSeverity(severity);
+        setSnackbarOpen(true);
+    };
+
+    const handleCloseSnackBar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setSnackbarOpen(false);
+    };
+
+    let modalLogin = <Login handleLogin={handleLogin} 
+        theme={theme}/>
+
+
+    let modalRegister = <>
         <Box sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -115,11 +228,21 @@ export default function Header({ ...props }) {
                 margin="normal"
                 required
                 fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
+                id="name"
+                label="Full Name"
+                name="name"
+                autoComplete="name"
                 autoFocus
+            />
+            <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="registerEmail"
+                type='email'
+                label="Email Address"
+                name="registerEmail"
+                autoComplete="email"
             />
             <TextField
                 margin="normal"
@@ -131,53 +254,14 @@ export default function Header({ ...props }) {
                 id="password"
                 autoComplete="current-password"
             />
-
-            <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-            >
-                Sign In
-            </Button>
-        </Box>
-    </>
-
-    const modalRegister = <>
-        <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-            width: '100%',
-        }}>
-            <img className={styles['login-cover']} src={login_cover} alt="login_cover" />
-            <Typography sx={{
-                fontWeight: '500', color: {
-                    light: theme.palette.textBlack,
-                    dark: theme.palette.textWhite,
-                },
-                marginTop: '20px',
-            }} variant='h5'>Welcome to ProExam</Typography>
             <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-            />
-            <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
+                name="rePassword"
+                label="Re-Password"
                 type="password"
-                id="password"
+                id="rePassword"
                 autoComplete="current-password"
             />
 
@@ -249,7 +333,7 @@ export default function Header({ ...props }) {
             onClose={handleMobileMenuClose}
         >
             <MenuItem>
-                <Button onClick={()=> handleModal('register')} sx={{ color: 'GrayText', width: '100%' }}>Register</Button>
+                <Button onClick={() => handleModal('register')} sx={{ color: 'GrayText', width: '100%' }}>Register</Button>
             </MenuItem>
             <MenuItem>
                 <Button onClick={() => handleModal('login')} sx={{ width: '100%' }} variant="contained">Login</Button>
@@ -339,10 +423,20 @@ export default function Header({ ...props }) {
                     top: '10px',
                     right: '10px',
                     color: theme.palette.textBlack,
-                
+
                 }} onClick={() => setModalIsOpen(false)}><CloseIcon /></IconButton>
                 {/* <button className={styles['close-modal-btn']} onClick={() => setModalIsOpen(false)}>Close Modal</button> */}
             </ReactModal>
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar} >
+                <Alert
+                    onClose={handleCloseSnackBar}
+                    severity={severity}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {content ? content : 'Invalid input'}
+                </Alert>
+            </Snackbar>
         </>
     );
 }

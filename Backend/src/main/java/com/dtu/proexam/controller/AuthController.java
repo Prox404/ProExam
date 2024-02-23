@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import com.dtu.proexam.util.LoggingUntil;
 import com.dtu.proexam.util.UserUtil;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/auth")
 public class AuthController {
     private JdbcTemplate jdbcTemplate;
@@ -37,12 +39,11 @@ public class AuthController {
         loggingUntil.info("AuthController", "Register");
         if (user.getUserEmail().trim() == null || user.getUserEmail().isEmpty()
                 || user.getUserPassword().trim() == null || user.getUserPassword().isEmpty()
-                || user.getUserName().trim() == null || user.getUserName().isEmpty()
-        ) {
+                || user.getUserName().trim() == null || user.getUserName().isEmpty()) {
             return ResponseEntity.badRequest().body("Invalid user");
         }
         if (!UserUtil.isUserValid(user))
-        return ResponseEntity.badRequest().body("Invalid user");
+            return ResponseEntity.badRequest().body("Invalid user");
         if (UserUtil.hasEmail(user.getUserEmail())) {
             return ResponseEntity.badRequest().body("Email already exists");
         }
@@ -56,25 +57,31 @@ public class AuthController {
 
         int result = jdbcTemplate.update(sql, user.getUserId(), user.getUserName(), user.getUserPassword(),
                 user.getUserEmail());
+        SimpleResponse simpleResponse = new SimpleResponse();
         if (result > 0) {
             user.setUserPassword(null);
             // return user json
-            return ResponseEntity.ok(user);
-        } else
-            return ResponseEntity.badRequest().body("Failed to store user");
+            simpleResponse.status = 200;
+            simpleResponse.message = "User stored";
+            simpleResponse.data = user;
+            return ResponseEntity.ok(simpleResponse);
+        } else{
+            simpleResponse.status = 400;
+            simpleResponse.message = "Failed to store user";
+            return ResponseEntity.badRequest().body(simpleResponse);
+        }
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Users user) {
         if (user.getUserEmail() == null || user.getUserEmail().isEmpty()
-                || user.getUserPassword() == null || user.getUserPassword().isEmpty()
-        ) {
+                || user.getUserPassword() == null || user.getUserPassword().isEmpty()) {
             return ResponseEntity.badRequest().body("Invalid user");
         }
-        if (!UserUtil.hasEmail(user.getUserEmail())){
+        if (!UserUtil.hasEmail(user.getUserEmail())) {
             return ResponseEntity.badRequest().body("Email does not exist");
         }
-        String sql = "select user_id, user_name from users where user_email = (?)";
+        String sql = "select user_id, user_name, user_email from users where user_email = (?)";
         Users result = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             Users u = new Users();
             u.setUserId(rs.getString("user_id"));
@@ -88,10 +95,24 @@ public class AuthController {
             sql = "select user_password from users where user_email = (?)";
             String password = jdbcTemplate.queryForObject(sql, String.class, user.getUserEmail());
             if (BCrypt.checkpw(user.getUserPassword(), password)) {
-                return ResponseEntity.ok(result);
-            } else
-                return ResponseEntity.badRequest().body("Failed to login");
+                SimpleResponse simpleResponse = new SimpleResponse();
+                simpleResponse.status = 200;
+                simpleResponse.message = "Login success";
+                simpleResponse.data = result;
+                return ResponseEntity.ok(simpleResponse);
+            } else {
+                SimpleResponse simpleResponse = new SimpleResponse();
+                simpleResponse.status = 400;
+                simpleResponse.message = "Failed to login";
+                return ResponseEntity.badRequest().body(simpleResponse);
+            }
         }
 
+    }
+
+    public class SimpleResponse {
+        public int status;
+        public String message;
+        public Object data;
     }
 }
