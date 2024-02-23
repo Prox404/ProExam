@@ -12,7 +12,7 @@ import StartedExam from '~/pages/StartedExam';
 
 // Public routes
 const publicRoutes = [
-    { path: config.routes.home, component: Home},
+    { path: config.routes.home, component: Home },
     { path: config.routes.takeExam, component: TakeExam, layout: ExamLayout },
     { path: '*', component: NotFound, layout: BlankLayout },
     { path: config.routes.startedExam, component: StartedExam, layout: ExamLayout },
