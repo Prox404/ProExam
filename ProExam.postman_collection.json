@@ -1,0 +1,382 @@
+{
+	"info": {
+		"_postman_id": "427d93fb-11bc-41d3-a160-c347959e4081",
+		"name": "ProExam",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23901035"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "GetAllUser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/user/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"prox\",\r\n    \"userPassword\": \"0000\",\r\n    \"userEmail\": \"prox@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/auth/register",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userEmail\": \"pro3@gmail.com\",\r\n    \"userPassword\": \"0000\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Exam",
+			"item": [
+				{
+					"name": "store",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"examName\": \"Siuuu\",\r\n    \"examStartTime\": null,\r\n    \"examEndTime\": null,\r\n    \"numberSubmit\": null,\r\n    \"keyCode\": 123456,\r\n    \"user\": {\r\n        \"userId\": \"8b366c8c-57f1-4571-9c47-abf7493e9085\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/exam/store",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"exam",
+								"store"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "storeQuestion",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"questionText\": \"What is 2 + 2?\",\r\n        \"exam\": {\r\n            \"examId\": \"c30ea8d7-9fc0-4951-af6c-f17c5aa1884a\"\r\n        },\r\n        \"answers\": [\r\n            {\r\n                \"answerText\": \"1\",\r\n                \"isCorrect\": true\r\n            },\r\n            {\r\n                \"answerText\": \"2\",\r\n                \"isCorrect\": false\r\n            },\r\n            {\r\n                \"answerText\": \"3\",\r\n                \"isCorrect\": false\r\n            },\r\n            {\r\n                \"answerText\": \"4\",\r\n                \"isCorrect\": true\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"questionText\": \"What is the capital of France?\",\r\n        \"exam\": {\r\n            \"examId\": \"c30ea8d7-9fc0-4951-af6c-f17c5aa1884a\"\r\n        },\r\n        \"answers\": [\r\n            {\r\n                \"answerText\": \"London\",\r\n                \"isCorrect\": false\r\n            },\r\n            {\r\n                \"answerText\": \"Berlin\",\r\n                \"isCorrect\": false\r\n            },\r\n            {\r\n                \"answerText\": \"Paris\",\r\n                \"isCorrect\": true\r\n            },\r\n            {\r\n                \"answerText\": \"Madrid\",\r\n                \"isCorrect\": false\r\n            }\r\n        ]\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/exam/storeQuestions/c30ea8d7-9fc0-4951-af6c-f17c5aa1884a",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"exam",
+								"storeQuestions",
+								"c30ea8d7-9fc0-4951-af6c-f17c5aa1884a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getRandomQuestion",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/exam/getRandomQuestion?examId=16d61ff7-f2c1-4739-bfaf-c048239cc860",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"exam",
+								"getRandomQuestion"
+							],
+							"query": [
+								{
+									"key": "examId",
+									"value": "16d61ff7-f2c1-4739-bfaf-c048239cc860"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UploadQuestion",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/exam/uploadQuestionList/16d61ff7-f2c1-4739-bfaf-c048239cc860",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"exam",
+								"uploadQuestionList",
+								"16d61ff7-f2c1-4739-bfaf-c048239cc860"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "takeExam",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userEmail\": \"prox@gmail.com\",\r\n    \"userName\": \"Prox Da God\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/exam/takeExam/123456",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"exam",
+								"takeExam",
+								"123456"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "answerQuestion",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"questionId\": \"63694032-08cd-4ab6-ae54-3748eed84ea6\",\r\n    \"selectedAnswerId\": \"7de2f998-99e2-4f07-8fb4-74d7b887a56e\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/exam/chooseAnwser/53d4d27c-21b9-4f86-92d7-90e6ac33040d",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"exam",
+								"chooseAnwser",
+								"53d4d27c-21b9-4f86-92d7-90e6ac33040d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "submitExam",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "getAnwser",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "IsValidKeyCode",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/exam/isValidKeyCode?keyCode=123456",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"exam",
+								"isValidKeyCode"
+							],
+							"query": [
+								{
+									"key": "keyCode",
+									"value": "123456"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cheating",
+			"item": [
+				{
+					"name": "StoreRule",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cheating/store",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cheating",
+								"store"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DetectedCheating",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cheatingCode\": 1001,\r\n    \"examResultId\": \"53d4d27c-21b9-4f86-92d7-90e6ac33040d\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cheating/detected",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cheating",
+								"detected"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

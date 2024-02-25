@@ -5,31 +5,39 @@ const httpRequest = axios.create({
 });
 
 export const get = async (path, options = {}) => {
-    const response = await httpRequest.get(path, options).catch((error) => {
+    try {
+        const response = await httpRequest.get(path, options)
+        return response.data;
+    } catch (error) {
         return error.response.data;
-    });
-    return response.data;
+    }
 };
 
 export const post = async (path, data, options = {}) => {
-    const response = await httpRequest.post(path, data, options).catch((error) => {
+    try {
+        const response = await httpRequest.post(path, data, options);
+        return response.data;
+    } catch (error) {
         return error.response.data;
-    });
-    return response.data ;
+    }
 };
 
 export const put = async (path, data, options = {}) => {
-    const response = await httpRequest.put(path, data, options).catch((error) => {
+    try {
+        const response = await httpRequest.put(path, data, options);
+        return response.data;
+    } catch (error) {
         return error.response.data;
-    });
-    return response.data;
+    }
 };
 
 export const del = async (path, options = {}) => {
-    const response = await httpRequest.delete(path, options).catch((error) => {
+    try {
+        const response = await httpRequest.delete(path, options);
+        return response.data;
+    } catch (error) {
         return error.response.data;
-    });
-    return response.data;
+    }
 };
 
 httpRequest.interceptors.request.use(function (config) {

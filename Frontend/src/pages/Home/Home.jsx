@@ -9,6 +9,7 @@ import styles from './Home.module.scss';
 import { useState } from 'react';
 import 'animate.css';
 import * as examService from '~/services/examService';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
     const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +19,7 @@ function Home() {
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [content, setContent] = useState('');
+    const navigate = useNavigate();
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
     const handleShowSnackBar = (content) => {
@@ -49,7 +51,7 @@ function Home() {
         }
     }
 
-    const handleEnterExam = () => {
+    const handleEnterExam = async () => {
         if (!name || !email || !emailRegex.test(email)) {
             handleShowSnackBar('Please input valid name and email!');
         } else {
@@ -58,7 +60,8 @@ function Home() {
                 email: email,
                 keyCode: keyCode,
             };
-            localStorage.setItem('examInfo', JSON.stringify(examInfo));
+            await localStorage.setItem('examInfo', JSON.stringify(examInfo));
+            navigate('/started-exam');
         }
     }
 

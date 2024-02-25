@@ -2,7 +2,7 @@ import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { ThemeContext } from '~/App';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
@@ -10,8 +10,9 @@ import styles from './Header.module.scss';
 import ReactModal from '~/components/Modal/ReactModal';
 import login_cover from '~/assets/login_cover.svg';
 import CloseIcon from '@mui/icons-material/Close';
-import { Alert, Snackbar } from '@mui/material';
+import { Alert, Snackbar, Avatar } from '@mui/material';
 import * as authService from '~/services/authService';
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
     TextField,
     InputBase,
@@ -72,6 +73,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 function Login({ handleLogin, theme }) {
     const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSubmit = async () => {
+        setIsLoading(true);
+        await handleLogin(loginEmail, loginPassword);
+        setIsLoading(false);
+    }
 
     return <Box sx={{
         display: 'flex',
@@ -89,41 +97,143 @@ function Login({ handleLogin, theme }) {
             },
             marginTop: '20px',
         }} variant='h5'>Welcome to ProExam</Typography>
-        <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="loginEmail"
-            label="Email Address"
-            name="loginEmail"
-            autoComplete="email"
-            autoFocus
-            value={loginEmail}
-            onChange={(e) => setLoginEmail(e.target.value)}
-        />
-        <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="loginPassword"
-            label="Password"
-            type="password"
-            id="loginPassword"
-            autoComplete="current-password"
-            value={loginPassword}
-            onChange={(e) => setLoginPassword(e.target.value)}
-        />
+        <form onSubmit={(e) => e.preventDefault()}>
 
-        <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            onClick={() => handleLogin(loginEmail, loginPassword)}
-        >
-            Sign In
-        </Button>
+
+            <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="loginEmail"
+                label="Email Address"
+                name="loginEmail"
+                autoComplete="email"
+                autoFocus
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+            />
+            <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="loginPassword"
+                label="Password"
+                type="password"
+                id="loginPassword"
+                autoComplete="current-password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+            />
+
+            <LoadingButton
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+                onClick={handleSubmit}
+                loading={isLoading}
+            >
+                Sign In
+            </LoadingButton>
+        </form>
     </Box>
+}
+
+function Register({ handleRegister, theme }) {
+
+    const [registerName, setRegisterName] = useState('');
+    const [registerEmail, setRegisterEmail] = useState('');
+    const [registerPassword, setRegisterPassword] = useState('');
+    const [registerRePassword, setRegisterRePassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSubmit = async () => {
+        setIsLoading(true); // Đặt trạng thái loading là true khi bắt đầu gửi request
+        await handleRegister(registerName, registerEmail, registerPassword, registerRePassword);
+        setIsLoading(false); // Đặt trạng thái loading là false sau khi nhận được kết quả từ request
+    };
+
+    return <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        width: '100%',
+    }}>
+        <img className={styles['login-cover']} src={login_cover} alt="login_cover" />
+        <form onSubmit={(e) => e.preventDefault()}>
+
+            <Typography sx={{
+                fontWeight: '500', color: {
+                    light: theme.palette.textBlack,
+                    dark: theme.palette.textWhite,
+                },
+                marginTop: '20px',
+            }} variant='h5'>Welcome to ProExam</Typography>
+            <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="registerName"
+                label="Full Name"
+                name="name"
+                autoComplete="name"
+                autoFocus
+                value={registerName}
+                onChange={(e) => setRegisterName(e.target.value)}
+            />
+            <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="registerEmail"
+                type='email'
+                label="Email Address"
+                name="registerEmail"
+                autoComplete="email"
+                value={registerEmail}
+                onChange={(e) => setRegisterEmail(e.target.value)}
+            />
+            <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                value={registerPassword}
+                onChange={(e) => setRegisterPassword(e.target.value)}
+            />
+            <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="rePassword"
+                label="Re-Password"
+                type="password"
+                id="rePassword"
+                autoComplete="current-password"
+                value={registerRePassword}
+                onChange={(e) => setRegisterRePassword(e.target.value)}
+            />
+
+            <LoadingButton
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+                onClick={handleSubmit}
+
+                loading={isLoading}
+            >
+                Register
+            </LoadingButton>
+        </form>
+    </Box>;
+
 }
 
 export default function Header({ ...props }) {
@@ -137,14 +247,20 @@ export default function Header({ ...props }) {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [content, setContent] = useState('');
     const [severity, setSeverity] = useState('error');
+    const [isLogin, setIsLogin] = useState(false);
+    const [user, setUser] = useState({});
 
-    const [registerName, setRegisterName] = useState('');
-    const [registerEmail, setRegisterEmail] = useState('');
-    const [registerPassword, setRegisterPassword] = useState('');
-    const [registerRePassword, setRegisterRePassword] = useState('');
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            setIsLogin(true);
+            setUser(user);
+        }
+    }, [isLogin]);
 
 
     const handleProfileMenuOpen = (event) => {
@@ -183,11 +299,61 @@ export default function Header({ ...props }) {
         if (res.status === 200) {
             handleShowSnackBar('Login successfully', 'success');
             localStorage.setItem('user', JSON.stringify(res.data));
+            setIsLogin(true);
+            setUser(res.data);
         } else {
             // console.log(res.data);
             handleShowSnackBar('Login failed', 'error');
         }
     }
+
+    const handleRegister = async (registerName, registerEmail, registerPassword, registerRePassword) => {
+        if (!registerName
+            || !registerEmail
+            || !registerPassword
+            || !registerRePassword) {
+            handleShowSnackBar('Please enter all fields', 'warning');
+            return;
+        }
+        if (!validate.validateEmail(registerEmail)) {
+            handleShowSnackBar('Please enter a valid email address', 'warning');
+            return;
+        }
+
+        if (!validate.validatePassword(registerPassword)) {
+            handleShowSnackBar('Password must contain at least 8 characters, 1 letter, 1 number and 1 special character', 'warning');
+            return;
+        }
+
+        if (registerPassword !== registerRePassword) {
+            handleShowSnackBar('Password and Re-Password are not matched', 'warning');
+            return;
+        }
+
+        const res = await authService.register({
+            email: registerEmail,
+            password: registerPassword,
+            userName: registerName
+        })
+
+        console.log(res);
+
+        if (res?.status && res.status === 200) {
+            handleShowSnackBar('Register successfully', 'success');
+            setModalIsOpen(false);
+        } else {
+            handleShowSnackBar(res?.message ? res.message : 'Register failed', 'error');
+        }
+
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('user');
+        setIsLogin(false);
+        setUser({});
+        handleMenuClose();
+    }
+
 
     const handleShowSnackBar = (content, severity) => {
         setContent(content);
@@ -203,77 +369,12 @@ export default function Header({ ...props }) {
         setSnackbarOpen(false);
     };
 
-    let modalLogin = <Login handleLogin={handleLogin} 
-        theme={theme}/>
+    let modalLogin = <Login handleLogin={handleLogin}
+        theme={theme} />
 
 
     let modalRegister = <>
-        <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-            width: '100%',
-        }}>
-            <img className={styles['login-cover']} src={login_cover} alt="login_cover" />
-            <Typography sx={{
-                fontWeight: '500', color: {
-                    light: theme.palette.textBlack,
-                    dark: theme.palette.textWhite,
-                },
-                marginTop: '20px',
-            }} variant='h5'>Welcome to ProExam</Typography>
-            <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="name"
-                label="Full Name"
-                name="name"
-                autoComplete="name"
-                autoFocus
-            />
-            <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="registerEmail"
-                type='email'
-                label="Email Address"
-                name="registerEmail"
-                autoComplete="email"
-            />
-            <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-            />
-            <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="rePassword"
-                label="Re-Password"
-                type="password"
-                id="rePassword"
-                autoComplete="current-password"
-            />
-
-            <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-            >
-                Register
-            </Button>
-        </Box>
+        <Register handleRegister={handleRegister} theme={theme} />
     </>
 
 
@@ -291,6 +392,19 @@ export default function Header({ ...props }) {
                 break;
         }
         handleMenuClose();
+    }
+
+    function stringAvatar(name) {
+        return {
+            sx: {
+                bgcolor: '#673ab7',
+                margin: {
+                    xs: '0 10px 0 0',
+                    sm: '0 0 0 10px'
+                },
+            },
+            children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+        };
     }
 
     const menuId = 'primary-search-account-menu';
@@ -311,7 +425,7 @@ export default function Header({ ...props }) {
             onClose={handleMenuClose}
         >
             <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
     );
 
@@ -332,12 +446,18 @@ export default function Header({ ...props }) {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem>
-                <Button onClick={() => handleModal('register')} sx={{ color: 'GrayText', width: '100%' }}>Register</Button>
-            </MenuItem>
-            <MenuItem>
-                <Button onClick={() => handleModal('login')} sx={{ width: '100%' }} variant="contained">Login</Button>
-            </MenuItem>
+
+            {
+                !isLogin && <>
+                    <MenuItem>
+                        <Button onClick={() => handleModal('register')} sx={{ color: 'GrayText', width: '100%' }}>Register</Button>
+                    </MenuItem>
+                    <MenuItem>
+                        <Button onClick={() => handleModal('login')} sx={{ width: '100%' }} variant="contained">Login</Button>
+                    </MenuItem>
+                </>
+            }
+
             <MenuItem onClick={handleChange}>
                 <IconButton sx={{ ml: 1 }} color="inherit">
                     {mode ? <Brightness7Icon /> : <Brightness4Icon />}
@@ -351,8 +471,6 @@ export default function Header({ ...props }) {
 
     return (
         <>
-
-
             <Box {...props} sx={{ flexGrow: 1 }}>
                 <AppBar color="default" elevation={0} position="static" sx={{
                     backgroundColor: mode ? '#333' : '#fff',
@@ -387,12 +505,22 @@ export default function Header({ ...props }) {
                                 {mode ? <Brightness7Icon /> : <Brightness4Icon />}
                             </IconButton>
                         </Box>
-                        <Box sx={{ display: { xs: 'none', md: 'flex' }, marginRight: '10px' }}>
-                            <Button onClick={() => handleModal('register')} sx={{ color: 'GrayText', textTransform: 'none' }}>Register</Button>
-                        </Box>
-                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                            <Button onClick={() => handleModal('login')} sx={{ textTransform: 'none' }} variant="contained">Login</Button>
-                        </Box>
+                        {
+                            isLogin && user ? <>
+                                <Avatar aria-haspopup="true"
+                                    onClick={handleProfileMenuOpen}
+                                    {...stringAvatar(user?.userName)}
+                                />
+                            </> : <>
+                                <Box sx={{ display: { xs: 'none', md: 'flex' }, marginRight: '10px' }}>
+                                    <Button onClick={() => handleModal('register')} sx={{ color: 'GrayText', textTransform: 'none' }}>Register</Button>
+                                </Box>
+                                <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                                    <Button onClick={() => handleModal('login')} sx={{ textTransform: 'none' }} variant="contained">Login</Button>
+                                </Box>
+                            </>
+                        }
+
 
 
                         <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -425,9 +553,8 @@ export default function Header({ ...props }) {
                     color: theme.palette.textBlack,
 
                 }} onClick={() => setModalIsOpen(false)}><CloseIcon /></IconButton>
-                {/* <button className={styles['close-modal-btn']} onClick={() => setModalIsOpen(false)}>Close Modal</button> */}
             </ReactModal>
-            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar} >
+            <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleCloseSnackBar} >
                 <Alert
                     onClose={handleCloseSnackBar}
                     severity={severity}
