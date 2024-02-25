@@ -10,7 +10,6 @@ import AnswerItem from "~/components/AnswerItem";
 import { useTheme } from "@emotion/react";
 import { ThemeContext } from "~/App";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import Loading from "~/components/Loading";
 
 function QuestionPanelItem({ label = '', selected = false, onClick, onChange, value, ...props }) {
 
@@ -379,7 +378,6 @@ function TakeExam() {
                 </SwipeableDrawer>
 
             </AntiCopy>
-            <Loading isOpen={false}/>
         </Box>
     );
 }
