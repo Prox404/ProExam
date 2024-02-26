@@ -29,11 +29,14 @@ public class Exam {
     @Column(name = "number_submit")
     private int numberSubmit;
 
-    @Column(name = "key_code")
+    @Column(name = "key_code", unique = true)
     private int keyCode;
 
     @Column(name = "is_public")
     private int isPublic;
+
+    @Column(name = "duration")
+    private int duration;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -174,6 +177,21 @@ public class Exam {
      */
     public void setIsPublic(int isPublic) {
         this.isPublic = isPublic;
+    }
+
+
+    /**
+     * @return int return the duration
+     */
+    public int getDuration() {
+        return duration;
+    }
+
+    /**
+     * @param duration the duration to set
+     */
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
 }
