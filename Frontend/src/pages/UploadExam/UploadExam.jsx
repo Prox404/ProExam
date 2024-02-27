@@ -23,6 +23,7 @@ import AlertError from "~/utils/alertError.jsx";
 import api from "../../config/api.js"
 import EditIcon from '@mui/icons-material/Edit';
 import {useNavigate, createSearchParams}  from "react-router-dom";
+import {useParams} from "react-router-dom";
 
 function UploadExam() {
     const [selectFile, setSelectFile] = useState(null)
@@ -34,6 +35,7 @@ function UploadExam() {
     const [stateSwitch, setStateSwitch] = useState(false);
     const navigate = useNavigate();
     const [message, setMessage] = useState()
+    const {id} = useParams();
     // const history = userHistory();
 
     let questionObject = null;
@@ -128,17 +130,17 @@ function UploadExam() {
         if(isCheck) {
             setSubmitDisabled(true);
             try {
-                // const response = await api.post(
-                //     '/exam/uploadQuestions/123',
-                //     questions,
-                //     {
-                //         headers: {
-                //             'Content-Type': 'application/json',
-                //         }
-                //     });
-                //
-                // if(response.status === 200) {
-                if(true) {
+                const response = await api.post(
+                    `/exam/uploadQuestions/${id}`,
+                    questions,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                if(response.status === 200) {
+                // if(true) {
                     removeFile();
                     setOpenAlert(true);
                     await new Promise(resolve => setTimeout(resolve, 1000));

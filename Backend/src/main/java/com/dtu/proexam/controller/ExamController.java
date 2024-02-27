@@ -28,9 +28,12 @@ import com.dtu.proexam.repository.UserRepository;
 import com.dtu.proexam.util.GlobalUtil;
 import com.dtu.proexam.util.LoggingUntil;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@CrossOrigin(origins = "http://localhost:8080")
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/exam")
 public class ExamController {
     private JdbcTemplate jdbcTemplate;
@@ -56,12 +59,20 @@ public class ExamController {
         this.examResultRepository = examResultRepository;
     }
 
+    private boolean isUniqueKeyCode(int keyCode) {
+        return examRepository.findByKeyCode(keyCode).size() == 0;
+    }
+
     @PostMapping("/store")
     public ResponseEntity<?> storeExam(@RequestBody Exam exam) {
         if (exam.getUser() == null || exam.getUser().getUserId() == null
                 || exam.getExamName() == null || exam.getExamName().isEmpty()
                 || exam.getKeyCode() < 100000 || exam.getKeyCode() > 999999) {
             return ResponseEntity.badRequest().body("Unstable data !");
+        }
+
+        if (!isUniqueKeyCode(exam.getKeyCode())) {
+            return ResponseEntity.badRequest().body("Key code is not unique !");
         }
 
         String uuid = GlobalUtil.getUUID();
@@ -369,6 +380,25 @@ public class ExamController {
             return ResponseEntity.badRequest().body(basicResponse);
         }
     }
+
+    @GetMapping("/isValidKeyCode")
+    public ResponseEntity<?> isValidKeyCode(@RequestParam int keyCode) {
+        if (keyCode > 999999 || keyCode < 100000) {
+            return ResponseEntity.badRequest().body("Invalid KeyCode !");
+        }
+        List<Exam> exams = examRepository.findByKeyCode(keyCode);
+        loggingUntil.info("isValidKeyCode", "exams: " + exams.size());
+        BasicResponse basicResponse = new BasicResponse();
+        if (exams.size() > 0) {
+            basicResponse.message = "Valid KeyCode";
+            basicResponse.status = 200;
+            return ResponseEntity.ok(basicResponse);
+        }
+        basicResponse.message = "Invalid KeyCode";
+        basicResponse.status = 400;
+        return ResponseEntity.badRequest().body(basicResponse);
+    }
+    
 
     @PostMapping("/submitExam/{examResultId}")
     public ResponseEntity<?> submitExam(
