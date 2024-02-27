@@ -101,19 +101,26 @@ public class ExamController {
             return ResponseEntity.badRequest().body("Exam not found !");
         }
 
-        for(Question question : questions) {
-            question.setExam(exam);
-            if (question.getAnswers().isEmpty()) continue;
-            if (question.getQuestionId() == null || question.getQuestionId().isEmpty()) question.setQuestionId(GlobalUtil.getUUID());
-            if (question.getAnswers().stream().filter(Answer::isIsCorrect).count() > 1)
-                question.setQuestionType(Question.QuestionType.MULTIPLE_CHOICE);
-            questionRepository.save(question);
-            for (Answer answer : question.getAnswers()) {
-                if (answer.getAnswerId() == null || answer.getAnswerId().isEmpty())
-                    answer.setAnswerId(GlobalUtil.getUUID());
-                answer.setQuestion(question);
-                answerRepository.save(answer);
+        List<Question> nQuestions = questionRepository.findByExamExamId(examId);
+        if(nQuestions.isEmpty()) {
+
+            for (Question question : questions) {
+                question.setExam(exam);
+                if (question.getAnswers().isEmpty()) continue;
+                if (question.getQuestionId() == null || question.getQuestionId().isEmpty())
+                    question.setQuestionId(GlobalUtil.getUUID());
+                if (question.getAnswers().stream().filter(Answer::isIsCorrect).count() > 1)
+                    question.setQuestionType(Question.QuestionType.MULTIPLE_CHOICE);
+                questionRepository.save(question);
+                for (Answer answer : question.getAnswers()) {
+                    if (answer.getAnswerId() == null || answer.getAnswerId().isEmpty())
+                        answer.setAnswerId(GlobalUtil.getUUID());
+                    answer.setQuestion(question);
+                    answerRepository.save(answer);
+                }
             }
+        } else {
+            return ResponseEntity.ok(false);
         }
         return ResponseEntity.ok(questions);
     }
