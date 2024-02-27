@@ -1,6 +1,8 @@
 const routes = {
     home: '/',
-    takeExam: '/take-exam'
+    takeExam: '/take-exam',
+    uploadExam: '/upload-exam',
+    codeExam: '/code-exam'
 };
 
 export default routes;
