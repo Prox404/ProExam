@@ -11,6 +11,7 @@ export const isValidKeyCode = (keyCode) => {
 }
 export const createExam = ({
     examName,
+    duration,
     examStartTime,
     examEndTime,
     numberSubmit,
@@ -20,6 +21,7 @@ export const createExam = ({
     try {
         const res = request.post(`/exam/store`,{
             examName,
+            duration,
             examStartTime,
             examEndTime,
             numberSubmit,

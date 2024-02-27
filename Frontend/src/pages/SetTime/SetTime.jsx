@@ -131,6 +131,7 @@ const SetTime = () => {
     const closeT = new Date(`${closeDate}T${closeTime}:00`);
     const result = await createExam({
       examName,
+      duration: Number(examTime)*60,
       examStartTime: openT,
       examEndTime: closeT,
       numberSubmit,
