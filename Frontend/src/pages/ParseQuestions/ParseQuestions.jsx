@@ -72,27 +72,7 @@ function ParseQuestions() {
     setQuestions(newQuestions);
   };
 
-  // const handleCorrectAnswerChange = (questionIndex, answerIndex) => {
-  //   setQuestions(
-  //     questions.map((question, idx) => {
-  //       if (idx === questionIndex) {
-  //         return {
-  //           ...question,
-  //           answers: question.answers.map((answer, index) => {
-  //             if (index === answerIndex) {
-  //               return {
-  //                 ...answer,
-  //                 isCorrect: !answer.isCorrect,
-  //               };
-  //             }
-  //             return answer;
-  //           }),
-  //         };
-  //       }
-  //       return question;
-  //     })
-  //   );
-  // };
+ 
   const handleCorrectAnswerChange = (questionIndex, answerIndex) => {
     setQuestions((prevQuestions) => {
       const updatedQuestions = prevQuestions.map((question, idx) => {
@@ -117,7 +97,7 @@ function ParseQuestions() {
           };
 
           console.log(updatedQuestion); 
-          
+
           return updatedQuestion;
         }
         return question;
