@@ -17,11 +17,17 @@ import { v4 as uuidv4 } from "uuid";
 function ParseQuestions() {
   const theme = useTheme();
   const [deleteEnabled, setDeleteEnabled] = useState(true);
+
   const [questions, setQuestions] = useState([
     {
       id: uuidv4(),
       question: "",
-      answers: ["", "", "", ""],
+      answers: [
+        {
+          answer_text: "",
+          isCorrect: false,
+        },
+      ],
       correctAnswers: [],
     },
   ]);
@@ -37,7 +43,12 @@ function ParseQuestions() {
     const newQuestion = {
       id: uuidv4(),
       question: "",
-      answers: ["", "", "", ""],
+      answers: [
+        {
+          answer_text: "",
+          isCorrect: false,
+        },
+      ],
       correctAnswers: [],
     };
 
@@ -47,20 +58,31 @@ function ParseQuestions() {
       { id: newQuestion.id, type: "an_answer" },
     ]);
     setAnswerCounts([...answerCounts, 4]);
+    //
+    const newAnswerCount = 4;
+    if (newAnswerCount > 2) {
+      setDeleteEnabled(true);
+    }
+    // console.log(newQuestion.id.uuidv4);
+    console.log(questions);
   };
 
-  const handleAddAnswer = (index) => {
+  const handleAddAnswer = (questionIndex) => {
     const newQuestions = [...questions];
-    const newAnswerCounts = [...answerCounts];
-    newQuestions[index].answers.push("");
-    newAnswerCounts[index]++;
+    const question = newQuestions[questionIndex];
+    question.answers.push("");
     setQuestions(newQuestions);
-    setAnswerCounts(newAnswerCounts);
+    const currentAnswerCount = question.answers.length;
+    if (currentAnswerCount > 2) {
+      setDeleteEnabled(true);
+    }
   };
+
   const handleQuestionChange = (index, value) => {
     const newQuestions = [...questions];
     newQuestions[index].question = value;
     setQuestions(newQuestions);
+    console.log(newQuestions[index].question);
   };
 
   const handleAnswerChange = (questionIndex, answerIndex, value) => {
@@ -80,8 +102,20 @@ function ParseQuestions() {
               "many_answer"
                 ? toggleCorrectAnswer(question.correctAnswers, answerIndex)
                 : [answerIndex],
+            //
+            answers: question.answers.map((answer, index) => {
+              if (index === answerIndex) {
+                return {
+                  ...answer,
+                  isCorrect: !answer.isCorrect, // Đảo ngược trạng thái isCorrect
+                };
+              }
+              return answer;
+            }),
           };
         }
+        console.log(answer.isCorrect);
+
         return question;
       })
     );
@@ -118,25 +152,6 @@ function ParseQuestions() {
     }
   };
 
-  // const handleDeleteAnswer = (questionIndex, answerIndex) => {
-  //   const newQuestions = [...questions];
-  //   newQuestions[questionIndex].answers.splice(answerIndex, 1);
-  //   newQuestions[questionIndex].correctAnswers = newQuestions[
-  //     questionIndex
-  //   ].correctAnswers.filter((idx) => idx !== answerIndex);
-  //   setQuestions(newQuestions);
-  //   console.log(newQuestions);
-  //   console.log(answerIndex);
-  //   const question = newQuestions[questionIndex];
-  //   if (question.answers.length <= 2) {
-  //     setDeleteEnabled(false);
-  //     console.log(deleteEnabled);
-  //     return;
-  //   }else{
-  //     setDeleteEnabled(true);
-
-  //   }
-  // };
   const handleDeleteAnswer = (questionIndex, answerIndex) => {
     const newQuestions = [...questions];
     const question = newQuestions[questionIndex];
@@ -145,8 +160,11 @@ function ParseQuestions() {
       (idx) => idx !== answerIndex
     );
     setQuestions(newQuestions);
-    if (question.answers.length <= 2) {
+    const currentAnswerCount = question.answers.length;
+    if (currentAnswerCount <= 2) {
       setDeleteEnabled(false);
+    } else if (!deleteEnabled && currentAnswerCount > 2) {
+      setDeleteEnabled(true);
     }
     console.log(newQuestions);
     console.log(answerIndex);
