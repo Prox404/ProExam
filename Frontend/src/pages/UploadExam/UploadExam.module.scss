@@ -1,0 +1,125 @@
+.file-btn {
+    width: 250px;
+    height: 150px;
+    font-size: 18px;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    color: #364c98;
+    background-color: white;
+    border: 1.5px dashed #364c98;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-btn:hover {
+    color: #364c98;
+    background-color: #fff;
+}
+
+.file-btn span {
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    color: #364c98;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25px;
+    background-color: #c6d2fc;
+}
+
+.selected-file {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #c6d2fc;
+    border: 1px solid #475aa0;
+    border-radius: 20px;
+    margin-top: 20px;
+}
+
+.selected-file p {
+    font-size: 13px;
+    font-weight: 500;
+    margin-left: 15px;
+    margin-bottom: 0;
+}
+
+.selected-file button {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #364c98;
+    background-color: transparent;
+    border: none;
+    border-radius: 17px;
+    cursor: pointer;
+    margin: 0 3px 0 5px;
+    transition: all 0.3s ease;
+}
+.selected-file button:hover {
+    color: #fff;
+    background-color: #364c98;
+}
+
+.btn-submit {
+    width: 50%;
+    background-color: #364c98;
+    border-radius: 17px;
+    padding: 15px;
+    color: white;
+    border: 1px solid #364c98;
+}
+
+.btn-submit:hover {
+    border: 1px solid #364c98;
+    background-color: #c6d2fc;
+    color: #364c98;
+    cursor: pointer;
+}
+
+.btn-submit:disabled {
+    background-color: gainsboro;
+    border: 1px solid #7d7d81;
+    color: #7d7d81;
+}
+
+.answer {
+    border-radius: 20px;
+    margin: 0 0 5px 0;
+}
+
+.answer:hover{
+    background-color: #FBFFC8;
+    //background-color: #FFC8C8;FBFFC8
+    cursor: pointer;
+}
+
+.file-empty {
+    height: 50%;
+}
+
+.img-empty {
+    height: calc(100vh - var(--header-height) - 80px);
+}
+
+@media screen and (max-width: 600px){
+    .file-empty {
+        height: 30%;
+    }
+
+    .file {
+        margin-top: 15px;
+    }
+
+    .img-empty {
+        height: calc(80vh - var(--header-height) - 80px);
+    }
+}

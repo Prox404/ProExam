@@ -9,3 +9,30 @@ export const isValidKeyCode = (keyCode) => {
         return false;
     }
 }
+export const createExam = ({
+    examName,
+    duration,
+    examStartTime,
+    examEndTime,
+    numberSubmit,
+    keyCode,
+    userId
+}) => {
+    try {
+        const res = request.post(`/exam/store`,{
+            examName,
+            duration,
+            examStartTime,
+            examEndTime,
+            numberSubmit,
+            keyCode,
+            user: {
+                userId
+            }
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
