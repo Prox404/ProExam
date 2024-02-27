@@ -136,8 +136,9 @@ const SetTime = () => {
       examEndTime: closeT,
       numberSubmit,
       keyCode: randomNumber,
-      userId: "329ff65e-01aa-4309-bb4d-f6d21b78a1c1"
+      userId: "A"
     });
+    console.log(result)
     return result;
   }
   return (
@@ -386,7 +387,7 @@ const SetTime = () => {
             <Button sx={{ display: 'block' }} onClick={() => setIsEditExam(true)}>
               Edit exam information
             </Button>
-            <Button sx={{ display: 'block' }} onClick={async () => {const result = await onCreate(); setTimeout(()=>{navigate(`/exam/uploadQuestionByFile/${result.examId}`)},1000);}}>
+            <Button sx={{ display: 'block' }} onClick={async () => {const result = await onCreate(); setTimeout(()=>{navigate(`/upload-exam/${result.examId}`)},1000);}}>
               Import questions via file
             </Button>
             <Button sx={{ display: 'block' }} onClick={async () => {const result = await onCreate(); setTimeout(()=>{navigate(`/exam/uploadQuestionManually/${result.examId}`)},1000);}}>
