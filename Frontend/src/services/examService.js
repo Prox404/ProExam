@@ -36,3 +36,16 @@ export const createExam = ({
         return false;
     }
 }
+
+export const createQuestionManually = ({
+    questions,
+    examId
+}) => {
+    try {
+        const res = request.post(`/exam/storeQuestions/${examId}`,questions);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
