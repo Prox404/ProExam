@@ -26,7 +26,7 @@ public class ProexamApplication implements CommandLineRunner {
 		String sql = "select * from test";
 		int result = jdbcTemplate.query(sql, (rs) -> {
 			int count = 0;
-			while (rs.next()) {
+			while (rs.next( )) {
 				count++;
 			}
 			return count;
