@@ -311,7 +311,7 @@ function TakeExam() {
                                     padding: '10px 20px',
                                 }}>Submit</Button>
                             </Box>
-                        </> 
+                        </>
                     }
                     <Box sx={{
                         display: 'flex',

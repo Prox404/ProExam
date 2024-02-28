@@ -1,28 +1,26 @@
-
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { Fragment } from 'react';
-import './App.css'
-import DefaultLayout from '~/layouts/DefaultLayout'
-import { publicRoutes } from '~/routes';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import CssBaseline from '@mui/material/CssBaseline';
-import { useState, createContext, useEffect } from 'react';
-import LoadingTopBar from './components/LoadingTopBar';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Fragment } from "react";
+import "./App.css";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { publicRoutes } from "~/routes";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import CssBaseline from "@mui/material/CssBaseline";
+import { useState, createContext, useEffect } from "react";
+import LoadingTopBar from "./components/LoadingTopBar";
 
 export const ThemeContext = createContext();
 
 function App() {
-
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [mode, setMode] = useState(() => {
     // Lấy giá trị từ localStorage, nếu không có thì sử dụng giá trị mặc định từ prefersDarkMode
-    const storedTheme = localStorage.getItem('theme');
-    return storedTheme ? storedTheme === 'dark' : prefersDarkMode;
+    const storedTheme = localStorage.getItem("theme");
+    return storedTheme ? storedTheme === "dark" : prefersDarkMode;
   });
 
   useEffect(() => {
-    localStorage.setItem('theme', mode ? 'dark' : 'light');
+    localStorage.setItem("theme", mode ? "dark" : "light");
   }, [mode]);
 
   const theme =
@@ -43,8 +41,6 @@ function App() {
         primaryCard: mode ? '#333' : '#435EBE',
       },
     })
-
-
   const handleChange = () => {
     setMode((prevMode) => !prevMode);
   };
@@ -55,10 +51,8 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
 
-
-
-            <Router>
-              <div className="App">
+          <Router>
+            <div className="App">
               <LoadingTopBar>
                 <Routes>
                   {publicRoutes.map((route, index) => {
@@ -91,7 +85,7 @@ function App() {
         </ThemeProvider>
       </ThemeContext.Provider>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
