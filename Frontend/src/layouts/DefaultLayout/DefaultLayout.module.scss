@@ -1,63 +1,60 @@
 .main-app {
-    // background-image: url('../../assets/texture_bg.jpg');
-    // background-size: 300px;
-    // background-repeat: repeat;
-    min-height: 100vh;
+  // background-image: url('../../assets/texture_bg.jpg');
+  // background-size: 300px;
+  // background-repeat: repeat;
+  min-height: 100vh;
 }
 
 .background {
-    position: fixed;
-    bottom: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    overflow: hidden;
+    background-image: url("../../assets/texture_bg.jpg");
+    background-size: 150px;
+    background-repeat: repeat;
     z-index: -1;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-image: url('../../assets/texture_bg.jpg');
-        background-size: 150px;
-        background-repeat: repeat;
-        z-index: -1;
-        animation: spin 25s linear infinite;
-        scale: 3;
-    }
+    animation: spin 25s linear infinite;
+    scale: 3;
+  }
 }
 
 .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    min-height: 56px;
-    z-index: 2;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 56px;
+  z-index: 2;
 }
 
 .content {
-    padding-top: var(--header-height);
+  padding-top: var(--header-height);
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
+  0% {
+    transform: rotate(0deg);
+  }
 
-    }
-
-    100% {
-        transform: rotate(360deg);
-
-    }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media screen and (min-width: 600px) {
-    .content {
-        padding-top: var(--header-height);
-    }
-    
+  .content {
+    padding-top: var(--header-height);
+  }
 }

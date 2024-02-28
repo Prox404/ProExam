@@ -389,7 +389,7 @@ const SetTime = () => {
             <Button sx={{ display: 'block' }} onClick={async () => {const result = await onCreate(); setTimeout(()=>{navigate(`/upload-exam/${result.examId}`)},1000);}}>
               Import questions via file
             </Button>
-            <Button sx={{ display: 'block' }} onClick={async () => {const result = await onCreate(); setTimeout(()=>{navigate(`/exam/uploadQuestionManually/${result.examId}`)},1000);}}>
+            <Button sx={{ display: 'block' }} onClick={async () => {const result = await onCreate(); setTimeout(()=>{navigate(`/parse-questions/${result.examId}`)},1000);}}>
               Import questions manually
             </Button>
           </Box>
