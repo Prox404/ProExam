@@ -25,6 +25,11 @@ const SetTime = () => {
   const [randomNumber, setRandomNumber] = useState();
   const [isEditExam, setIsEditExam] = useState(true);
   const navigate = useNavigate();
+  // useEffect(()=>{
+  //   if(!JSON.parse(localStorage.getItem('user'))){
+  //     navigate('/');
+  //   }
+  // },[]);
   useEffect(() => {
     if (Number(examTime) >= 0) {
       const openD = new Date(`${openDate}T${openTime}:00`);
@@ -136,7 +141,7 @@ const SetTime = () => {
       examEndTime: closeT,
       numberSubmit,
       keyCode: randomNumber,
-      userId: "329ff65e-01aa-4309-bb4d-f6d21b78a1c1"
+      userId: "a66dcbf2-0389-4a8f-a310-37b174daa034"
     });
     return result;
   }

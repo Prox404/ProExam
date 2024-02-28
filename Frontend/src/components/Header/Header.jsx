@@ -403,7 +403,7 @@ export default function Header({ ...props }) {
                     sm: '0 0 0 10px'
                 },
             },
-            children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+            children: `${name.split(' ')[0][0]}${name.split(' ')[1] ? name.split(' ')[1][0] : ''}`,
         };
     }
 

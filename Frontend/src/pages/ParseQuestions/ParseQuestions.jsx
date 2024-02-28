@@ -1,37 +1,43 @@
 import React, { useState } from "react";
-import { Box, Button, Checkbox, IconButton, TextField } from "@mui/material";
+import { Box, Button, Checkbox, IconButton, TextField, Snackbar, Alert } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
+import { createQuestionManually } from "~/services/examService";
 
 function ParseQuestions() {
   const theme = useTheme();
-
+  const navigate = useNavigate();
+  const [isOpenA, setIsOpenA] = useState(false);
+  const [statusA, setStatusA] = useState('success');
+  const [messageA, setMessageA] = useState('');
   const [deleteEnabled, setDeleteEnabled] = useState(true);
 
   const [questions, setQuestions] = useState([
     {
-      question: "",
+      questionText: "",
+      exam: {
+        examId: "32ad4f00-2520-400d-83a3-5d9043e3daa0"
+      },
       answers: Array.from({ length: 2 }, () => ({
-        answer_text: "",
+        answerText: "",
         isCorrect: false,
       })),
     },
   ]);
 
   const [answerCounts, setAnswerCounts] = useState(
-    Array(questions.length).fill(4)
+    Array(questions.length)
   );
 
   const handleAddQuestion = () => {
     const newQuestion = {
-      question: "",
+      questionText: "",
       answers: Array.from({ length: 2 }, () => ({
-        answer_text: "",
+        answerText: "",
         isCorrect: false,
       })),
     };
-
-    console.log("New Question", newQuestion);
 
     setQuestions((prevQuestions) => [...prevQuestions, newQuestion]);
     setAnswerCounts((prevCounts) => [...prevCounts, 2]);
@@ -41,9 +47,7 @@ function ParseQuestions() {
   const handleAddAnswer = (questionIndex) => {
     const newQuestions = [...questions];
     const question = newQuestions[questionIndex];
-    question.answers.push({ answer_text: "", isCorrect: false });
-
-    console.log("New Answer", newQuestions);
+    question.answers.push({ answerText: "", isCorrect: false });
 
     setQuestions(newQuestions);
     const currentAnswerCount = question.answers.length;
@@ -54,13 +58,13 @@ function ParseQuestions() {
 
   const handleQuestionChange = (index, value) => {
     const newQuestions = [...questions];
-    newQuestions[index].question = value;
+    newQuestions[index].questionText = value;
     setQuestions(newQuestions);
   };
 
   const handleAnswerChange = (questionIndex, answerIndex, value) => {
     const newQuestions = [...questions];
-    newQuestions[questionIndex].answers[answerIndex].answer_text = value;
+    newQuestions[questionIndex].answers[answerIndex].answerText = value;
     setQuestions(newQuestions);
   };
 
@@ -75,8 +79,6 @@ function ParseQuestions() {
                 isCorrect: !answer.isCorrect,
               };
 
-              console.log(updatedAnswer);
-
               return updatedAnswer;
             }
             return answer;
@@ -86,8 +88,6 @@ function ParseQuestions() {
             ...question,
             answers: updatedAnswers,
           };
-
-          console.log(updatedQuestion);
 
           return updatedQuestion;
         }
@@ -110,193 +110,181 @@ function ParseQuestions() {
       setDeleteEnabled(true);
     }
   };
-
-  const handleFinish = async () => {
-    let isSuccess = false;
-    let errorMessage = '';
-
-    if (questions.length === 0) {
-        errorMessage = "No questions to submit.";
-    } else {
-        const isValid = questions.every(question => question.answers.length > 0);
-        if (!isValid) {
-            errorMessage = "Each question must have at least one answer.";
-        } else {
-            const data = questions.map(({ question, answers }) => ({
-                question,
-                answers: answers.map(({ answer_text, isCorrect }) => ({ answer_text, isCorrect })),
-            }));
-
-            try {
-                const response = await api.post(
-                    `/exam/parseQuestions/${id}`,
-                    data,
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    }
-                );
-                if (response.status === 200) {
-                    isSuccess = true;
-                    removeFile();
-                    setOpenAlert(true);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    setOpenAlert(false);
-                    let a = 'asdfbsjdafasd';
-                    setSubmitDisabled(false);
-                    navigate({
-                        pathname: "/code-exam",
-                        search: createSearchParams({
-                            keyCode: a
-                        }).toString()
-                    });
-                } else {
-                    errorMessage = "An error occurred while submitting questions.";
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                errorMessage = "An error occurred while submitting questions.";
-            }
+  const checkisValid = () => {
+    for (let i = 0; i < questions.length; i += 1) {
+      if (questions[i].questionText === '') {
+        setMessageA("Question Text Is Not Null!")
+        return false;
+      }
+      let check = false;
+      for (let j = 0; j < questions[i].answers.length; j += 1) {
+        if (questions[i].answers[j].answerText === '') {
+          setMessageA("Answer Text Is Not Null!")
+          return false;
         }
-    }
 
-    if (!isSuccess) {
-        console.error(errorMessage);
-        
-        setOpenAlertError(true);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setOpenAlertError(false);
-        setSubmitDisabled(false);
+        if (questions[i].answers[j].isCorrect === true) {
+          check = true;
+        }
+      }
+      if (!check) {
+        setMessageA("Please Choose The Correct Answer!")
+        return false;
+      }
     }
-};
-
+    return true;
+  }
+  const handleFinish = async () => {
+    if (checkisValid()) {
+      setIsOpenA(true);
+      setStatusA('success');
+      setMessageA('Exam Has Created!');
+      await createQuestionManually({ questions, examId: "32ad4f00-2520-400d-83a3-5d9043e3daa0" })
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+    } else {
+      setIsOpenA(true);
+      setStatusA('error');
+    }
+  };
 
   return (
-    <Box
-      height={"calc(100vh - var(--header-height))"}
-      sx={{
-        color: theme.palette.white,
-        padding: {
-          xs: "10px",
-          sm: "20px",
-          md: "40px",
-        },
-        zIndex: "-1",
-      }}
-    >
-      {questions.map((question, index) => (
-        <Box
-          key={index}
-          sx={{
-            backgroundColor: "#7c8db5",
-            marginBottom: "20px",
-            borderRadius: "10px",
-            position: "relative",
-            justifyContent: "flex-end",
-            alignItems: "flex-start",
-            padding: "10px",
-            height: "auto",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <TextField
-              label={`Question ${index + 1}:`}
-              variant="outlined"
-              fullWidth
-              value={question.question}
-              onChange={(e) => handleQuestionChange(index, e.target.value)}
-              sx={{
-                marginBottom: "10px",
-              }}
-            />
-          </Box>
-
-          {question.answers.map((answer, answerIndex) => (
-            <Box
-              key={answerIndex}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "10px",
-              }}
-            >
-              <IconButton
-                sx={{
-                  color: theme.palette.trashColor,
-                  marginRight: "5px",
-                  "&:hover": {
-                    color: "#435ebe",
-                  },
-                }}
-                onClick={() => {
-                  if (deleteEnabled) {
-                    handleDeleteAnswer(index, answerIndex);
-                  }
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
-              <Checkbox
-                color="primary"
-                checked={answer.isCorrect}
-                onChange={() => handleCorrectAnswerChange(index, answerIndex)}
-              />
-
-              <TextField
-                label={`Answer ${answerIndex + 1}`}
-                variant="outlined"
-                fullWidth
-                size="small"
-                value={answer.answer_text}
-                onChange={(e) =>
-                  handleAnswerChange(index, answerIndex, e.target.value)
-                }
-                sx={{ marginLeft: "5px" }}
-              />
-            </Box>
-          ))}
-          <Button
-            variant="outlined"
-            onClick={() => handleAddAnswer(index)}
+    <>
+      <Box
+        height={"calc(100vh - var(--header-height))"}
+        sx={{
+          color: theme.palette.white,
+          padding: {
+            xs: "10px",
+            sm: "20px",
+            md: "40px",
+          },
+          zIndex: "-1",
+        }}
+      >
+        {questions.map((question, index) => (
+          <Box
+            key={index}
             sx={{
-              color: theme.palette.textColorSecondary,
-              textTransform: "none",
+              backgroundColor: "#7c8db5",
+              marginBottom: "20px",
+              borderRadius: "10px",
+              position: "relative",
+              justifyContent: "flex-end",
+              alignItems: "flex-start",
+              padding: "10px",
+              height: "auto",
             }}
           >
-            Add answer
-          </Button>
-        </Box>
-      ))}
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <TextField
+                label={`Question ${index + 1}:`}
+                variant="outlined"
+                fullWidth
+                value={question.question}
+                onChange={(e) => handleQuestionChange(index, e.target.value)}
+                sx={{
+                  marginBottom: "10px",
+                }}
+              />
+            </Box>
 
-      <Button
-        variant="contained"
-        onClick={handleAddQuestion}
-        sx={{
-          borderRadius: "10px",
-          padding: "13px 26px",
-          lineHeight: "20px",
-          marginRight: { xs: "5px" },
-          textTransform: "none",
-        }}
-      >
-        +Create new question
-      </Button>
+            {question.answers.map((answer, answerIndex) => (
+              <Box
+                key={answerIndex}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                }}
+              >
+                <IconButton
+                  sx={{
+                    color: theme.palette.trashColor,
+                    marginRight: "5px",
+                    "&:hover": {
+                      color: "#435ebe",
+                    },
+                  }}
+                  onClick={() => {
+                    if (deleteEnabled) {
+                      handleDeleteAnswer(index, answerIndex);
+                    }
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <Checkbox
+                  color="primary"
+                  checked={answer.isCorrect}
+                  onChange={() => handleCorrectAnswerChange(index, answerIndex)}
+                />
 
-      <Button
-        variant="contained"
-        onClick={handleFinish}
-        sx={{
-          borderRadius: "10px",
-          padding: "13px 26px",
-          lineHeight: "20px",
-          float: "right",
-          textTransform: "none",
-        }}
-      >
-        Finish
-      </Button>
-    </Box>
+                <TextField
+                  label={`Answer ${answerIndex + 1}`}
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  value={answer.answer_text}
+                  onChange={(e) =>
+                    handleAnswerChange(index, answerIndex, e.target.value)
+                  }
+                  sx={{ marginLeft: "5px" }}
+                />
+              </Box>
+            ))}
+            <Button
+              variant="outlined"
+              onClick={() => handleAddAnswer(index)}
+              sx={{
+                color: theme.palette.textColorSecondary,
+                textTransform: "none",
+              }}
+            >
+              Add answer
+            </Button>
+          </Box>
+        ))}
+
+        <Button
+          variant="contained"
+          onClick={handleAddQuestion}
+          sx={{
+            borderRadius: "10px",
+            padding: "13px 26px",
+            lineHeight: "20px",
+            marginRight: { xs: "5px" },
+            textTransform: "none",
+          }}
+        >
+          +Create new question
+        </Button>
+
+        <Button
+          variant="contained"
+          onClick={handleFinish}
+          sx={{
+            borderRadius: "10px",
+            padding: "13px 26px",
+            lineHeight: "20px",
+            float: "right",
+            textTransform: "none",
+          }}
+        >
+          Finish
+        </Button>
+      </Box>
+      <Snackbar open={isOpenA} autoHideDuration={6000} onClose={(event, reason) => { if (reason === 'clickaway') { setIsOpenA(false) } }}>
+        <Alert
+          severity={statusA}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {messageA}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
 

@@ -124,10 +124,8 @@ public class ExamController {
         }
         return ResponseEntity.ok(questions);
     }
-
     @PostMapping("/storeQuestions/{examId}")
     public ResponseEntity<?> postMethodName(@PathVariable String examId, @RequestBody List<Question> questions) {
-
         Exam exam = examRepository.findById(examId).orElse(null);
         if (exam == null) {
             return ResponseEntity.badRequest().body("Exam not found !");

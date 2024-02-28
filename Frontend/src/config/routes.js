@@ -5,7 +5,7 @@ const routes = {
     codeExam: '/code-exam',
     setTime: '/set-time',
     startedExam: '/started-exam',
-    parseQuestions: "/parse-questions",
+    parseQuestions: "/parse-questions/:id",
 };
 
 export default routes;
