@@ -8,6 +8,7 @@ const routes = {
   setTime: "/set-time",
   viewScoreExam: '/view-score-exam',
   thangDzvcl: '/thang-dzvcl'
+
 };
 
 export default routes;

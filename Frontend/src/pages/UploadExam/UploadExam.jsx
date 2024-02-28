@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Item from "@mui/material/Grid";
-import {useRef, useState} from "react";
+import {useRef, useState, useEffect} from "react";
 import styles from "./UploadExam.module.scss"
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -20,6 +20,7 @@ import ic_one from '~/assets/ic_one.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AlertSuccess from "~/utils/alertSuccess.jsx";
 import AlertError from "~/utils/alertError.jsx";
+import AlertWarning from "~/utils/alertWarning.jsx";
 import api from "../../config/api.js"
 import EditIcon from '@mui/icons-material/Edit';
 import {useNavigate, createSearchParams}  from "react-router-dom";
@@ -31,13 +32,18 @@ function UploadExam() {
     const [fileData, setFileData] = useState('')
     const [openAlert, setOpenAlert] = useState(false)
     const [openAlertError, setOpenAlertError] = useState(false)
+    const [openAlertWarning, setOpenAlertWarning] = useState(false)
     const [submitDisabled, setSubmitDisabled] = useState(false);
     const [stateSwitch, setStateSwitch] = useState(false);
     const navigate = useNavigate();
     const [message, setMessage] = useState()
     const {id} = useParams();
     // const history = userHistory();
-
+    useEffect(()=>{
+        if(!JSON.parse(localStorage.getItem('user'))){
+          navigate('/');
+        }
+      },[]);
     let questionObject = null;
     let answerRow = null;
     const [questions, setQuestions] = useState([])
@@ -138,8 +144,13 @@ function UploadExam() {
                             'Content-Type': 'application/json',
                         }
                     });
-
-                if(response.status === 200) {
+                if (response.data === false) {
+                    setMessage("This assignment already has data, please do not add new ones!");
+                    setOpenAlertWarning(true);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    setOpenAlertWarning(false);
+                    setSubmitDisabled(false);
+                } else if(response.status === 200) {
                 // if(true) {
                     removeFile();
                     setOpenAlert(true);
@@ -148,10 +159,10 @@ function UploadExam() {
                     let a = 'asdfbsjdafasd';
                     setSubmitDisabled(false);
                     navigate({
-                        pathname: "/code-exam",
-                        search: createSearchParams({
-                            keyCode: a
-                        }).toString()
+                        pathname: "/",
+                        // search: createSearchParams({
+                        //     keyCode: a
+                        // }).toString()
                     })
                 } else {
                     setOpenAlertError(true);
@@ -351,6 +362,15 @@ function UploadExam() {
             }}>
                 <div>
                     <AlertError message={message}/>
+                </div>
+            </Snackbar>
+            <Snackbar
+                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                style={{marginTop: '40px'}}
+                open={openAlertWarning} autoHideDuration={6000} onClose={() => {
+            }}>
+                <div>
+                    <AlertWarning message={message}/>
                 </div>
             </Snackbar>
         </Box>
