@@ -125,6 +125,12 @@ public class ExamController {
         return ResponseEntity.ok(questions);
     }
 
+    @GetMapping("/exams")
+    public ResponseEntity<List<Exam>> getExams() {
+        List<Exam> exams = examRepository.findAll();
+        return ResponseEntity.ok(exams);
+    }
+
     @PostMapping("/storeQuestions/{examId}")
     public ResponseEntity<?> postMethodName(@PathVariable String examId, @RequestBody List<Question> questions) {
 

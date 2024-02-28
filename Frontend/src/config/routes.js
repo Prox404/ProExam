@@ -5,6 +5,7 @@ const routes = {
     codeExam: '/code-exam',
     setTime: '/set-time',
     startedExam: '/started-exam',
+    examList: '/exams'
 };
 
 export default routes;
