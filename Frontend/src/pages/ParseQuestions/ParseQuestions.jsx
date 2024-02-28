@@ -1,14 +1,7 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Checkbox,
-  IconButton,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Checkbox, IconButton, TextField } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
-
 
 function ParseQuestions() {
   const theme = useTheme();
@@ -25,7 +18,9 @@ function ParseQuestions() {
     },
   ]);
 
-  const [answerCounts, setAnswerCounts] = useState(Array(questions.length).fill(4));
+  const [answerCounts, setAnswerCounts] = useState(
+    Array(questions.length).fill(4)
+  );
 
   const handleAddQuestion = () => {
     const newQuestion = {
@@ -36,14 +31,11 @@ function ParseQuestions() {
       })),
     };
 
-    console.log("New Question:", newQuestion);
+    console.log("New Question", newQuestion);
 
-    setQuestions([...questions, newQuestion]);
-    setAnswerCounts([...answerCounts, 4]);
-    const newAnswerCount = 7;
-    if (newAnswerCount > 2) {
-      setDeleteEnabled(true);
-    }
+    setQuestions((prevQuestions) => [...prevQuestions, newQuestion]);
+    setAnswerCounts((prevCounts) => [...prevCounts, 2]);
+    setDeleteEnabled(true);
   };
 
   const handleAddAnswer = (questionIndex) => {
@@ -72,7 +64,6 @@ function ParseQuestions() {
     setQuestions(newQuestions);
   };
 
- 
   const handleCorrectAnswerChange = (questionIndex, answerIndex) => {
     setQuestions((prevQuestions) => {
       const updatedQuestions = prevQuestions.map((question, idx) => {
@@ -84,29 +75,28 @@ function ParseQuestions() {
                 isCorrect: !answer.isCorrect,
               };
 
-              console.log(updatedAnswer); 
+              console.log(updatedAnswer);
 
               return updatedAnswer;
             }
             return answer;
           });
-  
+
           const updatedQuestion = {
             ...question,
             answers: updatedAnswers,
           };
 
-          console.log(updatedQuestion); 
+          console.log(updatedQuestion);
 
           return updatedQuestion;
         }
         return question;
       });
-  
+
       return updatedQuestions;
     });
   };
-  
 
   const handleDeleteAnswer = (questionIndex, answerIndex) => {
     const newQuestions = [...questions];
@@ -120,6 +110,67 @@ function ParseQuestions() {
       setDeleteEnabled(true);
     }
   };
+
+  const handleFinish = async () => {
+    let isSuccess = false;
+    let errorMessage = '';
+
+    if (questions.length === 0) {
+        errorMessage = "No questions to submit.";
+    } else {
+        const isValid = questions.every(question => question.answers.length > 0);
+        if (!isValid) {
+            errorMessage = "Each question must have at least one answer.";
+        } else {
+            const data = questions.map(({ question, answers }) => ({
+                question,
+                answers: answers.map(({ answer_text, isCorrect }) => ({ answer_text, isCorrect })),
+            }));
+
+            try {
+                const response = await api.post(
+                    `/exam/parseQuestions/${id}`,
+                    data,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    }
+                );
+                if (response.status === 200) {
+                    isSuccess = true;
+                    removeFile();
+                    setOpenAlert(true);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    setOpenAlert(false);
+                    let a = 'asdfbsjdafasd';
+                    setSubmitDisabled(false);
+                    navigate({
+                        pathname: "/code-exam",
+                        search: createSearchParams({
+                            keyCode: a
+                        }).toString()
+                    });
+                } else {
+                    errorMessage = "An error occurred while submitting questions.";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                errorMessage = "An error occurred while submitting questions.";
+            }
+        }
+    }
+
+    if (!isSuccess) {
+        console.error(errorMessage);
+        
+        setOpenAlertError(true);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setOpenAlertError(false);
+        setSubmitDisabled(false);
+    }
+};
+
 
   return (
     <Box
@@ -234,6 +285,7 @@ function ParseQuestions() {
 
       <Button
         variant="contained"
+        onClick={handleFinish}
         sx={{
           borderRadius: "10px",
           padding: "13px 26px",
