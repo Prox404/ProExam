@@ -136,9 +136,8 @@ const SetTime = () => {
       examEndTime: closeT,
       numberSubmit,
       keyCode: randomNumber,
-      userId: "d606b294-2939-414a-ad10-d88177ea6cf4"
+      userId: "6aa6a1f7-eab1-4e8e-aeb5-a843d46f4e53"
     });
-    console.log(result)
     return result;
   }
   return (
