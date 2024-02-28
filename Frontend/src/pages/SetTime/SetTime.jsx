@@ -25,11 +25,11 @@ const SetTime = () => {
   const [randomNumber, setRandomNumber] = useState();
   const [isEditExam, setIsEditExam] = useState(true);
   const navigate = useNavigate();
-  // useEffect(()=>{
-  //   if(!JSON.parse(localStorage.getItem('user'))){
-  //     navigate('/');
-  //   }
-  // },[]);
+  useEffect(()=>{
+    if(!JSON.parse(localStorage.getItem('user'))){
+      navigate('/');
+    }
+  },[]);
   useEffect(() => {
     if (Number(examTime) >= 0) {
       const openD = new Date(`${openDate}T${openTime}:00`);

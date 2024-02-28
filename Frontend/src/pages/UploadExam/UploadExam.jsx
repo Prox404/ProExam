@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Item from "@mui/material/Grid";
-import {useRef, useState} from "react";
+import {useRef, useState, useEffect} from "react";
 import styles from "./UploadExam.module.scss"
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -39,7 +39,11 @@ function UploadExam() {
     const [message, setMessage] = useState()
     const {id} = useParams();
     // const history = userHistory();
-
+    useEffect(()=>{
+        if(!JSON.parse(localStorage.getItem('user'))){
+          navigate('/');
+        }
+      },[]);
     let questionObject = null;
     let answerRow = null;
     const [questions, setQuestions] = useState([])

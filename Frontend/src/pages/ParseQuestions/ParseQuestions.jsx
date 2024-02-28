@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, Checkbox, IconButton, TextField, Snackbar, Alert } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +12,11 @@ function ParseQuestions() {
   const [statusA, setStatusA] = useState('success');
   const [messageA, setMessageA] = useState('');
   const [deleteEnabled, setDeleteEnabled] = useState(true);
-
+  useEffect(()=>{
+    if(!JSON.parse(localStorage.getItem('user'))){
+      navigate('/');
+    }
+  },[]);
   const [questions, setQuestions] = useState([
     {
       questionText: "",

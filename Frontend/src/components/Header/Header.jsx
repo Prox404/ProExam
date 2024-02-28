@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ThemeContext } from '~/App';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
@@ -243,6 +244,7 @@ export default function Header({ ...props }) {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modal, setModal] = useState(<></>);
     const theme = useTheme();
+    const navigate = useNavigate();
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [content, setContent] = useState('');
@@ -352,6 +354,9 @@ export default function Header({ ...props }) {
         setIsLogin(false);
         setUser({});
         handleMenuClose();
+        setTimeout(()=>{
+            navigate('/');
+        },300);
     }
 
 
