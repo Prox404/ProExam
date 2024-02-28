@@ -4,7 +4,7 @@ const routes = {
     uploadExam: '/upload-exam/:id',
     codeExam: '/code-exam',
     setTime: '/set-time',
-    startedExam: '/started-exam',
+    startedExam: '/started-exam'
 };
 
 export default routes;
