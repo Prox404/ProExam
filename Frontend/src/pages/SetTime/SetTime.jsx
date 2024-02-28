@@ -24,6 +24,7 @@ const SetTime = () => {
   const [messageA, setMessageA] = useState('');
   const [randomNumber, setRandomNumber] = useState();
   const [isEditExam, setIsEditExam] = useState(true);
+  const [userId, setUserId] = useState(JSON.parse(localStorage.getItem('user'))?.userId);
   const navigate = useNavigate();
   useEffect(()=>{
     if(!JSON.parse(localStorage.getItem('user'))){
@@ -141,7 +142,7 @@ const SetTime = () => {
       examEndTime: closeT,
       numberSubmit,
       keyCode: randomNumber,
-      userId: "a66dcbf2-0389-4a8f-a310-37b174daa034"
+      userId
     });
     return result;
   }

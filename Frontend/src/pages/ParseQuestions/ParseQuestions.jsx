@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, Checkbox, IconButton, TextField, Snackbar, Alert } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import { createQuestionManually } from "~/services/examService";
 
@@ -12,6 +13,7 @@ function ParseQuestions() {
   const [statusA, setStatusA] = useState('success');
   const [messageA, setMessageA] = useState('');
   const [deleteEnabled, setDeleteEnabled] = useState(true);
+  const {id} = useParams();
   useEffect(()=>{
     if(!JSON.parse(localStorage.getItem('user'))){
       navigate('/');
@@ -21,7 +23,7 @@ function ParseQuestions() {
     {
       questionText: "",
       exam: {
-        examId: "32ad4f00-2520-400d-83a3-5d9043e3daa0"
+        examId: id
       },
       answers: Array.from({ length: 2 }, () => ({
         answerText: "",
@@ -143,7 +145,7 @@ function ParseQuestions() {
       setIsOpenA(true);
       setStatusA('success');
       setMessageA('Exam Has Created!');
-      await createQuestionManually({ questions, examId: "32ad4f00-2520-400d-83a3-5d9043e3daa0" })
+      await createQuestionManually({ questions, examId: id })
       setTimeout(() => {
         navigate('/');
       }, 1000);
