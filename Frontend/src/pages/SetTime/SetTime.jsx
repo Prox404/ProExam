@@ -347,6 +347,9 @@ const SetTime = () => {
                 onChange={(event) => setNumberSubmit(event.target.value)}
                 sx={{
                   width: '225px',
+                  '& .MuiInputBase-root': {
+                    height: '40px'
+                  },
                 }}
               />
             </Box>
@@ -426,6 +429,7 @@ const SetTime = () => {
           {messageA}
         </Alert>
       </Snackbar>
+      
     </>
   );
 }

@@ -25,7 +25,6 @@ function ParseQuestions() {
   const [questions, setQuestions] = useState([
     {
       id: uuidv4(),
-      index: indexQuestion,
       questionText: "",
       exam: {
         examId: id
