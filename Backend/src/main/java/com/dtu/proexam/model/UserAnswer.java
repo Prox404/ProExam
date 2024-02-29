@@ -12,7 +12,7 @@ public class UserAnswer {
     @Column(name = "user_answer_id")
     private String userAnswerId;
 
-    @Column(name = "user_answer_name")
+    @Column(name = "user_answer_name", columnDefinition = "nvarchar")
     private String userAnswerName;
 
     @Column(name = "user_answer_email", unique = true)

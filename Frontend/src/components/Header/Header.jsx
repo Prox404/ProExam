@@ -301,6 +301,7 @@ export default function Header({ ...props }) {
             localStorage.setItem('user', JSON.stringify(res.data));
             setIsLogin(true);
             setUser(res.data);
+            setModalIsOpen(false);
         } else {
             // console.log(res.data);
             handleShowSnackBar('Login failed', 'error');

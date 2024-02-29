@@ -4,11 +4,13 @@ import * as blazeface from "@tensorflow-models/blazeface";
 import Webcam from 'react-webcam';
 import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs';
-import { Box } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import 'animate.css';
 
 
-
-function FaceDetectionCam() {
+function FaceDetectionCam({handleMultipleFaces}) {
     const [hide, setHide] = useState(false);
 
     const camRef = useRef(null);
@@ -54,7 +56,11 @@ function FaceDetectionCam() {
                     const cxt = cxtRef.current.getContext("2d");
 
                     draw(cxt, detections);
-                    console.log((detections.length > 1 || detections.length == 0) && "Cheating Detected");
+
+                    if (detections.length > 1 || detections.length == 0) {
+                        handleMultipleFaces();
+                        console.log("Multiple Faces Detected");
+                    }
                 }
             })();
         }, 1000);
@@ -67,56 +73,73 @@ function FaceDetectionCam() {
 
     return (
         <>
-            <Box>
+            <Box sx={{
+                position: "absolute",
+                bottom: 'calc(50% - 200px)',
+                right: 0,
+                zIndex: 9,
+                width: "300px",
+            }}
+                className="animate__animated animate__fadeInRight"
+            >
                 <Box sx={{
                     opacity: hide ? 0 : 1,
+                    borderRadius: "10px",
+                    overflow: "hidden",
+                    height: "160px",
+                    transition: "opacity 0.2s",
                 }}>
                     <Webcam
                         ref={camRef}
                         style={{
-                            position: "absolute",
-                            // marginLeft: "auto",
-                            // marginRight: "auto",
-                            top: 0,
-                            right: 0,
                             textAlign: "center",
                             zIndex: -1,
                             width: '300px',
                             objectFit: "cover",
+
                         }}
                     />
-    
+
                     <canvas
                         ref={cxtRef}
                         style={{
                             position: "absolute",
-                            // marginLeft: "auto",
-                            // marginRight: "auto",
                             top: 0,
                             right: 0,
                             textAlign: "center",
-                            zIndex: -1,
+                            zIndex: 9,
                             width: '300px',
                             objectFit: "cover",
                         }}
                     />
-                    <button style={{
+                    <IconButton style={{
                         position: "absolute",
                         top: 0,
                         right: 0,
                         zIndex: 9,
-                    }} onClick={() => setHide(true)}>Hide</button>
-                </Box>  
+                    }} onClick={() => setHide(true)}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
                 <Box>
-                    <button style={{
+                    <IconButton style={{
                         position: "absolute",
                         top: 0,
                         right: 0,
                         zIndex: 9,
                         display: hide ? "block" : "none",
-                    }} onClick={() => setHide(false)}>Show</button>
+                        height: "80px",
+                        borderRadius: "5px 0 0 5px",
+                        backgroundColor: "rgba(0,0,0,0.2)",
+                        padding: "0 2px",
+                        '& svg': {
+                            fontSize: "10px",
+                        }
+                    }} onClick={() => setHide(false)}>
+                        <ArrowBackIosNewIcon />
+                    </IconButton>
                 </Box>
-                
+
             </Box>
         </>
     )

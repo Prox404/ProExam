@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Date;
 
 @Entity
 @Table(name = "exam_result_cheating")
@@ -25,12 +26,17 @@ public class ExamResultCheating {
     @JoinColumn(name = "cheating_code")
     private Cheating cheating;
 
+    @Column(name = "cheating_time")
+    private Date cheatingTime;
+
     public ExamResultCheating() {
+        this.cheatingTime = new Date();
     }
 
     public ExamResultCheating(ExamResult examResult, Cheating cheating) {
         this.examResult = examResult;
         this.cheating = cheating;
+        this.cheatingTime = new Date();
     }
 
     /**
@@ -73,6 +79,21 @@ public class ExamResultCheating {
      */
     public void setCheating(Cheating cheating) {
         this.cheating = cheating;
+    }
+
+
+    /**
+     * @return Date return the cheatingTime
+     */
+    public Date getCheatingTime() {
+        return cheatingTime;
+    }
+
+    /**
+     * @param cheatingTime the cheatingTime to set
+     */
+    public void setCheatingTime(Date cheatingTime) {
+        this.cheatingTime = cheatingTime;
     }
 
 }
