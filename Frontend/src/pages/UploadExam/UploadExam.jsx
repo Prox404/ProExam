@@ -41,6 +41,7 @@ function UploadExam() {
     // const history = userHistory();
     useEffect(()=>{
         if(!JSON.parse(localStorage.getItem('user'))){
+            
           navigate('/');
         }
       },[]);

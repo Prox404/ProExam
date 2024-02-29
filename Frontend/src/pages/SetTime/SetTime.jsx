@@ -3,6 +3,8 @@ import { useTheme } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createExam } from "~/services/examService";
+import { useContext } from "react";
+import { ThemeContext } from '~/App';
 import 'animate.css'
 
 const SetTime = () => {
@@ -26,6 +28,7 @@ const SetTime = () => {
   const [isEditExam, setIsEditExam] = useState(true);
   const [userId, setUserId] = useState(JSON.parse(localStorage.getItem('user'))?.userId);
   const navigate = useNavigate();
+  const {mode} = useContext(ThemeContext);
   useEffect(()=>{
     if(!JSON.parse(localStorage.getItem('user'))){
       navigate('/');
@@ -244,7 +247,10 @@ const SetTime = () => {
                 value={openDate}
                 onChange={(event) => (new Date(today) <= new Date(event.target.value)) && setOpenDate(event.target.value)}
                 sx={{
-                  width: '200px'
+                  width: '200px',
+                  '& input::-webkit-calendar-picker-indicator': {
+                    filter: mode ? 'invert(1)' : 'none'
+                  },
                 }}
                 InputLabelProps={{
                   shrink: true,
@@ -258,7 +264,10 @@ const SetTime = () => {
                 value={openTime}
                 onChange={(event) => (new Date(`${today}T${now}:00`) < new Date(`${openDate}T${event.target.value}:00`)) && setOpenTime(event.target.value)}
                 sx={{
-                  width: '200px'
+                  width: '200px',
+                  '& input::-webkit-calendar-picker-indicator': {
+                    filter: mode ? 'invert(1)' : 'none'
+                  },
                 }}
                 InputLabelProps={{
                   shrink: true,
@@ -288,7 +297,10 @@ const SetTime = () => {
                 value={closeDate}
                 onChange={(event) => (new Date(openDate) <= new Date(event.target.value)) && setCloseDate(event.target.value)}
                 sx={{
-                  width: '200px'
+                  width: '200px',
+                  '& input::-webkit-calendar-picker-indicator': {
+                    filter: mode ? 'invert(1)' : 'none'
+                  }
                 }}
                 InputLabelProps={{
                   shrink: true,
@@ -301,7 +313,10 @@ const SetTime = () => {
                 value={closeTime}
                 onChange={(event) => (new Date(`${openDate}T${openTime}:00`) < new Date(`${closeDate}T${event.target.value}:00`)) && setCloseTime(event.target.value)}
                 sx={{
-                  width: '200px'
+                  width: '200px',
+                  '& input::-webkit-calendar-picker-indicator': {
+                    filter: mode ? 'invert(1)' : 'none'
+                  },
                 }}
                 InputLabelProps={{
                   shrink: true,
