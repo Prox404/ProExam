@@ -25,6 +25,7 @@ import api from "../../config/api.js"
 import EditIcon from '@mui/icons-material/Edit';
 import {useNavigate, createSearchParams}  from "react-router-dom";
 import {useParams} from "react-router-dom";
+import 'animate.css'
 
 function UploadExam() {
     const [selectFile, setSelectFile] = useState(null)
@@ -41,6 +42,7 @@ function UploadExam() {
     // const history = userHistory();
     useEffect(()=>{
         if(!JSON.parse(localStorage.getItem('user'))){
+            
           navigate('/');
         }
       },[]);
@@ -187,7 +189,9 @@ function UploadExam() {
     }
 
     return (
-        <Box sx={{
+        <Box
+        className = 'animate__animated animate__backInRight' 
+        sx={{
             backgroundColor: "white",
             borderRadius: 10,
             margin: '40px',
