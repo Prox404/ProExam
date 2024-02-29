@@ -28,10 +28,8 @@ const SetTime = () => {
   const [isEditExam, setIsEditExam] = useState(true);
   const [userId, setUserId] = useState(JSON.parse(localStorage.getItem('user'))?.userId);
   const navigate = useNavigate();
-<<<<<<< HEAD
   const {mode} = useContext(ThemeContext);
-=======
->>>>>>> ConggLuan
+
   useEffect(()=>{
     if(!JSON.parse(localStorage.getItem('user'))){
       navigate('/');

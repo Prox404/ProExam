@@ -5,8 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import { createQuestionManually } from "~/services/examService";
-import { useNavigate } from "react-router-dom";
-import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { v4 as uuidv4 } from "uuid";
 
