@@ -9,6 +9,32 @@ export const isValidKeyCode = (keyCode) => {
         return false;
     }
 }
+
+// thang
+export const getExam = ({
+    idExam
+}) => {
+    try {
+        const res = request.get(`/exam/getQuestion?examId=${idExam}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const getTime = ({
+    idExam
+}) => {
+    try {
+        const res = request.get(`/exam/getQuestion?examId=${idExam}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 export const createExam = ({
     examName,
     duration,
@@ -19,7 +45,7 @@ export const createExam = ({
     userId
 }) => {
     try {
-        const res = request.post(`/exam/store`,{
+        const res = request.post(`/exam/store`, {
             examName,
             duration,
             examStartTime,
@@ -42,7 +68,7 @@ export const createQuestionManually = ({
     examId
 }) => {
     try {
-        const res = request.post(`/exam/storeQuestions/${examId}`,questions);
+        const res = request.post(`/exam/storeQuestions/${examId}`, questions);
         return res;
     } catch (error) {
         console.log(error);
