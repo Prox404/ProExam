@@ -12,7 +12,7 @@ as
 				RAISERROR('Invalid',16,1);
 				rollback
 			end
-		else if  NOT EXISTS (select * from history where exam_result_id = @exam_result_id and @question_id = @question_id)
+		else if  NOT EXISTS (select * from history where exam_result_id = @exam_result_id and question_id = @question_id)
 				begin
 					insert into history(exam_result_id, question_id, selected_answer_id) values (@exam_result_id, @question_id, @selected_answer_id)
 					print'Success'

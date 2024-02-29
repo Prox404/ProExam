@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.poi.hwpf.HWPFDocument;
@@ -31,6 +32,7 @@ import com.dtu.proexam.repository.UserAnswerRepository;
 import com.dtu.proexam.repository.UserRepository;
 import com.dtu.proexam.util.GlobalUtil;
 import com.dtu.proexam.util.LoggingUntil;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -85,6 +87,16 @@ public class ExamController {
 
         examRepository.save(exam);
         return ResponseEntity.ok(exam);
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> getExam(@RequestParam int keyCode) {
+        List<Exam> exams = examRepository.findByKeyCode(keyCode);
+        Exam exam = exams.size() > 0 ? exams.get(0) : null;
+        if (exam == null) {
+            return ResponseEntity.badRequest().body(new BasicResponse("Exam not found", 400));
+        }
+        return ResponseEntity.ok(new BasicResponse("Success", 200, exam));
     }
 
     @PostMapping("/update")
@@ -266,11 +278,18 @@ public class ExamController {
         questions.forEach(
                 question -> {
                     List<Answer> answers = question.getAnswers();
+                    List<Answer> newAnswers = new ArrayList<>(answers.size());
                     Collections.shuffle(answers);
                     answers.forEach(
                             answer -> {
-                                answer.setIsCorrect(false);
+                                Answer answerCopy = new Answer();
+                                answerCopy.setAnswerId(answer.getAnswerId());
+                                answerCopy.setAnswerText(answer.getAnswerText());
+                                answerCopy.setIsCorrect(false); 
+                                newAnswers.add(answerCopy);
                             });
+                    // Thay đổi danh sách câu trả lời của câu hỏi
+                    question.setAnswers(newAnswers);
                 });
         // random question
         Collections.shuffle(questions);
@@ -310,6 +329,7 @@ public class ExamController {
 
         examResultRepository.save(examResult);
         takeExamResponse.ExamResultId = examResult.getExamResultId();
+        takeExamResponse.ExamResultStartTime = examResult.getStartTime();
 
         return ResponseEntity.ok(takeExamResponse);
 
@@ -321,32 +341,49 @@ public class ExamController {
             @RequestBody ObjectNode objectNode) {
 
         try {
-
             String questionId = objectNode.get("questionId").asText();
-            String selectedAnswerId = objectNode.get("selectedAnswerId").asText();
-
-            loggingUntil.info("chooseAnwser", "examResultId: " + examResultId + " questionId: " + questionId
-                    + " selectedAnswerId: " + selectedAnswerId);
+            ArrayNode selectedAnswerIdsNode = (ArrayNode) objectNode.get("selectedAnswerIds");
 
             if (examResultId == null || examResultId.isEmpty() || questionId == null || questionId.isEmpty()
-                    || selectedAnswerId == null || selectedAnswerId.isEmpty()) {
-                return ResponseEntity.badRequest().body("Invalid Account !");
+                    || selectedAnswerIdsNode == null || selectedAnswerIdsNode.isEmpty()) {
+                return ResponseEntity.badRequest().body("Invalid request data !");
             }
 
             List<ExamResult> examResults = examResultRepository.findByExamResultId(examResultId);
-            loggingUntil.info("chooseAnwser", "examResults: " + examResults.size());
-            if (examResults.size() == 0) {
+            if (examResults.isEmpty()) {
                 return ResponseEntity.badRequest().body("Exam not found !");
             }
 
             ExamResult examResult = examResults.get(0);
-
             if (examResult == null) {
                 return ResponseEntity.badRequest().body("Exam not found !");
             }
 
-            jdbcTemplate.execute("Exec CreateOrAlterHistory '" + examResultId + "', '" + questionId + "', '"
-                    + selectedAnswerId + "'");
+            List<String> selectedAnswerIds = new ArrayList<>();
+            selectedAnswerIdsNode.forEach(answerId -> selectedAnswerIds.add(answerId.asText()));
+
+            Optional<Question> question = questionRepository.findById(questionId);
+            if (!question.isPresent()) {
+                return ResponseEntity.badRequest().body("Question not found !");
+            }
+            Question questionEntity = question.get();
+            if (questionEntity.getQuestionType() == Question.QuestionType.SINGLE_CHOICE) {
+                String sql = "Exec CreateOrAlterHistory '" + examResultId + "', '" + questionId + "', '"
+                        + selectedAnswerIds.get(0) + "'";
+                loggingUntil.info("chooseAnwser", "sql: " + sql);
+                jdbcTemplate.execute("Exec CreateOrAlterHistory '" + examResultId + "', '" + questionId + "', '"
+                        + selectedAnswerIds.get(0) + "'");
+            } else {
+                jdbcTemplate.execute("delete from History where exam_result_id = '" + examResultId
+                        + "' and question_id = '" + questionId + "'");
+
+                for (String selectedAnswerId : selectedAnswerIds) {
+                    jdbcTemplate
+                            .execute("insert into History (exam_result_id, question_id, selected_answer_id) values ('"
+                                    + examResultId + "', '" + questionId + "', '"
+                                    + selectedAnswerId + "')");
+                }
+            }
 
             BasicResponse basicResponse = new BasicResponse();
             basicResponse.message = "Success";
@@ -379,9 +416,8 @@ public class ExamController {
         basicResponse.status = 400;
         return ResponseEntity.badRequest().body(basicResponse);
     }
-    
 
-    @PostMapping("/submitExam/{examResultId}")
+    @GetMapping("/submitExam/{examResultId}")
     public ResponseEntity<?> submitExam(
             @PathVariable(required = true) String examResultId) {
 
@@ -390,19 +426,19 @@ public class ExamController {
             loggingUntil.info("submitExam", "examResultId: " + examResultId);
 
             if (examResultId == null || examResultId.isEmpty()) {
-                return ResponseEntity.badRequest().body("Invalid Account !");
+                return ResponseEntity.badRequest().body(new BasicResponse("Invalid Account !", 400));
             }
 
             List<ExamResult> examResults = examResultRepository.findByExamResultId(examResultId);
             loggingUntil.info("submitExam", "examResults: " + examResults.size());
             if (examResults.size() == 0) {
-                return ResponseEntity.badRequest().body("Exam not found !");
+                return ResponseEntity.badRequest().body(new BasicResponse("Exam not found !", 400));
             }
 
             ExamResult examResult = examResults.get(0);
 
             if (examResult == null) {
-                return ResponseEntity.badRequest().body("Exam not found !");
+                return ResponseEntity.badRequest().body(new BasicResponse("Exam not found !", 400));
             }
 
             List<Question> questions = questionRepository.findByExamExamId(examResult.getExam().getExamId());
@@ -416,7 +452,7 @@ public class ExamController {
             AtomicReference<Float> score = new AtomicReference<>(0.0f);
 
             questions.forEach(question -> {
-                boolean isMultipleChoice = question.getAnswers().stream().filter(Answer::isIsCorrect).count() > 1;
+                boolean isMultipleChoice = question.getQuestionType() == Question.QuestionType.MULTIPLE_CHOICE;
                 // skip if any answer incorrect in question
 
                 if (histories.stream().anyMatch(history -> history.getQuestionId().equals(question.getQuestionId())
@@ -428,10 +464,11 @@ public class ExamController {
 
                 question.getAnswers().forEach(answer -> {
                     if (isMultipleChoice) {
+                        float scorePerAnswer = scorePerQuestion / question.getAnswers().stream().filter(Answer::isIsCorrect).count();
                         if (answer.isIsCorrect() && histories.stream()
                                 .anyMatch(history -> history.getQuestionId().equals(question.getQuestionId())
                                         && history.getSelectedAnswerId().equals(answer.getAnswerId()))) {
-                            score.updateAndGet(currentScore -> currentScore + scorePerQuestion);
+                            score.updateAndGet(currentScore -> currentScore + scorePerAnswer);
                         }
                     } else {
                         if (histories.stream()
@@ -448,7 +485,7 @@ public class ExamController {
             examResult.setEndTime(new Date());
             examResultRepository.save(examResult);
 
-            return ResponseEntity.ok(examResult);
+            return ResponseEntity.ok(new BasicResponse("Success", 200, examResult));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -489,7 +526,7 @@ public class ExamController {
                 List<History> histories = jdbcTemplate.query(sqlGetHistory,
                         (rs, rowNum) -> new History(rs.getString("exam_result_id"),
                                 rs.getString("selected_answer_id"), rs.getString("question_id")));
-                
+
                 ExamResultResponse examResultResponse = new ExamResultResponse();
                 examResultResponse.message = "Success";
                 examResultResponse.status = 200;
@@ -543,6 +580,22 @@ public class ExamController {
     public class BasicResponse {
         public String message;
         public int status;
+        public Object data;
+
+        public BasicResponse() {
+        }
+
+        public BasicResponse(String message, int status) {
+            this.message = message;
+            this.status = status;
+        }
+
+        public BasicResponse(String message, int status, Object data) {
+            this.message = message;
+            this.status = status;
+            this.data = data;
+        }
+
     }
 
     public class TakeExamResponse {
@@ -551,6 +604,7 @@ public class ExamController {
         public int status;
         public UserAnswer userAnswer;
         public String ExamResultId;
+        public Date ExamResultStartTime;
     }
 
 }

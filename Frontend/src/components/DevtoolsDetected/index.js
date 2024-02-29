@@ -1,0 +1,1 @@
+export {dèault} from './DevtoolsDetected.jsx';

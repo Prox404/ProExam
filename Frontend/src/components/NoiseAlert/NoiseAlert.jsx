@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useDebounce } from 'use-debounce';
 
-const NoiseAlert = () => {
+const NoiseAlert = ({ handleNoiseDetection }) => {
   const [volume, setVolume] = useState(0);
-  const [color, setColor] = useState('green');
   const offsetRef = useRef(0);
   const offsetValueRef = useRef(null);
   const intervalRef = useRef(null);
+
+  // Debounce handleNoiseDetection function with 500ms delay
+  const [debouncedHandleNoiseDetection] = useDebounce(handleNoiseDetection, 3000);
 
   useEffect(() => {
     let mediaStream;
@@ -58,37 +61,25 @@ const NoiseAlert = () => {
   }, []);
 
   useEffect(() => {
-    const updateDb = () => {
-      setColor(changeColor(volume));
-    };
-
-    intervalRef.current = setInterval(updateDb, 500); // Use a fixed interval for updates
+    if (volume > 50) {
+      // Call the debounced function
+      debouncedHandleNoiseDetection();
+    }
 
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, [volume]);
+  }, [volume, debouncedHandleNoiseDetection]);
 
-  const changeColor = (decibels) => {
-    if (decibels < 50) return 'green';
-    else if (decibels >= 50 && decibels < 70) return 'yellow';
-    else if (decibels >= 70 && decibels < 90) return 'orange';
-    else return 'red';
-  };
-
-  const changeUpdateRate = () => {
-    // If you want to change the update rate dynamically, modify the interval here
-  };
 
   return (
     <div>
-      <h1>Decibel Meter</h1>
-      <div className="main-inputs">
+      {/* <div className="main-inputs">
         <main>
           <h2><span>{volume}</span> dB</h2>
           <div id='visuals'></div>
         </main>
-      </div>
+      </div> */}
     </div>
   );
 };
