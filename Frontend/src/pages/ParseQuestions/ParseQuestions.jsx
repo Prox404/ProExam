@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Checkbox, IconButton, TextField, Snackbar, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  IconButton,
+  TextField,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -8,18 +16,17 @@ import { createQuestionManually } from "~/services/examService";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { v4 as uuidv4 } from "uuid";
 
-
 function ParseQuestions() {
   const theme = useTheme();
   const navigate = useNavigate();
   const [isOpenA, setIsOpenA] = useState(false);
-  const [statusA, setStatusA] = useState('success');
-  const [messageA, setMessageA] = useState('');
+  const [statusA, setStatusA] = useState("success");
+  const [messageA, setMessageA] = useState("");
   const [deleteEnabled, setDeleteEnabled] = useState(true);
   const { id } = useParams();
   useEffect(() => {
-    if (!JSON.parse(localStorage.getItem('user'))) {
-      navigate('/');
+    if (!JSON.parse(localStorage.getItem("user"))) {
+      navigate("/");
     }
   }, []);
   const [questions, setQuestions] = useState([
@@ -28,7 +35,7 @@ function ParseQuestions() {
       // index: indexQuestion,
       questionText: "",
       exam: {
-        examId: id
+        examId: id,
       },
       answers: Array.from({ length: 2 }, () => ({
         answerText: "",
@@ -130,26 +137,23 @@ function ParseQuestions() {
   const handleDeleteAnswer = (questionIndex, answerIndex) => {
     const newQuestions = [...questions];
     const question = newQuestions[questionIndex];
-    question.answers.splice(answerIndex, 1);
+    question.answers = question.answers.filter(
+      (_, index) => index !== answerIndex
+    );
+    console.log(question.answers);
     setQuestions(newQuestions);
-    const currentAnswerCount = question.answers.length;
-    if (currentAnswerCount <= 2 && deleteEnabled) {
-      setDeleteEnabled(false);
-    } else if (currentAnswerCount > 2 && !deleteEnabled) {
-      setDeleteEnabled(true);
-    }
   };
 
   const checkisValid = () => {
     for (let i = 0; i < questions.length; i += 1) {
-      if (questions[i].questionText === '') {
-        setMessageA("Question Text Is Not Null!")
+      if (questions[i].questionText === "") {
+        setMessageA("Question Text Is Not Null!");
         return false;
       }
       let check = false;
       for (let j = 0; j < questions[i].answers.length; j += 1) {
-        if (questions[i].answers[j].answerText === '') {
-          setMessageA("Answer Text Is Not Null!")
+        if (questions[i].answers[j].answerText === "") {
+          setMessageA("Answer Text Is Not Null!");
           return false;
         }
 
@@ -158,24 +162,24 @@ function ParseQuestions() {
         }
       }
       if (!check) {
-        setMessageA("Please Choose The Correct Answer!")
+        setMessageA("Please Choose The Correct Answer!");
         return false;
       }
     }
     return true;
-  }
+  };
   const handleFinish = async () => {
     if (checkisValid()) {
       setIsOpenA(true);
-      setStatusA('success');
-      setMessageA('Exam Has Created!');
-      await createQuestionManually({ questions, examId: id })
+      setStatusA("success");
+      setMessageA("Exam Has Created!");
+      await createQuestionManually({ questions, examId: id });
       setTimeout(() => {
-        navigate('/');
+        navigate("/");
       }, 1000);
     } else {
       setIsOpenA(true);
-      setStatusA('error');
+      setStatusA("error");
     }
   };
 
@@ -281,7 +285,7 @@ function ParseQuestions() {
                   variant="outlined"
                   fullWidth
                   size="small"
-                  value={answer.answer_text}
+                  value={question.answers[answerIndex].answerText}
                   onChange={(e) =>
                     handleAnswerChange(index, answerIndex, e.target.value)
                   }
@@ -330,12 +334,16 @@ function ParseQuestions() {
           Finish
         </Button>
       </Box>
-      <Snackbar open={isOpenA} autoHideDuration={6000} onClose={(event, reason) => { if (reason === 'clickaway') { setIsOpenA(false) } }}>
-        <Alert
-          severity={statusA}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
+      <Snackbar
+        open={isOpenA}
+        autoHideDuration={6000}
+        onClose={(event, reason) => {
+          if (reason === "clickaway") {
+            setIsOpenA(false);
+          }
+        }}
+      >
+        <Alert severity={statusA} variant="filled" sx={{ width: "100%" }}>
           {messageA}
         </Alert>
       </Snackbar>
