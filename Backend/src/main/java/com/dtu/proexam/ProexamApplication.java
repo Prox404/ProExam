@@ -23,18 +23,18 @@ public class ProexamApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// db connected successfully
-		String sql = "select * from test";
-		int result = jdbcTemplate.query(sql, (rs) -> {
-			int count = 0;
-			while (rs.next()) {
-				count++;
-			}
-			return count;
-		});
-		if (result > 0)
-			logger.info("Connected to database");
-		else
-			logger.info("Failed to connect to database");
+		// String sql = "select * from test";
+		// int result = jdbcTemplate.query(sql, (rs) -> {
+		// 	int count = 0;
+		// 	while (rs.next()) {
+		// 		count++;
+		// 	}
+		// 	return count;
+		// });
+		// if (result > 0)
+		// 	logger.info("Connected to database");
+		// else
+		// 	logger.info("Failed to connect to database");
 	}
 
 }
