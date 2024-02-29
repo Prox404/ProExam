@@ -11,11 +11,7 @@ import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.dtu.proexam.model.Answer;
 import com.dtu.proexam.model.Exam;
@@ -32,7 +28,6 @@ import com.dtu.proexam.repository.UserRepository;
 import com.dtu.proexam.util.GlobalUtil;
 import com.dtu.proexam.util.LoggingUntil;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -99,9 +94,38 @@ public class ExamController {
         return ResponseEntity.ok(exam);
     }
 
+    @PostMapping("/uploadQuestions/{examId}")
+    public ResponseEntity<?> uploadQuestions(@PathVariable String examId, @RequestBody List<Question> questions) {
+        Exam exam = examRepository.findById(examId).orElse(null);
+        if(exam == null) {
+            return ResponseEntity.badRequest().body("Exam not found !");
+        }
+
+        List<Question> nQuestions = questionRepository.findByExamExamId(examId);
+        if(nQuestions.isEmpty()) {
+
+            for (Question question : questions) {
+                question.setExam(exam);
+                if (question.getAnswers().isEmpty()) continue;
+                if (question.getQuestionId() == null || question.getQuestionId().isEmpty())
+                    question.setQuestionId(GlobalUtil.getUUID());
+                if (question.getAnswers().stream().filter(Answer::isIsCorrect).count() > 1)
+                    question.setQuestionType(Question.QuestionType.MULTIPLE_CHOICE);
+                questionRepository.save(question);
+                for (Answer answer : question.getAnswers()) {
+                    if (answer.getAnswerId() == null || answer.getAnswerId().isEmpty())
+                        answer.setAnswerId(GlobalUtil.getUUID());
+                    answer.setQuestion(question);
+                    answerRepository.save(answer);
+                }
+            }
+        } else {
+            return ResponseEntity.ok(false);
+        }
+        return ResponseEntity.ok(questions);
+    }
     @PostMapping("/storeQuestions/{examId}")
     public ResponseEntity<?> postMethodName(@PathVariable String examId, @RequestBody List<Question> questions) {
-
         Exam exam = examRepository.findById(examId).orElse(null);
         if (exam == null) {
             return ResponseEntity.badRequest().body("Exam not found !");
