@@ -7,7 +7,8 @@ const routes = {
   codeExam: "/code-exam",
   setTime: "/set-time",
   viewScoreExam: '/view-score-exam',
-  thangDzvcl: '/thang-dzvcl'
+  thangDzvcl: '/thang-dzvcl',
+  examDetail: '/exam-detail/:id'
 
 };
 

@@ -88,7 +88,7 @@ function Login({ handleLogin, theme }) {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100%',
-        width: '100%',
+        width: '100%'
     }}>
         <img className={styles['login-cover']} src={login_cover} alt="login_cover" />
         <Typography sx={{
@@ -355,9 +355,9 @@ export default function Header({ ...props }) {
         setIsLogin(false);
         setUser({});
         handleMenuClose();
-        setTimeout(()=>{
+        setTimeout(() => {
             navigate('/');
-        },300);
+        }, 300);
     }
 
 
@@ -477,7 +477,11 @@ export default function Header({ ...props }) {
 
     return (
         <>
-            <Box {...props} sx={{ flexGrow: 1 }}>
+            <Box {...props} sx={{
+                flexGrow: 1,
+                position: 'relative',
+                boxShadow: '0px 1px 6px rgba(191, 191, 191, 1)', // Thêm đổ bóng ở đây
+            }}>
                 <AppBar color="default" elevation={0} position="static" sx={{
                     backgroundColor: mode ? '#333' : '#fff',
                 }}>

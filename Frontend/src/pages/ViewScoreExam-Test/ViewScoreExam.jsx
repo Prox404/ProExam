@@ -29,7 +29,6 @@ const ViewScoreExam = () => {
           alignItems: 'center',
           gap: '30px',
           padding: '30px 0px ',
-
         }}>
           {/* box dad 1 */}
           <Box sx={{
