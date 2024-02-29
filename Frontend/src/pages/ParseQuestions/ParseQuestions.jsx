@@ -5,6 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import { createQuestionManually } from "~/services/examService";
+import { useNavigate } from "react-router-dom";
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { v4 as uuidv4 } from "uuid";
+
 
 function ParseQuestions() {
   const theme = useTheme();
@@ -13,14 +18,16 @@ function ParseQuestions() {
   const [statusA, setStatusA] = useState('success');
   const [messageA, setMessageA] = useState('');
   const [deleteEnabled, setDeleteEnabled] = useState(true);
-  const {id} = useParams();
-  useEffect(()=>{
-    if(!JSON.parse(localStorage.getItem('user'))){
+  const { id } = useParams();
+  useEffect(() => {
+    if (!JSON.parse(localStorage.getItem('user'))) {
       navigate('/');
     }
-  },[]);
+  }, []);
   const [questions, setQuestions] = useState([
     {
+      id: uuidv4(),
+      index: indexQuestion,
       questionText: "",
       exam: {
         examId: id
@@ -32,12 +39,11 @@ function ParseQuestions() {
     },
   ]);
 
-  const [answerCounts, setAnswerCounts] = useState(
-    Array(questions.length)
-  );
+  const [answerCounts, setAnswerCounts] = useState(Array(questions.length));
 
   const handleAddQuestion = () => {
     const newQuestion = {
+      id: uuidv4(),
       questionText: "",
       answers: Array.from({ length: 2 }, () => ({
         answerText: "",
@@ -48,6 +54,7 @@ function ParseQuestions() {
     setQuestions((prevQuestions) => [...prevQuestions, newQuestion]);
     setAnswerCounts((prevCounts) => [...prevCounts, 2]);
     setDeleteEnabled(true);
+    console.log(questions.id);
   };
 
   const handleAddAnswer = (questionIndex) => {
@@ -73,7 +80,6 @@ function ParseQuestions() {
     newQuestions[questionIndex].answers[answerIndex].answerText = value;
     setQuestions(newQuestions);
   };
-
   const handleCorrectAnswerChange = (questionIndex, answerIndex) => {
     setQuestions((prevQuestions) => {
       const updatedQuestions = prevQuestions.map((question, idx) => {
@@ -104,18 +110,38 @@ function ParseQuestions() {
     });
   };
 
+  const handleDeleteQuestion = (id) => {
+    if (questions.length < 2) {
+      setStatusA("warning");
+      setMessageA("Need at least one question !");
+      setIsOpenA(true);
+      return;
+    }
+    let newQuestions = questions.filter((question) => question.id !== id);
+    // console.log(newQuestions);
+    setQuestions(newQuestions);
+  };
+
+  useEffect(() => {
+    const initialDeleteEnabled = questions.some(
+      (question) => question.answers.length > 2
+    );
+    setDeleteEnabled(initialDeleteEnabled);
+  }, [questions]);
+
   const handleDeleteAnswer = (questionIndex, answerIndex) => {
     const newQuestions = [...questions];
     const question = newQuestions[questionIndex];
     question.answers.splice(answerIndex, 1);
     setQuestions(newQuestions);
     const currentAnswerCount = question.answers.length;
-    if (currentAnswerCount <= 2) {
+    if (currentAnswerCount <= 2 && deleteEnabled) {
       setDeleteEnabled(false);
-    } else if (!deleteEnabled && currentAnswerCount > 2) {
+    } else if (currentAnswerCount > 2 && !deleteEnabled) {
       setDeleteEnabled(true);
     }
   };
+
   const checkisValid = () => {
     for (let i = 0; i < questions.length; i += 1) {
       if (questions[i].questionText === '') {
@@ -171,7 +197,7 @@ function ParseQuestions() {
       >
         {questions.map((question, index) => (
           <Box
-            key={index}
+            key={question.id}
             sx={{
               backgroundColor: "#7c8db5",
               marginBottom: "20px",
@@ -183,6 +209,31 @@ function ParseQuestions() {
               height: "auto",
             }}
           >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "40px",
+              }}
+            >
+              <IconButton
+                sx={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  color: theme.palette.trashColor,
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  "&:hover": {
+                    color: "#435ebe",
+                  },
+                }}
+                onClick={() => handleDeleteQuestion(question.id)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <TextField
                 label={`Question ${index + 1}:`}
