@@ -4,23 +4,23 @@
     import DataTable from './DataTable .jsx';
     import style from './Report.module.scss';
     import reportempty from '/src/assets/reportempty.svg';
-    import { useTheme} from '@mui/material/styles';
+    // import { useTheme} from '@mui/material/styles';
     import {useEffect, useState} from "react";
     import axios from 'axios';
-    import {useParams} from "react-router-dom";
+    // import {useParams} from "react-router-dom";
     function Report() {
-        const [isListEmpty, setisListEmpty] = useState([]);
-        const {uid} = useParams();
+        const [isListEmpty, setIsListEmpty] = useState([]);
+        // const {uid} = useParams();
         useEffect(() => {
             axios.get(`http://localhost:8080/exam/getExam/de50e663-e85b-414b-b239-84ba324de6ac`)
                 .then(response => {
-                    setisListEmpty(response.data);
+                    setIsListEmpty(response.data);
                     console.log('hello'+response.data+isListEmpty.length);
                 })
 
         }, []);
         console.log(isListEmpty.length)
-        const theme = useTheme();
+        // const theme = useTheme();
         return <>
             <Box  height={'100%'} sx={{}}>
                 <Box sx={{color:'white',letterSpacing:-0.14}}  display="flex" flexDirection="row"  alignItems="center">

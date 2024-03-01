@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootApplication
 @ComponentScan("com.dtu.proexam")
+
 public class ProexamApplication implements CommandLineRunner {
 
 	private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ProexamApplication.class);
