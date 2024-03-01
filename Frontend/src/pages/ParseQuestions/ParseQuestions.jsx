@@ -140,8 +140,15 @@ function ParseQuestions() {
     question.answers = question.answers.filter(
       (_, index) => index !== answerIndex
     );
-    console.log(question.answers);
+    // console.log(question.answers);
     setQuestions(newQuestions);
+
+    const currentAnswerCount = question.answers.length;
+    if (currentAnswerCount <= 2 && deleteEnabled) {
+      setDeleteEnabled(false);
+    } else if (currentAnswerCount > 2 && !deleteEnabled) {
+      setDeleteEnabled(true);
+    }
   };
 
   const checkisValid = () => {
@@ -275,7 +282,7 @@ function ParseQuestions() {
                   <CloseIcon />
                 </IconButton>
                 <Checkbox
-                  color="primary"
+                  color="info"
                   checked={answer.isCorrect}
                   onChange={() => handleCorrectAnswerChange(index, answerIndex)}
                 />
