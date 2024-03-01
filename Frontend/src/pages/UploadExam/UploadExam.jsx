@@ -1,9 +1,9 @@
 import {
-    Box, IconButton, Input,
+    Box, Button, IconButton, Input,
     List,
     ListItem, ListItemSecondaryAction,
     ListItemText,
-    Snackbar,
+    Snackbar, Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Item from "@mui/material/Grid";
@@ -16,6 +16,7 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import not_file from '~/assets/file_empty.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AlertSuccess from "~/utils/alertSuccess.jsx";
@@ -23,7 +24,7 @@ import AlertError from "~/utils/alertError.jsx";
 import AlertWarning from "~/utils/alertWarning.jsx";
 import api from "../../config/api.js"
 import EditIcon from '@mui/icons-material/Edit';
-import {useNavigate, createSearchParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useParams} from "react-router-dom";
 
 function UploadExam() {
@@ -41,14 +42,25 @@ function UploadExam() {
     const [openEdit, setOpenEdit] = useState(false);
     const [indexEdit, setIndexEdit] = useState(false);
     const [onChangeText, setOnChangeText] = useState(false);
-    let [newQuestion, setNewQuestion] = useState(null)
+    let [newQuestion, setNewQuestion] = useState(null);
+    const [isExam, setIsExam] = useState(false);
     // const history = userHistory();
 
     let questionObject = null;
     let answerRow = null;
     const [questions, setQuestions] = useState([])
     const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-        'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+    useEffect(() => {
+        const checkExam = async () => {
+            const response = await api.get(`exam/${id}`);
+            if (response.status === 200) {
+                setIsExam(response.data);
+            }
+        }
+        checkExam();
+    }, []);
 
     const handleOnChange = async (event) => {
         const listTemp = [];
@@ -305,212 +317,246 @@ function UploadExam() {
                         sm: 'calc(100vh - var(--header-height) - 80px)'
                     },
                 }}>
-                <Grid container columnSpacing={2} sx={{
-                    height: '100%',
-                    display: {
-                        xs: 'flex',
-                        md: 'flex'
-                    },
-                }}>
-                    <Grid item xs={12} sm={6} md={4}
-                          style={{
-                              display: "flex",
-                              justifyContent: "space-around",
-                              alignItems: "center"
-                          }}>
-                        <Item>
-                            <div
-                                className={styles['file']}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexDirection: "column"
-                                }}>
-                                <input
-                                    type={"file"}
-                                    ref={inputRef}
-                                    onChange={handleOnChange}
-                                    style={{display: "none"}}
-                                    accept=".docx"/>
-
-                                <button className={styles['file-btn']} onClick={chooseFile}>
-                                    <UploadFileIcon/> Upload File
-                                </button>
-
-                                {selectFile && (
-                                    <div className={styles["selected-file"]}>
-                                        <p>{selectFile.name}</p>
-                                        <button onClick={removeFile}>
-                                            <DeleteIcon/>
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </Item>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6} md={8}>
-                        <Item>{questions.length != 0
-                            ? (<Box sx={{height: '100%', display: 'flex', flexDirection: 'column'}}>
-                                <Box
-                                    className={styles['img-empty']}
-                                    sx={{flex: '1', padding: '10px'}}>
-                                    <Box sx={{
-                                        height: {
-                                            xs: 'auto',
-                                            sm: "calc(100vh - var(--header-height) - 170px)"
-                                        },
-                                        overflow: 'auto',
-                                        scrollbarWidth: "none"
+                {(isExam)
+                    ? <Grid container columnSpacing={2} sx={{
+                        height: '100%',
+                        display: {
+                            xs: 'flex',
+                            md: 'flex'
+                        },
+                    }}>
+                        <Grid item xs={12} sm={6} md={4}
+                              style={{
+                                  display: "flex",
+                                  justifyContent: "space-around",
+                                  alignItems: "center"
+                              }}>
+                            <Item>
+                                <div
+                                    className={styles['file']}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        flexDirection: "column"
                                     }}>
-                                        <List>
-                                            {questions.map((value, index) => (
-                                                <ListItem key={index} sx={{
-                                                    display: {
-                                                        xs: 'flex',
-                                                        md: 'flex'
-                                                    },
-                                                    flexDirection: "column",
-                                                    alignItems: "start",
-                                                }}>
-                                                    {(openEdit && index === indexEdit)
-                                                        ? <ListItemText>{`${index + 1}. `}<Input
-                                                            value={newQuestion.questionText} onChange={editQuestion}/>
-                                                        </ListItemText>
-                                                        : <ListItemText
-                                                            primary={<span
-                                                                style={{
-                                                                    fontWeight: 'bold'
-                                                                }}
-                                                            >{`${index + 1}. ${value.questionText}`}</span>
-                                                            }/>
-                                                    }
-                                                    <ListItemSecondaryAction style={{top: 43, display: "flex", flexDirection: "column"}}>
-                                                        {(onChangeText && index === indexEdit)
-                                                            ?
-                                                            <IconButton><CheckRoundedIcon onClick={handleEditQuestion}/></IconButton>
-                                                            : ((openEdit && index === indexEdit)
-                                                                ? <IconButton edge="end" aria-label="edit"
-                                                                              onClick={endEdit(index)}>
-                                                                    <CloseRoundedIcon/>
-                                                                </IconButton>
-                                                                : <IconButton edge="end" aria-label="edit"
-                                                                              onClick={async () => {
-                                                                                  if(indexEdit !== index && openEdit) {
-                                                                                      setMessage("You are in the editing process, please complete it!");
-                                                                                      setOpenAlertWarning(true);
-                                                                                      await new Promise(resolve => setTimeout(resolve, 1000));
-                                                                                      setOpenAlertWarning(false);
-                                                                                  } else {
-                                                                                      setOpenEdit(!openEdit)
-                                                                                      setIndexEdit(index);
-                                                                                      setNewQuestion(questions[index]);
-                                                                                  }
-                                                                              }}>
-                                                                    <EditIcon/>
-                                                                </IconButton>)
-                                                        }
-                                                        <IconButton edge="end" aria-label="edit"
-                                                                     onClick={()=> removeQuestion(index)}>
-                                                        <RemoveIcon/>
-                                                    </IconButton>
-                                                    </ListItemSecondaryAction>
-                                                    <div style={{display: "flex", flexDirection: 'column'}}>
-                                                        <List style={{padding: 0}}>
-                                                            {((openEdit && index === indexEdit)
-                                                                ? (newQuestion.answers.map((answer, indexA) => (
-                                                                    <ListItem key={indexA}>
-                                                                        {`${alphabet[indexA]}. `}
-                                                                        <Input value={answer.answerText}
-                                                                               onChange={(event) => editAnswer(indexA, event)}/>
-                                                                        <IconButton
-                                                                            onClick={() => removeAnswer(indexA)}><RemoveIcon/></IconButton>
-                                                                    </ListItem>
-                                                                )))
-                                                                : (value.answers.map((answer, indexA) => (
-                                                                        <ListItem
-                                                                            key={indexA}
-                                                                            className={styles['answer']}
-                                                                            sx={{backgroundColor: answer.isCorrect ? "#CDFFC8 !important" : "white"}}
-                                                                            onClick={() => handleChooseAnswer(index, indexA)}
-                                                                        >
-                                                                            <ListItemText
-                                                                                primary={`${alphabet[indexA]}. ${answer.answerText}`}/>
-                                                                        </ListItem>
-                                                                    ))
-                                                                ))}
-                                                        </List>
-                                                        {(openEdit && index === indexEdit) && (
-                                                            <ListItem style={{
-                                                                display: 'flex',
-                                                                flexDirection: 'row',
-                                                                alignItems: 'flex-end',
-                                                                width: '95%',
-                                                                padding: 0,
-                                                                marginRight: '30px',
-                                                            }}>
-                                                                <div style={{
-                                                                    flex: 1,
-                                                                    marginLeft: '30px',
-                                                                    height: .5,
-                                                                    backgroundColor: "#757575"
-                                                                }}></div>
-                                                                <IconButton
-                                                                    onClick={addNewAnswer}><AddIcon/></IconButton>
-                                                            </ListItem>)}
+                                    <input
+                                        type={"file"}
+                                        ref={inputRef}
+                                        onChange={handleOnChange}
+                                        style={{display: "none"}}
+                                        accept=".docx"/>
 
-                                                    </div>
-                                                </ListItem>
-                                            ))}
-                                            <ListItem style={{
-                                                display: 'flex',
-                                                flexDirection: 'row',
-                                                alignItems: 'flex-end',
-                                                width: '100%',
-                                                padding: 0,
-                                                marginRight: '30px',
-                                            }}>
-                                                <div style={{
-                                                    flex: 1,
-                                                    marginLeft: '30px',
-                                                    height: .5,
-                                                    backgroundColor: "#757575"
-                                                }}></div>
-                                                <IconButton
-                                                    onClick={addNewQuestion}><AddIcon/></IconButton>
-                                            </ListItem>
-                                        </List>
-                                    </Box>
-                                </Box>
-                                <Box sx={{margin: 0, padding: '0 10px 10px 10px'}}
-                                     style={{
-                                         display: "flex",
-                                         justifyContent: "center",
-                                         alignItems: "center",
-                                         justifyItems: "center"
-                                     }}>
-                                <button
-                                    type={"submit"}
-                                        disabled={submitDisabled}
-                                        onClick={handleSubmitExam}
-                                        className={styles['btn-submit']}>Finish
+                                    <button className={styles['file-btn']} onClick={chooseFile}>
+                                        <UploadFileIcon/> Upload File
                                     </button>
-                                </Box>
-                            </Box>)
-                            : <div
-                                className={styles['img-empty']}
-                                style={{
-                                    alignItems: "center",
-                                    display: "flex",
-                                    justifyContent: "center"
-                                }}>
-                                <img className={styles['file-empty']} src={not_file} alt="My SVG Image"/>
-                            </div>
-                        }
-                        </Item>
+
+                                    {selectFile && (
+                                        <div className={styles["selected-file"]}>
+                                            <p>{selectFile.name}</p>
+                                            <button onClick={removeFile}>
+                                                <DeleteIcon/>
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </Item>
+                        </Grid>
+
+                        <Grid item xs={12} sm={6} md={8}>
+                            <Item>{questions.length != 0
+                                ? (<Box sx={{height: '100%', display: 'flex', flexDirection: 'column'}}>
+                                    <Box
+                                        className={styles['img-empty']}
+                                        sx={{flex: '1', padding: '10px'}}>
+                                        <Box sx={{
+                                            height: {
+                                                xs: 'auto',
+                                                sm: "calc(100vh - var(--header-height) - 170px)"
+                                            },
+                                            overflow: 'auto',
+                                            scrollbarWidth: "none"
+                                        }}>
+                                            <List>
+                                                {questions.map((value, index) => (
+                                                    <ListItem key={index} sx={{
+                                                        display: {
+                                                            xs: 'flex',
+                                                            md: 'flex'
+                                                        },
+                                                        flexDirection: "column",
+                                                        alignItems: "start",
+                                                    }}>
+                                                        {(openEdit && index === indexEdit)
+                                                            ? <ListItemText>{`${index + 1}. `}<Input
+                                                                value={newQuestion.questionText}
+                                                                onChange={editQuestion}/>
+                                                            </ListItemText>
+                                                            : <ListItemText
+                                                                primary={<span
+                                                                    style={{
+                                                                        fontWeight: 'bold'
+                                                                    }}
+                                                                >{`${index + 1}. ${value.questionText}`}</span>
+                                                                }/>
+                                                        }
+                                                        <ListItemSecondaryAction
+                                                            style={{top: 43, display: "flex", flexDirection: "column"}}>
+                                                            {(onChangeText && index === indexEdit)
+                                                                ?
+                                                                <IconButton><CheckRoundedIcon
+                                                                    onClick={handleEditQuestion}/></IconButton>
+                                                                : ((openEdit && index === indexEdit)
+                                                                    ? <IconButton edge="end" aria-label="edit"
+                                                                                  onClick={endEdit(index)}>
+                                                                        <CloseRoundedIcon/>
+                                                                    </IconButton>
+                                                                    : <IconButton edge="end" aria-label="edit"
+                                                                                  onClick={async () => {
+                                                                                      if (indexEdit !== index && openEdit) {
+                                                                                          setMessage("You are in the editing process, please complete it!");
+                                                                                          setOpenAlertWarning(true);
+                                                                                          await new Promise(resolve => setTimeout(resolve, 1000));
+                                                                                          setOpenAlertWarning(false);
+                                                                                      } else {
+                                                                                          setOpenEdit(!openEdit)
+                                                                                          setIndexEdit(index);
+                                                                                          setNewQuestion(questions[index]);
+                                                                                      }
+                                                                                  }}>
+                                                                        <EditIcon/>
+                                                                    </IconButton>)
+                                                            }
+                                                            <IconButton edge="end" aria-label="edit"
+                                                                        onClick={() => removeQuestion(index)}>
+                                                                <RemoveIcon/>
+                                                            </IconButton>
+                                                        </ListItemSecondaryAction>
+                                                        <div style={{display: "flex", flexDirection: 'column'}}>
+                                                            <List style={{padding: 0}}>
+                                                                {((openEdit && index === indexEdit)
+                                                                    ? (newQuestion.answers.map((answer, indexA) => (
+                                                                        <ListItem key={indexA}>
+                                                                            {`${alphabet[indexA]}. `}
+                                                                            <Input value={answer.answerText}
+                                                                                   onChange={(event) => editAnswer(indexA, event)}/>
+                                                                            <IconButton
+                                                                                onClick={() => removeAnswer(indexA)}><RemoveIcon/></IconButton>
+                                                                        </ListItem>
+                                                                    )))
+                                                                    : (value.answers.map((answer, indexA) => (
+                                                                            <ListItem
+                                                                                key={indexA}
+                                                                                className={styles['answer']}
+                                                                                sx={{backgroundColor: answer.isCorrect ? "#CDFFC8 !important" : "white"}}
+                                                                                onClick={() => handleChooseAnswer(index, indexA)}
+                                                                            >
+                                                                                <ListItemText
+                                                                                    primary={`${alphabet[indexA]}. ${answer.answerText}`}/>
+                                                                            </ListItem>
+                                                                        ))
+                                                                    ))}
+                                                            </List>
+                                                            {(openEdit && index === indexEdit) && (
+                                                                <ListItem style={{
+                                                                    display: 'flex',
+                                                                    flexDirection: 'row',
+                                                                    alignItems: 'flex-end',
+                                                                    width: '95%',
+                                                                    padding: 0,
+                                                                    marginRight: '30px',
+                                                                }}>
+                                                                    <div style={{
+                                                                        flex: 1,
+                                                                        marginLeft: '30px',
+                                                                        height: .5,
+                                                                        backgroundColor: "#757575"
+                                                                    }}></div>
+                                                                    <IconButton
+                                                                        onClick={addNewAnswer}><AddIcon/></IconButton>
+                                                                </ListItem>)}
+
+                                                        </div>
+                                                    </ListItem>
+                                                ))}
+                                                <ListItem style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    alignItems: 'flex-end',
+                                                    width: '100%',
+                                                    padding: 0,
+                                                    marginRight: '30px',
+                                                }}>
+                                                    <div style={{
+                                                        flex: 1,
+                                                        marginLeft: '30px',
+                                                        height: .5,
+                                                        backgroundColor: "#757575"
+                                                    }}></div>
+                                                    <IconButton
+                                                        onClick={addNewQuestion}><AddIcon/></IconButton>
+                                                </ListItem>
+                                            </List>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{margin: 0, padding: '0 10px 10px 10px'}}
+                                         style={{
+                                             display: "flex",
+                                             justifyContent: "center",
+                                             alignItems: "center",
+                                             justifyItems: "center"
+                                         }}>
+                                        <button
+                                            type={"submit"}
+                                            disabled={submitDisabled}
+                                            onClick={handleSubmitExam}
+                                            className={styles['btn-submit']}>Finish
+                                        </button>
+                                    </Box>
+                                </Box>)
+                                : <div
+                                    className={styles['img-empty']}
+                                    style={{
+                                        alignItems: "center",
+                                        display: "flex",
+                                        justifyContent: "center"
+                                    }}>
+                                    <img className={styles['file-empty']} src={not_file} alt="My SVG Image"/>
+                                </div>
+                            }
+                            </Item>
+                        </Grid>
                     </Grid>
-                </Grid>
+                    : (<Box sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        justifyItems: "center",
+                        alignItems: "center"
+                    }}>
+                        <img src={not_file} alt={"img empty"} style={{width: '30%', marginBottom: "10px"}}/>
+                        <Typography variant={"h5"} style={{marginBottom: "10px", color: "#757575"}}>This test does not exist!</Typography>
+                        <Button
+                            className={styles['search-form']}
+                            style={{
+                                padding: "10px",
+                                borderRadius: 30,
+                                color: '#757575',
+                                display: "flex",
+                                alignItems: "center",
+                                justifyItems: "center",
+                                justifyContent: "center"
+                            }}
+                            onClick={() => {
+                                navigate({pathname: "/exams"})
+                            }}
+                        >
+                            <ArrowBackIosIcon/>
+                            {'Back'}
+                        </Button>
+                    </Box>)}
             </Box>
             <Snackbar
                 anchorOrigin={{vertical: 'top', horizontal: 'right'}}
@@ -518,7 +564,7 @@ function UploadExam() {
                 open={openAlert} autoHideDuration={6000} onClose={() => {
             }}>
                 <div>
-                    <AlertSuccess/>
+                    <AlertSuccess message = {'Upload successful.'}/>
                 </div>
             </Snackbar>
             <Snackbar

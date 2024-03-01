@@ -9,8 +9,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.dtu.proexam.model.Answer;
@@ -127,8 +130,38 @@ public class ExamController {
 
     @GetMapping("/exams")
     public ResponseEntity<List<Exam>> getExams() {
-        List<Exam> exams = examRepository.findAll();
+        List<Exam> exams = examRepository.findAll(Sort.by(Sort.Direction.DESC, "examStartTime"));
         return ResponseEntity.ok(exams);
+    }
+    @Transactional
+    @DeleteMapping("/removeExam/{examId}")
+    public ResponseEntity<?> removeExam(@PathVariable String examId) {
+        try {
+            Exam exam = examRepository.findById(examId)
+                    .orElse(null);
+            if (exam != null) {
+                // Delete answers associated with questions of the exam
+                List<Question> questions = questionRepository.findByExamExamId(examId);
+                if (questions != null && !questions.isEmpty()) {
+                    for (Question question : questions) {
+                        answerRepository.deleteAnswersByQuestion(question);
+                    }
+                }
+
+                // Delete questions associated with the exam
+                questionRepository.deleteQuestionsByExam_ExamId(examId);
+
+                // Delete the exam
+                examRepository.deleteById(examId);
+
+            }
+            return ResponseEntity.ok("Exam removed successfully!");
+        } catch (Exception e) {
+            // Log the exception details
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while removing the exam.");
+        }
     }
 
     @PostMapping("/storeQuestions/{examId}")
@@ -170,6 +203,13 @@ public class ExamController {
         }
 
         return ResponseEntity.ok(questions);
+    }
+
+    @GetMapping("/{examId}")
+    public ResponseEntity<?> checkExam(@PathVariable String examId) {
+        Exam exam = examRepository.findById(examId).orElse(null);
+        boolean checked = (exam != null);
+        return ResponseEntity.ok(checked);
     }
 
     @GetMapping("/getAnswer")
