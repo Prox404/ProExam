@@ -7,6 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { createQuestionManually } from "~/services/examService";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { v4 as uuidv4 } from "uuid";
+import 'animate.css';
 
 
 function ParseQuestions() {
@@ -16,6 +17,7 @@ function ParseQuestions() {
   const [statusA, setStatusA] = useState('success');
   const [messageA, setMessageA] = useState('');
   const [deleteEnabled, setDeleteEnabled] = useState(true);
+  const [animate, setAnimate] = useState('animate__backInRight');
   const { id } = useParams();
   useEffect(() => {
     if (!JSON.parse(localStorage.getItem('user'))) {
@@ -194,6 +196,7 @@ function ParseQuestions() {
       >
         {questions.map((question, index) => (
           <Box
+          className={`animate__animated animate__backInUp`}
             key={question.id}
             sx={{
               backgroundColor: "#7c8db5",
@@ -246,6 +249,7 @@ function ParseQuestions() {
 
             {question.answers.map((answer, answerIndex) => (
               <Box
+              className={`animate__animated animate__backInRight`}
                 key={answerIndex}
                 sx={{
                   display: "flex",
