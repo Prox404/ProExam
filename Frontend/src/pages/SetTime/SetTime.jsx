@@ -13,7 +13,7 @@ const SetTime = () => {
   const today = new Date().getFullYear()
     + '-' +
     ((new Date().getMonth() > 8) ? (new Date().getMonth() + 1) : '0' + (new Date().getMonth() + 1))
-    + '-' + new Date().getDate();
+    + '-' + ((new Date().getDate() > 9) ? (new Date().getDate()) : '0' + (new Date().getDate()));
   const now = ((new Date().getHours() > 9) ? new Date().getHours() : '0' + new Date().getHours()) + ':' + ((new Date().getMinutes() > 9) ? new Date().getMinutes() : '0' + new Date().getMinutes());
   const [openDate, setOpenDate] = useState(today);
   const [openTime, setOpenTime] = useState(now);
@@ -429,7 +429,7 @@ const SetTime = () => {
           {messageA}
         </Alert>
       </Snackbar>
-      
+
     </>
   );
 }

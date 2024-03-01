@@ -42,7 +42,7 @@ function UploadExam() {
     // const history = userHistory();
     useEffect(()=>{
         if(!JSON.parse(localStorage.getItem('user'))){
-            
+
           navigate('/');
         }
       },[]);
@@ -190,7 +190,7 @@ function UploadExam() {
 
     return (
         <Box
-        className = 'animate__animated animate__backInRight' 
+        className = 'animate__animated animate__backInRight'
         sx={{
             backgroundColor: "white",
             borderRadius: 10,
