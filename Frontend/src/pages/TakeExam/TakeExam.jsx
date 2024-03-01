@@ -1,15 +1,20 @@
-import { Box, Button, Checkbox, IconButton, Typography } from "@mui/material";
+import { Box, Button, Checkbox, IconButton, Typography, Alert, Snackbar } from "@mui/material";
 import AntiCopy from "~/components/AntiCopy";
 import FaceDetectionCam from "~/components/FaceDetectionCam";
 import NoiseAlert from "~/components/NoiseAlert";
 import take_exam_timing from "~/assets/take_exam_timing.svg";
 import styles from './TakeExam.module.scss';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import { useState, useContext, useMemo } from "react";
+import { useState, useContext, useMemo, useEffect, useCallback } from "react";
 import AnswerItem from "~/components/AnswerItem";
 import { useTheme } from "@emotion/react";
 import { ThemeContext } from "~/App";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import CountdownTimer from "./CountdownTimer";
+import * as examServices from '~/services/examService';
+import CheatingAlert from "~/components/CheatingAlert";
+import DevtoolsDetected from "~/components/DevtoolsDetected/DevtoolsDetected";
+import ScreenshotDetected from "~/components/ScreenshotDetected";
 
 function QuestionPanelItem({ label = '', selected = false, onClick, onChange, value, ...props }) {
 
@@ -46,100 +51,49 @@ function TakeExam() {
     });
     const theme = useTheme();
     const { mode, handleChange } = useContext(ThemeContext);
-    const questionsData = [
-        {
-            "questionId": "f339e08c-4241-4ff0-9ea0-98b8f96577a3",
-            "questionText": "What is 2 + 2?",
-            "questionType": "MULTIPLE_CHOICE",
-            "exam": {
-                "examId": "c30ea8d7-9fc0-4951-af6c-f17c5aa1884a",
-                "examName": "Siuuu",
-                "examStartTime": "2023-02-20T17:00:00.000+00:00",
-                "examEndTime": null,
-                "numberSubmit": 0,
-                "keyCode": 123456,
-                "isPublic": 0,
-                "duration": 0,
-                "user": {
-                    "userId": "8b366c8c-57f1-4571-9c47-abf7493e9085",
-                    "userName": "prox",
-                    "userPassword": "$2a$10$Q3UHWpMK5m.xl.984mzqtu2qpm/NsqGqk6hOyht8YVrW1dzccdybC",
-                    "userEmail": "pro3@gmail.com"
-                }
-            },
-            "answers": [
-                {
-                    "answerId": "a75e1aa5-40d5-4a87-a9eb-ca627ac81ae0",
-                    "answerText": "4",
-                    "isCorrect": false
-                },
-                {
-                    "answerId": "298c5969-f0cd-43b8-86d1-aa5e69ff0af1",
-                    "answerText": "1",
-                    "isCorrect": false
-                },
-                {
-                    "answerId": "ab4091b4-bbd8-4661-8cf8-5a18ef5c8446",
-                    "answerText": "3",
-                    "isCorrect": false
-                },
-                {
-                    "answerId": "27bc58ce-79c6-4645-bfa7-cd151d91e6d7",
-                    "answerText": "2",
-                    "isCorrect": false
-                }
-            ]
-        },
-        {
-            "questionId": "3ce6c66d-d269-435d-afe2-1184cc837e84",
-            "questionText": "What is the capital of France?",
-            "questionType": "SINGLE_CHOICE",
-            "exam": {
-                "examId": "c30ea8d7-9fc0-4951-af6c-f17c5aa1884a",
-                "examName": "Siuuu",
-                "examStartTime": "2023-02-20T17:00:00.000+00:00",
-                "examEndTime": null,
-                "numberSubmit": 0,
-                "keyCode": 123456,
-                "isPublic": 0,
-                "duration": 0,
-                "user": {
-                    "userId": "8b366c8c-57f1-4571-9c47-abf7493e9085",
-                    "userName": "prox",
-                    "userPassword": "$2a$10$Q3UHWpMK5m.xl.984mzqtu2qpm/NsqGqk6hOyht8YVrW1dzccdybC",
-                    "userEmail": "pro3@gmail.com"
-                }
-            },
-            "answers": [
-                {
-                    "answerId": "436d505a-295f-47d2-a7da-11692257aaed",
-                    "answerText": "Madrid",
-                    "isCorrect": false
-                },
-                {
-                    "answerId": "355b822e-7f52-4491-903b-0b6181e553c3",
-                    "answerText": "Paris",
-                    "isCorrect": false
-                },
-                {
-                    "answerId": "3bd8a000-66c3-41e7-b152-e5c769be16f1",
-                    "answerText": "Berlin",
-                    "isCorrect": false
-                },
-                {
-                    "answerId": "d72d94f8-9b23-434d-92f7-1c0ef04984c4",
-                    "answerText": "London",
-                    "isCorrect": false
-                }
-            ]
-        },
-    ]
-
-    const [questions, setQuestions] = useState(questionsData);
+    const [questions, setQuestions] = useState([]);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [content, setContent] = useState('');
+    const [examInfo, setExamInfo] = useState({});
+    const [severity, setSeverity] = useState('error');
+    const [isCurrentQuestionChanged, setIsCurrentQuestionChanged] = useState(false);
+    const [cheatingCode, setCheatingCode] = useState(1000);
+    const [isCheatingOpen, setIsCheatingOpen] = useState(false);
 
-    const handleAnswerSelect = (questionId, answerId, questionType) => {
+    useEffect(() => {
+        const examData = JSON.parse(localStorage.getItem('exam')) || {};
+        if (examData?.questions?.length) {
+            setQuestions(examData?.questions);
+            setExamInfo({
+                ...examData,
+                ...examData?.questions[0].exam,
+            });
+
+        } else {
+            handleShowSnackBar('No question found');
+        }
+    }, [])
+
+
+
+    console.log(examInfo);
+    const handleShowSnackBar = (content, severity = 'error') => {
+        setContent(content);
+        setSnackbarOpen(true);
+        setSeverity(severity);
+    };
+
+    const handleCloseSnackBar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setSnackbarOpen(false);
+    };
+
+    const handleAnswerSelect = useCallback((questionId, answerId, questionType) => {
         setSelectedAnswers(prevState => {
             if (questionType === 'MULTIPLE_CHOICE') {
                 const selectedAnswers = prevState[questionId] || [];
@@ -151,41 +105,96 @@ function TakeExam() {
                 return { ...prevState, [questionId]: [answerId] };
             }
         });
-    };
+
+        setIsCurrentQuestionChanged(true);
+    }, [setSelectedAnswers, setIsCurrentQuestionChanged]);
+
     console.log(selectedAnswers);
 
-    const handleNextQuestion = () => {
+    const onCountdownFinish = useCallback(() => {
+        console.log('countdown finish');
+    }, []);
+
+    const handleNextQuestion = async () => {
+        // kiểm tra đáp án có thay đổi không, nếu có thì cập nhật
+        if (selectedAnswers[questions[currentQuestionIndex].questionId] && isCurrentQuestionChanged) {
+            const res = await examServices.chooseAnwser(examInfo.ExamResultId, {
+                questionId: questions[currentQuestionIndex].questionId,
+                answerIds: selectedAnswers[questions[currentQuestionIndex].questionId],
+            })
+            if (res?.status === 200) {
+                handleShowSnackBar('Choose answer successfully', 'success');
+            } else {
+                handleShowSnackBar('Choose answer failed');
+            }
+        }
         setCurrentQuestionIndex(prevIndex => Math.min(prevIndex + 1, questions.length - 1));
+        setIsCurrentQuestionChanged(false);
     };
 
-    const handlePreviousQuestion = () => {
+    const handlePreviousQuestion = async () => {
+        if (selectedAnswers[questions[currentQuestionIndex].questionId] && isCurrentQuestionChanged) {
+            const res = await examServices.chooseAnwser(examInfo.ExamResultId, {
+                questionId: questions[currentQuestionIndex].questionId,
+                answerIds: selectedAnswers[questions[currentQuestionIndex].questionId],
+            })
+            if (res?.status === 200) {
+                handleShowSnackBar('Choose answer successfully', 'success');
+            } else {
+                handleShowSnackBar('Choose answer failed');
+            }
+        }
         setCurrentQuestionIndex(prevIndex => Math.max(prevIndex - 1, 0));
+        setIsCurrentQuestionChanged(false);
     };
 
-    const renderQuestions = () => {
-        const question = questionsData[currentQuestionIndex];
+    const handleSubmit = async () => {
+
+        const isAllQuestionAnswered = questions.every(question => selectedAnswers[question.questionId] && selectedAnswers[question.questionId].length > 0);
+        if (!isAllQuestionAnswered) {
+            handleShowSnackBar('Please answer all questions');
+            return;
+        }
+        let res = await examServices.submitExam(examInfo.ExamResultId);
+        if (res?.status === 200) {
+            handleShowSnackBar('Submit exam successfully', 'success');
+        } else {
+            handleShowSnackBar('Submit exam failed');
+        }
+    }
+
+    // console.log(examInfo);
+
+    const renderQuestions = useCallback(() => {
+        const question = questions[currentQuestionIndex];
         return (
-            <Box key={question.questionId} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <Typography variant='h4' sx={{ textAlign: 'center', margin: { xs: '20px 0', md: '40px 0' }, fontWeight: '500' }}>{question.questionText}</Typography>
-                <Box className={styles['answer-list']} sx={{ padding: { xs: '0px', md: '20px' } }}>
-                    {question.answers.map(answer => (
-                        <AnswerItem
-                            className={styles['answer-item']}
-                            key={answer.answerId}
-                            answer={answer.answerText}
-                            value={answer.answerId}
-                            selected={selectedAnswers[question.questionId]?.includes(answer.answerId)}
-                            onChange={() => handleAnswerSelect(question.questionId, answer.answerId, question.questionType)}
-                        />
-                    ))}
-                </Box>
-            </Box>
+            <>
+                {
+                    question && <>
+                        <Box key={question.questionId} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            <Typography variant='h4' sx={{ textAlign: 'center', margin: { xs: '20px 0', md: '40px 0' }, fontWeight: '500' }}>{question.questionText}</Typography>
+                            <Box className={styles['answer-list']} sx={{ padding: { xs: '0px', md: '20px' } }}>
+                                {question.answers.map(answer => (
+                                    <AnswerItem
+                                        className={styles['answer-item']}
+                                        key={answer.answerId}
+                                        answer={answer.answerText}
+                                        value={answer.answerId}
+                                        selected={selectedAnswers[question.questionId]?.includes(answer.answerId)}
+                                        onChange={() => handleAnswerSelect(question.questionId, answer.answerId, question.questionType)}
+                                    />
+                                ))}
+                            </Box>
+                        </Box>
+                    </>
+                }
+            </>
+
+
         );
-    };
+    }, [questions, selectedAnswers, currentQuestionIndex, handleAnswerSelect]);
 
-
-
-    const toggleDrawer = (anchor, open) => (event) => {
+    const toggleDrawer = useCallback((anchor, open) => (event) => {
         if (
             event &&
             event.type === 'keydown' &&
@@ -195,9 +204,8 @@ function TakeExam() {
         }
 
         setState({ ...state, [anchor]: open });
-    };
+    }, [state]);
 
-    // eslint-disable-next-line react/display-name
     const list = useMemo(() => anchor => (
         <Box
             sx={{
@@ -238,7 +246,50 @@ function TakeExam() {
 
             </Box>
         </Box>
-    ), [questions, selectedAnswers, setCurrentQuestionIndex]);
+    ), [questions, selectedAnswers, setCurrentQuestionIndex, toggleDrawer]);
+
+    let timeoutId;
+
+    const handleNoiseDetection = async () => {
+        if (!isCheatingOpen && examInfo?.ExamResultId) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(async () => {
+                await handleCheatingDetection(1004);
+                console.log('noise detected');
+            }, 3000);
+        }
+
+    }
+
+    const handleCheatingDetection = async (cheatingCode) => {
+        await examServices.cheatingDetection({
+            cheatingCode: cheatingCode,
+            examResultId: examInfo.ExamResultId
+        });
+        setCheatingCode(cheatingCode);
+        setIsCheatingOpen(true);
+    }
+
+    const handleMultipleFaces = async () => {
+        if (!isCheatingOpen && examInfo?.ExamResultId) {
+            await handleCheatingDetection(1005);
+            console.log('multiple faces detected');
+        }
+    }
+
+    const handleDevtoolsDetected = async () => {
+        if (!isCheatingOpen && examInfo?.ExamResultId) {
+            await handleCheatingDetection(1003);
+            console.log('devtools detected');
+        }
+    }
+
+    const handleCopyDetection = async () => {
+        if (!isCheatingOpen && examInfo?.ExamResultId) {
+            await handleCheatingDetection(1000);
+            console.log('copy detected');
+        }
+    }
 
     return (
         <Box sx={{
@@ -248,7 +299,7 @@ function TakeExam() {
             },
             height: '100%',
         }} className={styles['take-exam']}>
-            <AntiCopy>
+            <AntiCopy handleCopyDetection={handleCopyDetection}>
                 {/* exam header */}
                 <Box sx={{
                     display: 'flex',
@@ -270,7 +321,9 @@ function TakeExam() {
                                 },
                                 fontWeight: '500',
                                 textAlign: 'left',
-                            }}>Username</Typography>
+                            }}>
+                                {examInfo?.examName ? examInfo.examName : 'Exam Name'}
+                            </Typography>
                         </Box>
                         <Box sx={{
                             display: 'flex',
@@ -282,7 +335,9 @@ function TakeExam() {
                             <Typography variant='h5' sx={{
                                 fontWeight: '500',
                                 color: 'var(--primary-color)',
-                            }}>00:00</Typography>
+                            }}>
+                                <CountdownTimer examStartTime={examInfo?.ExamResultStartTime} duration={300} onCountdownFinish={onCountdownFinish} />
+                            </Typography>
                         </Box>
                         <Box sx={{
                             flex: 1,
@@ -294,7 +349,9 @@ function TakeExam() {
                                 },
                                 fontWeight: '500',
                                 textAlign: 'right',
-                            }}>Exam Name</Typography>
+                            }}>
+                                {examInfo?.userAnswerName ? examInfo.userAnswerName : 'User Name'}
+                            </Typography>
                         </Box>
                     </Box>
                     {/* question panel */}
@@ -309,7 +366,9 @@ function TakeExam() {
                             }}>
                                 <Button variant='contained' sx={{
                                     padding: '10px 20px',
-                                }}>Submit</Button>
+                                }}
+                                    onClick={handleSubmit}
+                                >Submit</Button>
                             </Box>
                         </>
                     }
@@ -365,9 +424,11 @@ function TakeExam() {
                         }} onClick={handleChange}>{mode ? 'Dark' : 'Light'}</Button>
                     </Box>
                 </Box>
-                {/* <NoiseAlert /> */}
-                {/* <FaceDetectionCam /> */}
-
+                <ScreenshotDetected />
+                {/* <DevtoolsDetected handleDevtoolsDetected={handleDevtoolsDetected} /> */}
+                {/* <NoiseAlert handleNoiseDetection={handleNoiseDetection} /> */}
+                {/* <FaceDetectionCam handleMultipleFaces={handleMultipleFaces} /> */}
+                <CheatingAlert cheatingCode={cheatingCode} isOpen={isCheatingOpen} handleClose={() => setIsCheatingOpen(false)} />
                 <SwipeableDrawer
                     anchor={'left'}
                     open={state['left']}
@@ -378,6 +439,16 @@ function TakeExam() {
                 </SwipeableDrawer>
 
             </AntiCopy>
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar} >
+                <Alert
+                    onClose={handleCloseSnackBar}
+                    severity={severity}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {content ? content : 'Invalid input'}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

@@ -16,7 +16,7 @@ import {
 import { useParams } from 'react-router-dom';
 import Header from '../../components/Header';
 import CloseIcon from '@mui/icons-material/Close';
-import { getExam } from '../../services/examService';
+import { getQuestion } from '../../services/examService';
 
 const ExamDetail = () => {
   const { id } = useParams();
@@ -28,7 +28,7 @@ const ExamDetail = () => {
     const fetchData = async () => {
       try {
         // Gọi các hàm asynchronous ở đây
-        const questions = await getExam({ idExam: id });
+        const questions = await getQuestion({ idExam: id });
         setQuestions(questions);
       } catch (error) {
         console.error('Error:', error);

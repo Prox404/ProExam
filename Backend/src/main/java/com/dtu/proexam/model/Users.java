@@ -13,7 +13,7 @@ public class Users {
     @Column(name = "user_id")
     private String userId;
 
-    @Column(name = "user_name")
+    @Column(name = "user_name", columnDefinition = "nvarchar(255)")
     private String userName;
 
     @Column(name = "user_password")

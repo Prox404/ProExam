@@ -16,7 +16,7 @@ public class Answer {
     @Column(name = "answer_id")
     private String answerId;
 
-    @Column(name = "answer_text")
+    @Column(name = "answer_text", columnDefinition = "nvarchar(255)")
     private String answerText;
 
     @Column(name = "is_correct")
