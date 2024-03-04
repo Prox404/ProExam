@@ -208,7 +208,7 @@ function ParseQuestions() {
           <Box
             key={question.id}
             sx={{
-              backgroundColor: "#7c8db5",
+              backgroundColor: theme.palette.cardSecondaryBackground,
               marginBottom: "20px",
               borderRadius: "10px",
               position: "relative",
