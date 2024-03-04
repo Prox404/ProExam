@@ -5,8 +5,10 @@ import { BlankLayout, ExamLayout } from '~/layouts';
 
 // Pages
 import Home from '~/pages/Home';
+import Report from '~/pages/Report';
 import TakeExam from '~/pages/TakeExam';
 import NotFound from '~/pages/NotFound';
+import HomeCreateExam from "~/pages/HomeCreateExam/HomeCreateExam";
 import StartedExam from '~/pages/StartedExam';
 import ViewScoreExam from '~/pages/ViewScoreExam';
 
@@ -18,6 +20,8 @@ const publicRoutes = [
     { path: '*', component: NotFound, layout: BlankLayout },
     { path: config.routes.startedExam, component: StartedExam, layout: ExamLayout },
     { path: config.routes.examResult, component: ViewScoreExam, layout: BlankLayout },
+    { path: config.routes.homeCreateExam,component:HomeCreateExam},
+    { path: config.routes.report, component: Report, layout: Report },
 ];
 
 const privateRoutes = [];

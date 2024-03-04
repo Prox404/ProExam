@@ -48,8 +48,19 @@ public class Exam {
     public Exam() {
     }
 
+    public Exam(String examId, String examName, Date examStartTime, Date examEndTime, int numberSubmit, int keyCode, int isPublic, Users user) {
+        this.examId = examId;
+        this.examName = examName;
+        this.examStartTime = examStartTime;
+        this.examEndTime = examEndTime;
+        this.numberSubmit = numberSubmit;
+        this.keyCode = keyCode;
+        this.isPublic = isPublic;
+        this.user = user;
+    }
+
     public Exam(String examId, String examName, Date examStartTime, Date examEndTime, int numberSubmit, int keyCode,
-            Users user) {
+                Users user) {
         this.examId = examId;
         this.examName = examName;
         this.examStartTime = examStartTime;
