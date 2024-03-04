@@ -1,0 +1,21 @@
+input[type=number] {
+  min-width: 200px;
+  padding: 13px 16px;
+  outline: none;
+  border-radius: 10px;
+  border: none;
+}
+
+.cover-image {
+  height: calc(100% - var(--header-height));
+}
+
+@media screen and (min-width: 600px) {
+  input[type=number] {
+    min-width: 300px;
+  }
+}
+.login-cover{
+  mix-blend-mode: difference;
+  filter: invert(1);
+}

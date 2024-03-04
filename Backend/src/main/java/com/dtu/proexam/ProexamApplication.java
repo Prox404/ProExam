@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootApplication
 @ComponentScan("com.dtu.proexam")
+
 public class ProexamApplication implements CommandLineRunner {
 
 	private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ProexamApplication.class);
@@ -26,7 +27,7 @@ public class ProexamApplication implements CommandLineRunner {
 		String sql = "select * from test";
 		int result = jdbcTemplate.query(sql, (rs) -> {
 			int count = 0;
-			while (rs.next()) {
+			while (rs.next( )) {
 				count++;
 			}
 			return count;

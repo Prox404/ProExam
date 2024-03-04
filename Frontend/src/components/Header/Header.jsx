@@ -445,6 +445,7 @@ export default function Header({ ...props }) {
                 horizontal: 'right',
             }}
             open={isMobileMenuOpen}
+            open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
 
@@ -477,7 +478,6 @@ export default function Header({ ...props }) {
                     backgroundColor: mode ? '#333' : '#fff',
                 }}>
                     <Toolbar>
-
                         <Typography
                             variant="h6"
                             noWrap
@@ -547,7 +547,7 @@ export default function Header({ ...props }) {
                 onRequestClose={() => setModalIsOpen(false)}
             >
                 {modal}
-                <IconButton sx={{
+               t <IconButton sx={{
                     position: 'absolute',
                     top: '10px',
                     right: '10px',
