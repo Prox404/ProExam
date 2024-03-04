@@ -58,7 +58,7 @@ function FaceDetectionCam({handleMultipleFaces}) {
                     draw(cxt, detections);
 
                     if (detections.length > 1 || detections.length == 0) {
-                        handleMultipleFaces();
+                        await handleMultipleFaces();
                         console.log("Multiple Faces Detected");
                     }
                 }
@@ -68,7 +68,7 @@ function FaceDetectionCam({handleMultipleFaces}) {
         return () => {
             clearInterval(timerIntervalId);
         };
-    }, []);
+    }, [handleMultipleFaces]);
 
 
     return (

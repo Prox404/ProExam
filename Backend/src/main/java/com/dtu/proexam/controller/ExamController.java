@@ -269,9 +269,12 @@ public class ExamController {
             return ResponseEntity.badRequest().body("Exam not found !");
         }
 
-        if (exam.getExamStartTime() == null || exam.getExamStartTime().after(new Date())
-                || exam.getExamEndTime() != null && exam.getExamEndTime().before(new Date())) {
+        if (exam.getExamStartTime() == null ||  exam.getExamStartTime().after(new Date())) {
             return ResponseEntity.badRequest().body("Exam not started !");
+        }
+
+        if (exam.getExamEndTime() != null && exam.getExamEndTime().before(new Date())) {
+            return ResponseEntity.badRequest().body("Exam Ended !");
         }
 
         List<Question> questions = questionRepository.findByExamExamId(exam.getExamId());

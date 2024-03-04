@@ -1,11 +1,15 @@
 package com.dtu.proexam;
 
+import java.util.TimeZone;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 @ComponentScan("com.dtu.proexam")
@@ -35,6 +39,12 @@ public class ProexamApplication implements CommandLineRunner {
 			logger.info("Connected to database");
 		else
 			logger.info("Failed to connect to database");
+	}
+
+	@PostConstruct
+	public void init() {
+		// TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+		logger.info("Spring boot application running in UTC timezone :" + new java.util.Date());
 	}
 
 }

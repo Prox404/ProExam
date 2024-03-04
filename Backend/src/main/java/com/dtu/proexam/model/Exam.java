@@ -2,6 +2,7 @@ package com.dtu.proexam.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,9 +22,11 @@ public class Exam {
     private String examName;
 
     @Column(name = "exam_start_time")
+    @JsonFormat(pattern="MM/dd/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
     private Date examStartTime;
 
     @Column(name = "exam_end_time")
+    @JsonFormat(pattern="MM/dd/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
     private Date examEndTime;
 
     @Column(name = "number_submit")

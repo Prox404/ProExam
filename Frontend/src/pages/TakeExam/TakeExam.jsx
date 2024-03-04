@@ -14,7 +14,8 @@ import CountdownTimer from "./CountdownTimer";
 import * as examServices from '~/services/examService';
 import CheatingAlert from "~/components/CheatingAlert";
 import DevtoolsDetected from "~/components/DevtoolsDetected/DevtoolsDetected";
-import ScreenshotDetected from "~/components/ScreenshotDetected";
+import ShortCutDetected from "~/components/ShortCutDetected";
+import { useNavigate } from "react-router-dom";
 
 function QuestionPanelItem({ label = '', selected = false, onClick, onChange, value, ...props }) {
 
@@ -61,6 +62,7 @@ function TakeExam() {
     const [isCurrentQuestionChanged, setIsCurrentQuestionChanged] = useState(false);
     const [cheatingCode, setCheatingCode] = useState(1000);
     const [isCheatingOpen, setIsCheatingOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const examData = JSON.parse(localStorage.getItem('exam')) || {};
@@ -72,7 +74,7 @@ function TakeExam() {
             });
 
         } else {
-            handleShowSnackBar('No question found');
+            navigate('/')
         }
     }, [])
 
@@ -110,10 +112,29 @@ function TakeExam() {
     }, [setSelectedAnswers, setIsCurrentQuestionChanged]);
 
     console.log(selectedAnswers);
+    console.log(examInfo?.duration, examInfo?.ExamResultId);
 
-    const onCountdownFinish = useCallback(() => {
+    const onCountdownFinish = async () => {
         console.log('countdown finish');
-    }, []);
+        if (examInfo?.duration != 0 && examInfo?.ExamResultId) {
+            
+            let res = await examServices.submitExam(examInfo.ExamResultId);
+            if (res?.status === 200) {
+                handleShowSnackBar('Submit exam successfully', 'success');
+                if (selectedAnswers[questions[currentQuestionIndex].questionId] && isCurrentQuestionChanged) {
+                    await examServices.chooseAnwser(examInfo.ExamResultId, {
+                        questionId: questions[currentQuestionIndex].questionId,
+                        answerIds: selectedAnswers[questions[currentQuestionIndex].questionId],
+                    })
+                }
+                localStorage.removeItem('exam');
+                navigate('/exam-result/' + examInfo.ExamResultId);
+            } else {
+                handleShowSnackBar('Submit exam failed');
+                
+            }
+        }
+    };
 
     const handleNextQuestion = async () => {
         // kiểm tra đáp án có thay đổi không, nếu có thì cập nhật
@@ -149,21 +170,35 @@ function TakeExam() {
     };
 
     const handleSubmit = async () => {
-
         const isAllQuestionAnswered = questions.every(question => selectedAnswers[question.questionId] && selectedAnswers[question.questionId].length > 0);
         if (!isAllQuestionAnswered) {
             handleShowSnackBar('Please answer all questions');
             return;
         }
+        // check if current question is choose answer, if yes, update to server
+        if (selectedAnswers[questions[currentQuestionIndex].questionId] && isCurrentQuestionChanged) {
+            const res = await examServices.chooseAnwser(examInfo.ExamResultId, {
+                questionId: questions[currentQuestionIndex].questionId,
+                answerIds: selectedAnswers[questions[currentQuestionIndex].questionId],
+            })
+            if (!res?.status === 200) {
+                handleShowSnackBar('Submit failed, please try again later', 'error');
+                return
+            }
+
+        }
+        
         let res = await examServices.submitExam(examInfo.ExamResultId);
         if (res?.status === 200) {
             handleShowSnackBar('Submit exam successfully', 'success');
+            localStorage.removeItem('exam');
+            navigate('/exam-result/' + examInfo.ExamResultId);
         } else {
             handleShowSnackBar('Submit exam failed');
         }
     }
 
-    // console.log(examInfo);
+    console.log(examInfo);
 
     const renderQuestions = useCallback(() => {
         const question = questions[currentQuestionIndex];
@@ -271,6 +306,7 @@ function TakeExam() {
     }
 
     const handleMultipleFaces = async () => {
+        console.log(examInfo);
         if (!isCheatingOpen && examInfo?.ExamResultId) {
             await handleCheatingDetection(1005);
             console.log('multiple faces detected');
@@ -288,6 +324,13 @@ function TakeExam() {
         if (!isCheatingOpen && examInfo?.ExamResultId) {
             await handleCheatingDetection(1000);
             console.log('copy detected');
+        }
+    }
+
+    const handlesCreenshotDetected = async () => {
+        if (!isCheatingOpen && examInfo?.ExamResultId) {
+            await handleCheatingDetection(1001);
+            console.log('screenshot detected');
         }
     }
 
@@ -336,7 +379,7 @@ function TakeExam() {
                                 fontWeight: '500',
                                 color: 'var(--primary-color)',
                             }}>
-                                <CountdownTimer examStartTime={examInfo?.ExamResultStartTime} duration={300} onCountdownFinish={onCountdownFinish} />
+                                <CountdownTimer examStartTime={examInfo?.ExamResultStartTime} duration={examInfo?.duration} onCountdownFinish={onCountdownFinish} />
                             </Typography>
                         </Box>
                         <Box sx={{
@@ -424,10 +467,11 @@ function TakeExam() {
                         }} onClick={handleChange}>{mode ? 'Dark' : 'Light'}</Button>
                     </Box>
                 </Box>
-                <ScreenshotDetected />
+                <ShortCutDetected handleCopyDetection={handleCopyDetection} handlesCreenshotDetected={handlesCreenshotDetected}/>
+                {/* <ScreenshotDetected handlesCreenshotDetected={handlesCreenshotDetected}/> */}
                 {/* <DevtoolsDetected handleDevtoolsDetected={handleDevtoolsDetected} /> */}
                 {/* <NoiseAlert handleNoiseDetection={handleNoiseDetection} /> */}
-                {/* <FaceDetectionCam handleMultipleFaces={handleMultipleFaces} /> */}
+                <FaceDetectionCam handleMultipleFaces={handleMultipleFaces} />
                 <CheatingAlert cheatingCode={cheatingCode} isOpen={isCheatingOpen} handleClose={() => setIsCheatingOpen(false)} />
                 <SwipeableDrawer
                     anchor={'left'}

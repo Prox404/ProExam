@@ -74,3 +74,13 @@ export const cheatingDetection = ({
         return false;
     }
 }
+
+export const getExamResult = (examResultId) => {
+    try {
+        const res = request.get(`/exam/getExamResult/${examResultId}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
