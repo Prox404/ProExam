@@ -1,8 +1,9 @@
 const routes = {
-    home: '/home',
-    takeExam: '/take_exam',
-    homeCreateExam:'/',
+    homeCreateExam:'/dashboard',
     report:'/report'
+    home: '/',
+    takeExam: '/take-exam',
+    startedExam: '/started-exam',
 };
 
 export default routes;
