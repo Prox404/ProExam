@@ -25,11 +25,11 @@ public class ExamResult {
     private float score;
 
     @Column(name = "start_time")
-    @JsonFormat(pattern="MM/dd/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
+    @JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
     private Date startTime;
 
     @Column(name = "end_time")
-    @JsonFormat(pattern="MM/dd/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
+    @JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
     private Date endTime;
 
     @ManyToOne

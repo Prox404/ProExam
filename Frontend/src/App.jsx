@@ -40,6 +40,7 @@ function App() {
         lineColor: mode ? '#3a3a3a' : '#C1C1C1',
         scoreExam: mode? '#747474' : '#F2F7FF',
         primaryCard: mode ? '#333' : '#435EBE',
+        
       },
     })
 

@@ -610,6 +610,59 @@ public class ExamController {
 
     }
 
+    @PostMapping("/uploadQuestions/{examId}")
+    public ResponseEntity<?> uploadQuestions(@PathVariable String examId, @RequestBody List<Question> questions) {
+        Exam exam = examRepository.findById(examId).orElse(null);
+        if(exam == null) {
+            return ResponseEntity.badRequest().body("Exam not found !");
+        }
+
+        List<Question> nQuestions = questionRepository.findByExamExamId(examId);
+        if(nQuestions.isEmpty()) {
+
+            for (Question question : questions) {
+                question.setExam(exam);
+                if (question.getAnswers().isEmpty()) continue;
+                if (question.getQuestionId() == null || question.getQuestionId().isEmpty())
+                    question.setQuestionId(GlobalUtil.getUUID());
+                if (question.getAnswers().stream().filter(Answer::isIsCorrect).count() > 1)
+                    question.setQuestionType(Question.QuestionType.MULTIPLE_CHOICE);
+                questionRepository.save(question);
+                for (Answer answer : question.getAnswers()) {
+                    if (answer.getAnswerId() == null || answer.getAnswerId().isEmpty())
+                        answer.setAnswerId(GlobalUtil.getUUID());
+                    answer.setQuestion(question);
+                    answerRepository.save(answer);
+                }
+            }
+        } else {
+            return ResponseEntity.badRequest().body(new BasicResponse("Questions already exist", 400));
+        }
+        return ResponseEntity.ok(new BasicResponse("Store questions successfully", 200, questions));
+    }
+
+    @GetMapping("/get/{examId}")
+    public ResponseEntity<?> checkExam(@PathVariable String examId) {
+        Exam exam = examRepository.findById(examId).orElse(null);
+        if(exam == null) {
+            return ResponseEntity.badRequest().body("Exam not found !");
+        }
+        return ResponseEntity.ok(new BasicResponse("Success", 200, exam));
+    }
+
+    @GetMapping("/getQuestions/{examId}")
+    public ResponseEntity<?> getQuestions(@PathVariable String examId) {
+        Exam exam = examRepository.findById(examId).orElse(null);
+        if(exam == null) {
+            return ResponseEntity.badRequest().body(new BasicResponse("Exam not found", 400));
+        }
+        List<Question> questions = questionRepository.findByExamExamId(examId);
+        if(questions.isEmpty()) {
+            return ResponseEntity.ok(new BasicResponse("No questions found", 200, new ArrayList<Question>()));
+        }
+        return ResponseEntity.ok(new BasicResponse("Success", 200, questions));
+    }
+
 //    @GetMapping("getNumberCorrect/{examid}/{userId}")
 //    public ResponseEntity<?> getNumberCorrect(@PathVariable(required = true) String examid,@PathVariable(required = true) String userId) {
 ////        try {

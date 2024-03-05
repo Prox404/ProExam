@@ -22,11 +22,11 @@ public class Exam {
     private String examName;
 
     @Column(name = "exam_start_time")
-    @JsonFormat(pattern="MM/dd/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
+    @JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
     private Date examStartTime;
 
     @Column(name = "exam_end_time")
-    @JsonFormat(pattern="MM/dd/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
+    @JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
     private Date examEndTime;
 
     @Column(name = "number_submit")
