@@ -12,6 +12,8 @@ import List from '@mui/material/List';
 import Discover from "~/pages/Discover"
 import Report from "~/pages/Report"
 import { useNavigate } from "react-router-dom";
+import DataTable from "~/pages/Report/DataTable .jsx";
+import DetailedReport from "~/pages/Report/DetailedReport.jsx";
 const data = [
     { name: 'Discover', icon: <Map /> ,link: '~/pages/Report'},
     { name: 'Library', icon: <MenuBook /> ,link: '~/pages/Report'},
@@ -26,13 +28,23 @@ function HomeCreateExam() {
     const [showReport, setShowReport] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedExamId, setSelectedExamId] = useState(null);
+    const [showDetailedReport, setShowDetailedReport] = useState(false); // Thêm vào đây
 
+
+    const handleRowClick = (examId) => {
+        setSelectedExamId(examId);
+        setShowDetailedReport(true);
+        setShowReport(false)
+        setclickItem(null);
+    };
     const clickMenuItem = (index)=>{
         setclickItem(index);
         setShowDiscover(index === 0);
         setShowLibrary(index === 1);
         setShowReport(index === 2);
         setShowSettings(index === 3);
+        setShowDetailedReport(false);
     }
 
     const theme = useTheme();
@@ -89,14 +101,14 @@ function HomeCreateExam() {
                     xs: '5px', // Cho thiết bị có kích thước màn hình nhỏ hơn 600px
                     sm: '10px', // Cho thiết bị có kích thước màn hình từ 600px trở lên
                     md: '25px',
-            }
+                }
             }}>
                 <Box sx={{height:'100%'}}>
-
                     {showDiscover && <Discover/>}
                     {showLibrary && <Discover/>}
-                    {showReport && <Report />}
+                    {showReport && <Report selectedExamId={selectedExamId} handleRowClick={handleRowClick}/>}
                     {showSettings && <Discover />}
+                    {showDetailedReport && selectedExamId  && <DetailedReport examId={selectedExamId} />}
                 </Box>
             </Box>
         </Box>

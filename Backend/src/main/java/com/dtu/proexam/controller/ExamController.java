@@ -559,6 +559,24 @@ public class ExamController {
             return ResponseEntity.badRequest().body(basicResponse);
         }
     }
+    @GetMapping("getExamId/{examId}")
+    public ResponseEntity<?> getExamId(
+            @PathVariable(required = true) String examId) {
+        try {
+            loggingUntil.info("getExam ", "examId: " + examId);
+            if (examId == null || examId.isEmpty()) {
+                return ResponseEntity.badRequest().body("Invalid Account !");
+            }
+            List<Exam> examList = examRepository.findByExamId(examId);
+            return ResponseEntity.ok(examList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            BasicResponse basicResponse = new BasicResponse();
+            basicResponse.message = "Error";
+            basicResponse.status = 400;
+            return ResponseEntity.badRequest().body(basicResponse);
+        }
+    }
     @GetMapping("getExamResult_examid/{examid}")
     public ResponseEntity<?> getExamResult_examid(
             @PathVariable(required = true) String examid) {

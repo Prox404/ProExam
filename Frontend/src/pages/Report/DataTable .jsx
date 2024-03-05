@@ -16,10 +16,11 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import 'react-circular-progressbar/dist/styles.css';
 import axios from "axios";
 import * as XLSX from 'xlsx';
+import DetailedReport from "~/pages/Report/DetailedReport.jsx";
 const removeSpaces= (str)=> {
     return str.replace(/\s/g, '');
 }
-function DataTable({ data }) {
+function DataTable({ data, selectedExamId, handleRowClick }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const [menuOpen, setMenuOpen] = useState(null);
 
@@ -67,7 +68,6 @@ function DataTable({ data }) {
             return null;
         }
     };
-    const XLSX = require('xlsx-style');
     const handleExportExcel = async (exam) => {
         const data123 = await  readataExamResult(exam.examId);
         if(data123===null)
@@ -82,33 +82,12 @@ function DataTable({ data }) {
                 item.endTime
             ];
         });
-        // // Tạo một workbook và một worksheet
+
         const wb = XLSX.utils.book_new();
         const columnWidths = [{wch: 20}, {wch: 20}, {wch: 10}, {wch: 10}, {wch: 25}, {wch: 25}];
         const ws = XLSX.utils.aoa_to_sheet([['User name', 'User Email', 'Correct','Incorrect', 'Start at', 'End at', ], ...dataArray]);
         ws["!cols"] = columnWidths;
 
-
-        const headerStyle = {
-            fill: {
-                fgColor: { rgb: "FF000000" },
-            },
-            font: {
-                color: { rgb: "FFFFFFFF" },
-                sz: 14,
-                bold: true,
-            },
-        };
-        const headerStyleCell = {
-            s: headerStyle,
-            e: headerStyle,
-        };
-        ws["A1"].s = headerStyleCell;
-        ws["B1"].s = headerStyleCell;
-        ws["C1"].s = headerStyleCell;
-        ws["D1"].s = headerStyleCell;
-        ws["E1"].s = headerStyleCell;
-        ws["F1"].s = headerStyleCell;
         XLSX.utils.book_append_sheet(wb, ws, 'Data');
 
         const nameFile = 'ProExam_'+removeSpaces(exam.examName)+'Report.xlsx';
@@ -116,93 +95,99 @@ function DataTable({ data }) {
         XLSX.writeFile(wb, nameFile);
     };
     return (
-        <table className={'table-content'}>
-            <thead>
-            <tr className="table-header">
-                <th>Type</th>
-                <th className={'table-name'}>Exam Name</th>
-                <th className={'split-text'}>Total Participants</th>
-                <th>Accuracy</th>
-                <th>Start time</th>
-                <th>End Time</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody style={{ width: '100%', textAlign: "center", }}>
-            {data.map((row, index) => (
-                <tr key={index} className={'row-content'}>
-                    <td>
-                        <div className={'btn-live'}>
-                            <div className={'btn-live btn-live-in'} style={{ width: "50%", backgroundColor: 'rgba(123,107,234,0.27)' }}><PlaylistAddCheckIcon fontSize={"small"} />Live</div>
-                        </div></td>
-                    <td className={'table-name'}>
-                        <div>
-                            {row.examName}
-                        </div>
-                        <div className={'row-date'}>{parseDateString(row.examStartTime)}</div>
-                    </td>
-                    <td className={'split-text'}>{row.numberSubmit}</td>
-                    <td >
-                        <div key={index} className={'cricularprogressbar'}>
-                            <div style={{ width: 30 }}>
-                                <CircularProgressbar
-                                    styles={buildStyles({
-                                        pathColor: "#d6a13c"
-                                    })}
-                                    strokeWidth={14} value={averageScores[index] * 10} />
-                            </div>
-                            <div style={{ marginLeft: 8 }}>
-                                {averageScores[index] * 10}
-                            </div>
-                        </div>
-                    </td>
-                    <td>{parseTimeString(row.examStartTime)}</td>
-                    <td>{parseTimeString(row.examEndTime)}</td>
-                    <td onClick={(event) => handleClick(event, index)} className={'dropdown'}>
-                        <div>
-                            <MoreVertIcon fontSize={"small"} aria-controls="simple-menu"
-                                          aria-haspopup="true" onClick={handleClick}
-                                          sx={{
-                                              ":hover": {
-                                                  borderRadius: 1,
-                                                  backgroundColor: '#e5e5e5'
-                                              }
-                                          }} />
-                            <Menu
-                                id="simple-menu"
-                                anchorEl={menuOpen === index ? anchorEl : null}
-                                open={menuOpen === index}
-                                onClose={handleClose}
-                                sx={{
-                                    left: '-50px', fontSize: '5px'
-                                }}
-                            >
-                                <MenuItem onClick={() => handleExportExcel(row)}>
-                                    <ListItemIcon>
-                                        <DownloadIcon fontSize="inherit" sx={{ color: '#090909' }} />
-                                    </ListItemIcon>
-                                    <ListItemText><Typography sx={{ fontSize: '13px' }}>Download Excel</Typography></ListItemText>
-                                </MenuItem>
-                                <MenuItem onClick={handleClose}>
-                                    <ListItemIcon>
-                                        <EditIcon fontSize="inherit" sx={{ color: '#090909' }} />
-                                    </ListItemIcon>
-                                    <ListItemText><Typography sx={{ fontSize: '13px' }}>Rename report</Typography></ListItemText>
-                                </MenuItem>
-                                <MenuItem onClick={handleClose}>
-                                    <ListItemIcon>
-                                        <DeleteIcon fontSize="inherit" sx={{ color: '#090909', }} />
-                                    </ListItemIcon>
-                                    <ListItemText><Typography sx={{ fontSize: '13px' }}>Delete report</Typography></ListItemText>
-                                </MenuItem>
-                            </Menu>
-                        </div>
-                    </td>
+        <div>
+            <table className={'table-content'}>
+                <thead>
+                <tr className="table-header">
+                    <th>Type</th>
+                    <th className={'table-name'}>Exam Name</th>
+                    <th className={'split-text'}>Total Participants</th>
+                    <th>Accuracy</th>
+                    <th>Start time</th>
+                    <th>End Time</th>
+                    <th></th>
                 </tr>
-            ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody style={{ width: '100%', textAlign: "center", }}>
+                {data.map((row, index) => (
+                    <tr key={index} className={'row-content'}  onClick={() => handleRowClick(row.examId)}>
+                        <td>
+                            <div className={'btn-live'}>
+                                <div className={'btn-live btn-live-in'} style={{ width: "50%", backgroundColor: 'rgba(123,107,234,0.27)' }}><PlaylistAddCheckIcon fontSize={"small"} />Live</div>
+                            </div></td>
+                        <td className={'table-name'}>
+                            <div>
+                                {row.examName}
+                            </div>
+                            <div className={'row-date'}>{parseDateString(row.examStartTime)}</div>
+                        </td>
+                        <td className={'split-text'}>{row.numberSubmit}</td>
+                        <td >
+                            <div key={index} className={'cricularprogressbar'}>
+                                <div style={{ width: 30 }}>
+                                    <CircularProgressbar
+                                        styles={buildStyles({
+                                            pathColor: "#d6a13c"
+                                        })}
+                                        strokeWidth={14} value={averageScores[index] * 10} />
+                                </div>
+                                <div style={{ marginLeft: 8 }}>
+                                    {averageScores[index] * 10}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{parseTimeString(row.examStartTime)}</td>
+                        <td>{parseTimeString(row.examEndTime)}</td>
+                        <td  onClick={(event) =>{event.stopPropagation();handleClick(event, index)}} className={'dropdown'}>
+                            <div>
+                                <MoreVertIcon fontSize={"small"} aria-controls="simple-menu"
+                                              aria-haspopup="true"
+                                              onClick={(event) =>{event.stopPropagation();handleClick(event, index)}}
+                                              sx={{
+                                                  ":hover": {
+                                                      borderRadius: 1,
+                                                      backgroundColor: '#e5e5e5'
+                                                  }
+                                              }} />
+                                <Menu
+                                    id="simple-menu"
+                                    anchorEl={menuOpen === index ? anchorEl : null}
+                                    open={menuOpen === index}
+                                    onClose={handleClose}
+                                    sx={{
+                                        left: '-50px', fontSize: '5px'
+                                    }}
+                                >
+                                    <MenuItem onClick={() => handleExportExcel(row)}>
+                                        <ListItemIcon>
+                                            <DownloadIcon fontSize="inherit" sx={{ color: '#090909' }} />
+                                        </ListItemIcon>
+                                        <ListItemText><Typography sx={{ fontSize: '13px' }}>Download Excel</Typography></ListItemText>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleClose}>
+                                        <ListItemIcon>
+                                            <EditIcon fontSize="inherit" sx={{ color: '#090909' }} />
+                                        </ListItemIcon>
+                                        <ListItemText><Typography sx={{ fontSize: '13px' }}>Rename report</Typography></ListItemText>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleClose}>
+                                        <ListItemIcon>
+                                            <DeleteIcon fontSize="inherit" sx={{ color: '#090909', }} />
+                                        </ListItemIcon>
+                                        <ListItemText><Typography sx={{ fontSize: '13px' }}>Delete report</Typography></ListItemText>
+                                    </MenuItem>
+                                </Menu>
+                            </div>
+                        </td>
+                    </tr>
+                ))}
+                </tbody>
+
+            </table>
+
+        </div>
     );
 }
+
 
 export default DataTable;

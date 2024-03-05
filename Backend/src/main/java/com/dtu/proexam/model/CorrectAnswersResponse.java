@@ -15,6 +15,7 @@ public class CorrectAnswersResponse {
     private String startTime;
     private String endTime;
 
+    private float score;
     private int correctAnswerCount;
     private int incorrectAnswerCount;
     public void setUserAnswerName(String userAnswerName) {
@@ -75,5 +76,12 @@ public class CorrectAnswersResponse {
     public void setCorrectAnswerCount(int correctAnswerCount) {
         this.correctAnswerCount = correctAnswerCount;
     }
-// Getters và setters
+
+    public float getScore() {
+        return score;
+    }
+
+    public void setScore(float score) {
+        this.score = score;
+    }
 }

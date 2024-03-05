@@ -30,4 +30,8 @@ public class HistoryController {
     public List<CorrectAnswersResponse> getAllHistories(@PathVariable String examId) {
         return historyRepository.getNumberOfCorrectAnswers(examId);
     }
+    @GetMapping("/listQuestion/{examId}")
+    public String getlistQuestion(@PathVariable String examId) {
+        return historyRepository.getListHistoryQuestion(examId);
+    }
 }

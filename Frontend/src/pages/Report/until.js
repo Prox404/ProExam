@@ -23,3 +23,20 @@ export function parseDateString(dateTimeString) {
 
     return formattedDate;
 }
+ export function convertDateFormat(dateString) {
+    // Chuyển đổi chuỗi ngày tháng thành đối tượng Date
+    var date = new Date(dateString);
+    // Lấy các thành phần của ngày tháng
+    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var month = monthNames[date.getMonth()];
+    var day = date.getDate();
+    var year = date.getFullYear();
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+
+    // Format lại ngày tháng theo yêu cầu "Mon DD, YYYY, HH:MM"
+    var formattedDate = month + " " + (day < 10 ? '0' : '') + day + ", " + year + ", " + (hours < 10 ? '0' : '') + hours + ":" + (minutes < 10 ? '0' : '') + minutes;
+    console.log(formattedDate)
+    return formattedDate;
+}

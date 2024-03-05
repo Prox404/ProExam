@@ -1,6 +1,6 @@
 const routes = {
     homeCreateExam:'/dashboard',
-    report:'/report'
+    report:'/report',
     home: '/',
     takeExam: '/take-exam',
     startedExam: '/started-exam',
