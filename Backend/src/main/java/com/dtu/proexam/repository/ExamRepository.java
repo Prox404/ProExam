@@ -9,4 +9,5 @@ public interface ExamRepository extends JpaRepository<Exam, String> {
 
     List<Exam> findByKeyCode(int keyCode);
 
+    List<Exam> findAllByUserUserIdOrderByExamStartTimeDesc(String userId);
 }

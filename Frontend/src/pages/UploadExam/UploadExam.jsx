@@ -26,6 +26,7 @@ import api from "../../config/api.js"
 import EditIcon from '@mui/icons-material/Edit';
 import {useNavigate} from "react-router-dom";
 import {useParams} from "react-router-dom";
+import 'animate.css'
 
 function UploadExam() {
     const [selectFile, setSelectFile] = useState(null)
@@ -45,7 +46,12 @@ function UploadExam() {
     let [newQuestion, setNewQuestion] = useState(null);
     const [isExam, setIsExam] = useState(false);
     // const history = userHistory();
+    useEffect(()=>{
+        if(!JSON.parse(localStorage.getItem('user'))){
 
+          navigate('/');
+        }
+      },[]);
     let questionObject = null;
     let answerRow = null;
     const [questions, setQuestions] = useState([])
@@ -165,11 +171,18 @@ function UploadExam() {
         setNewQuestion({...newQuestion, answers: updatedAnswers});
     };
 
-    const removeAnswer = (index) => {
-        const updatedAnswers = [...newQuestion.answers];
-        updatedAnswers.splice(index, 1);
-        setOnChangeText(updatedAnswers !== newQuestion.answers);
-        setNewQuestion({...newQuestion, answers: updatedAnswers});
+    const removeAnswer = async (index) => {
+        if(newQuestion.answers.length === 1) {
+            setMessage("There must be at least one answer!");
+            setOpenAlertWarning(true);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            setOpenAlertWarning(false);
+        } else {
+            const updatedAnswers = [...newQuestion.answers];
+            updatedAnswers.splice(index, 1);
+            setOnChangeText(updatedAnswers !== newQuestion.answers);
+            setNewQuestion({...newQuestion, answers: updatedAnswers});
+        }
     }
 
     const addNewAnswer = async () => {
@@ -291,12 +304,13 @@ function UploadExam() {
     }
 
     const removeQuestion = (async (index) => {
-        if(openEdit) {
+        if(openEdit && index !== indexEdit) {
             setMessage("You are in the editing process, please complete it!");
             setOpenAlertWarning(true);
             await new Promise(resolve => setTimeout(resolve, 1000));
             setOpenAlertWarning(false);
         } else {
+            setOpenEdit(!openEdit);
             setQuestions((prev) => prev.filter((_, indexValue) => indexValue !== index));
             if(questions.filter((_, indexValue) => indexValue !== index).length === 0) {
                 removeFile()

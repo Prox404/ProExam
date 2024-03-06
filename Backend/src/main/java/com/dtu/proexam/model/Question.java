@@ -24,7 +24,7 @@ public class Question {
     @Column(name = "question_id")
     private String questionId;
 
-    @Column(name = "question_text")
+    @Column(name = "question_text", columnDefinition = "nvarchar(255)")
     private String questionText;
 
     //Enum for question type

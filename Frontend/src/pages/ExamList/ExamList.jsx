@@ -32,10 +32,11 @@ function ExamList() {
     const [anchorEl, setAnchorEl] = useState(null);
     const [openAlert, setOpenAlert] = useState(false)
     const [message, setMessage] = useState()
+    const [userId, setUserId] = useState(JSON.parse(localStorage.getItem('user'))?.userId);
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await api.get('/exam/exams');
+            const response = await api.get(`/exam/exams/${userId}`);
             if (response.status === 200) {
                 setExamList(response.data);
                 setExamListTemp(response.data);

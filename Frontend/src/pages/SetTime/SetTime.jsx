@@ -3,6 +3,8 @@ import { useTheme } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createExam } from "~/services/examService";
+import { useContext } from "react";
+import { ThemeContext } from '~/App';
 import 'animate.css'
 
 const SetTime = () => {
@@ -11,7 +13,7 @@ const SetTime = () => {
   const today = new Date().getFullYear()
     + '-' +
     ((new Date().getMonth() > 8) ? (new Date().getMonth() + 1) : '0' + (new Date().getMonth() + 1))
-    + '-' + new Date().getDate();
+    + '-' + ((new Date().getDate() > 9) ? (new Date().getDate()) : '0' + (new Date().getDate()));
   const now = ((new Date().getHours() > 9) ? new Date().getHours() : '0' + new Date().getHours()) + ':' + ((new Date().getMinutes() > 9) ? new Date().getMinutes() : '0' + new Date().getMinutes());
   const [openDate, setOpenDate] = useState(today);
   const [openTime, setOpenTime] = useState(now);
@@ -24,7 +26,15 @@ const SetTime = () => {
   const [messageA, setMessageA] = useState('');
   const [randomNumber, setRandomNumber] = useState();
   const [isEditExam, setIsEditExam] = useState(true);
+  const [userId, setUserId] = useState(JSON.parse(localStorage.getItem('user'))?.userId);
   const navigate = useNavigate();
+  const {mode} = useContext(ThemeContext);
+
+  useEffect(()=>{
+    if(!JSON.parse(localStorage.getItem('user'))){
+      navigate('/');
+    }
+  },[]);
   useEffect(() => {
     if (Number(examTime) >= 0) {
       const openD = new Date(`${openDate}T${openTime}:00`);
@@ -131,13 +141,13 @@ const SetTime = () => {
     const closeT = new Date(`${closeDate}T${closeTime}:00`);
     const result = await createExam({
       examName,
+      duration: Number(examTime)*60,
       examStartTime: openT,
       examEndTime: closeT,
       numberSubmit,
       keyCode: randomNumber,
-      userId: "A"
+      userId
     });
-    console.log(result)
     return result;
   }
   return (
@@ -238,7 +248,10 @@ const SetTime = () => {
                 value={openDate}
                 onChange={(event) => (new Date(today) <= new Date(event.target.value)) && setOpenDate(event.target.value)}
                 sx={{
-                  width: '200px'
+                  width: '200px',
+                  '& input::-webkit-calendar-picker-indicator': {
+                    filter: mode ? 'invert(1)' : 'none'
+                  },
                 }}
                 InputLabelProps={{
                   shrink: true,
@@ -252,7 +265,10 @@ const SetTime = () => {
                 value={openTime}
                 onChange={(event) => (new Date(`${today}T${now}:00`) < new Date(`${openDate}T${event.target.value}:00`)) && setOpenTime(event.target.value)}
                 sx={{
-                  width: '200px'
+                  width: '200px',
+                  '& input::-webkit-calendar-picker-indicator': {
+                    filter: mode ? 'invert(1)' : 'none'
+                  },
                 }}
                 InputLabelProps={{
                   shrink: true,
@@ -282,7 +298,10 @@ const SetTime = () => {
                 value={closeDate}
                 onChange={(event) => (new Date(openDate) <= new Date(event.target.value)) && setCloseDate(event.target.value)}
                 sx={{
-                  width: '200px'
+                  width: '200px',
+                  '& input::-webkit-calendar-picker-indicator': {
+                    filter: mode ? 'invert(1)' : 'none'
+                  }
                 }}
                 InputLabelProps={{
                   shrink: true,
@@ -295,7 +314,10 @@ const SetTime = () => {
                 value={closeTime}
                 onChange={(event) => (new Date(`${openDate}T${openTime}:00`) < new Date(`${closeDate}T${event.target.value}:00`)) && setCloseTime(event.target.value)}
                 sx={{
-                  width: '200px'
+                  width: '200px',
+                  '& input::-webkit-calendar-picker-indicator': {
+                    filter: mode ? 'invert(1)' : 'none'
+                  },
                 }}
                 InputLabelProps={{
                   shrink: true,
@@ -325,6 +347,9 @@ const SetTime = () => {
                 onChange={(event) => setNumberSubmit(event.target.value)}
                 sx={{
                   width: '225px',
+                  '& .MuiInputBase-root': {
+                    height: '40px'
+                  },
                 }}
               />
             </Box>
@@ -389,7 +414,7 @@ const SetTime = () => {
             <Button sx={{ display: 'block' }} onClick={async () => {const result = await onCreate(); setTimeout(()=>{navigate(`/upload-exam/${result.examId}`)},1000);}}>
               Import questions via file
             </Button>
-            <Button sx={{ display: 'block' }} onClick={async () => {const result = await onCreate(); setTimeout(()=>{navigate(`/exam/uploadQuestionManually/${result.examId}`)},1000);}}>
+            <Button sx={{ display: 'block' }} onClick={async () => {const result = await onCreate(); setTimeout(()=>{navigate(`/parse-questions/${result.examId}`)},1000);}}>
               Import questions manually
             </Button>
           </Box>
@@ -404,6 +429,7 @@ const SetTime = () => {
           {messageA}
         </Alert>
       </Snackbar>
+
     </>
   );
 }
