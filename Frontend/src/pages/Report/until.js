@@ -37,6 +37,5 @@ export function parseDateString(dateTimeString) {
 
     // Format lại ngày tháng theo yêu cầu "Mon DD, YYYY, HH:MM"
     var formattedDate = month + " " + (day < 10 ? '0' : '') + day + ", " + year + ", " + (hours < 10 ? '0' : '') + hours + ":" + (minutes < 10 ? '0' : '') + minutes;
-    console.log(formattedDate)
     return formattedDate;
 }

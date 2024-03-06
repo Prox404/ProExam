@@ -18,6 +18,7 @@ function DetailedReport({examId}) {
     const [openDialog, setOpenDialog] = useState(false); // Trạng thái cho biết xem dialog có mở hay không
     const [selectedResult, setSelectedResult] = useState(null); // Kết quả được chọn
     const [index_selected,set_index_selected] = useState(null);
+    const [listAnswer, setListAnswer] = useState([]);
     useEffect(() => {
         axios.get(`http://localhost:8080/exam/getExamId/${examId}`)
             .then(response => {
@@ -26,10 +27,19 @@ function DetailedReport({examId}) {
 
         getAverageScoreByExamId(examId)
         readataExamResult(examId);
-        read_list_question(examId);
+        read_box_list_question(examId);
 
     }, []);
-    const read_list_question = async (examId) =>{
+    const read_list_answer_user = async (examId,uid)=>{
+        try {
+            const response = await axios.get(`http://localhost:8080/history/getListAnswer/${examId}/${uid}`);
+            setListAnswer(response.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return null;
+        }
+    }
+    const read_box_list_question = async (examId) =>{
         try {
             const response = await axios.get(`http://localhost:8080/history/listQuestion/${examId}`);
             setresult_question(convertToResult1Array(response.data));
@@ -48,6 +58,7 @@ function DetailedReport({examId}) {
     const readataExamResult = async (examId) => {
         try {
             const response = await axios.get(`http://localhost:8080/history/numbercorrect/${examId}`);
+            console.log(response.data);
             setresultData(response.data);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -68,6 +79,8 @@ function DetailedReport({examId}) {
         setSelectedResult(result);
         setOpenDialog(true);
         set_index_selected(index);
+        read_list_answer_user(examId,result.userAnswerId);
+        console.log(listAnswer);
     };
 
     const handleCloseDialog = () => {
@@ -169,43 +182,52 @@ function DetailedReport({examId}) {
                                 <QuestionBoxes questions={result_question.at(index_selected)} />
                                 <div className={styles['box_infor_correct']}>
                                     <div className={styles['box_number_correct']}>
-                                        <CheckIcon fontSize={"12px"}/>{selectedResult.correctAnswerCount} correct
+                                        <CheckIcon fontSize={"12px"}/>{selectedResult.correctAnswerCount} Correct
                                     </div>
                                     <div className={`${styles['box_number_correct']} ${styles['box_number_incorrect']}`}>
                                         <CloseIcon fontSize={"12px"}/>{selectedResult.incorrectAnswerCount} Incorrect
                                     </div>
                                 </div>
-                                <div className={styles['box_answer_user']}>
-                                    <div className={styles['box_infor_correct']} style={{float:"left",justifyContent:"start",padding:0}}>
-                                        {
-                                            1 === 2 ? (
-                                                    <div className={styles['box_number_correct']}>
-                                                        <CheckIcon fontSize={"12px"}/>correct
-                                                    </div>):
-                                                (<div
-                                                    className={`${styles['box_number_correct']} ${styles['box_number_incorrect']}`}>
-                                                    <CloseIcon fontSize={"12px"}/>Incorrect
-                                                </div>)
-                                        }
-                                    </div>
-                                    <div className={styles['question_title']}>Question</div>
-                                    <div className={styles['box_answer_selected']}>
-                                        <div className={styles['response_answer']}>
-                                            <div className={styles['title_answer']}>Answer</div>
-                                            <div className={styles['content_answer']}><CheckIcon fontSize={"12px"} style={{marginRight:'4px',color:'#5ee3b6'}}/>title answer</div>
+                                {listAnswer.map((row,index)=> (
+                                    <div key={index} className={styles['box_answer_user']}>
+                                        <div className={styles['box_infor_correct']}
+                                             style={{float: "left", justifyContent: "start", padding: 0}}>
+                                            {
+                                                row.is_correct === true ? (
+                                                        <div className={styles['box_number_correct']}>
+                                                            <CheckIcon fontSize={"12px"}/>Correct
+                                                        </div>) :
+                                                    (<div
+                                                        className={`${styles['box_number_correct']} ${styles['box_number_incorrect']}`}>
+                                                        <CloseIcon fontSize={"12px"}/>Incorrect
+                                                    </div>)
+                                            }
                                         </div>
-                                        <div className={styles['response_answer']}>
-                                            <div className={styles['title_correct_answer']}>Correct Answer</div>
-                                            <div className={styles['content_answer']}>title answer</div>
+                                        <div className={styles['question_title']}>{row.question_text}</div>
+                                        <div className={styles['box_answer_selected']}>
+                                            <div className={styles['response_answer']}>
+                                                <div className={styles['title_answer']}>Answer</div>
+                                                <div className={styles['content_answer']}><CheckIcon fontSize={"12px"}
+                                                                                                     style={{
+                                                                                                         marginRight: '4px',
+                                                                                                         color: '#5ee3b6'
+                                                                                                     }}/>{row.answer_text}
+                                                </div>
+                                            </div>
+                                            <div className={styles['response_answer']}>
+                                                <div className={styles['title_correct_answer']}>Correct Answer</div>
+                                                <div className={styles['content_answer']}>{row.answer_correct.answerText}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                ))}
+
                             </div>
                         </div>
                     )}
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={handleCloseDialog}>Close</Button>
+                    <Button onClick={handleCloseDialog}>Close</Button>
                 </DialogActions>
             </Dialog>
         </div>

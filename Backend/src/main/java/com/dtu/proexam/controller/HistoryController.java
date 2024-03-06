@@ -2,6 +2,7 @@ package com.dtu.proexam.controller;
 
 import com.dtu.proexam.model.CorrectAnswersResponse;
 import com.dtu.proexam.model.History;
+import com.dtu.proexam.model.ListAnswerSelected;
 import com.dtu.proexam.repository.HistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,5 +34,9 @@ public class HistoryController {
     @GetMapping("/listQuestion/{examId}")
     public String getlistQuestion(@PathVariable String examId) {
         return historyRepository.getListHistoryQuestion(examId);
+    }
+    @GetMapping("/getListAnswer/{examId}/{uid}")
+    public List<ListAnswerSelected> getListAnswer(@PathVariable String examId, @PathVariable String uid) {
+        return historyRepository.getAnswerList(examId,uid);
     }
 }

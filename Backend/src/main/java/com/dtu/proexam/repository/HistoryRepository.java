@@ -1,6 +1,8 @@
 package com.dtu.proexam.repository;
+import com.dtu.proexam.model.Answer;
 import com.dtu.proexam.model.CorrectAnswersResponse;
 import com.dtu.proexam.model.History;
+import com.dtu.proexam.model.ListAnswerSelected;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -88,6 +90,30 @@ public class HistoryRepository {
         }
     }
 
+    public List<ListAnswerSelected> getAnswerList(String examId, String uid){
+        String sql = "SELECT h.selected_answer_id, a.answer_text, q.question_text, q.question_id, a.is_correct, ar.exam_result_id," +
+                " ca.answer_id as correct_answer_id, ca.answer_text as correct_answer_text, ca.is_correct as iscorrect_answer " +
+                " FROM History h " +
+                " JOIN exam_result ar ON ar.exam_result_id = h.exam_result_id AND ar.user_answer_id = ? " +
+                " JOIN Answer a ON a.answer_id = h.selected_answer_id " +
+                " JOIN Question q ON a.question_id = q.question_id " +
+                " LEFT JOIN Answer ca ON q.question_id = ca.question_id AND ca.is_correct = 1 " +
+                " WHERE ar.exam_id = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) ->
+                new ListAnswerSelected(
+                        rs.getString("selected_answer_id"),
+                        rs.getString("answer_text"),
+                        rs.getString("question_text"),
+                        rs.getString("question_id"),
+                        rs.getBoolean("is_correct"),
+                        rs.getString("exam_result_id"),
+                        new Answer(
+                                rs.getString("correct_answer_id"),
+                                rs.getString("correct_answer_text"),
+                                rs.getBoolean("iscorrect_answer")
+                        )
+                ), uid, examId);
+    }
 
     public List<CorrectAnswersResponse> getNumberOfCorrectAnswers(String examId) {
 //        String sql = "SELECT COUNT(h.selected_answer_id) FROM History h JOIN Answer a ON h.selected_answer_id = a.answer_id JOIN exam_result e ON h.exam_result_id = e.exam_result_id WHERE e.user_answer_id = ? AND e.exam_id = ? AND a.is_correct = ?";
@@ -102,7 +128,7 @@ public class HistoryRepository {
                 "JOIN user_answer u ON er.user_answer_id = u.user_answer_id " +
                 "WHERE e.exam_id = ? " +
                 "GROUP BY er.exam_id, er.user_answer_id, u.user_answer_name, u.user_answer_email, er.start_time, er.end_time,er.score ";
-        return jdbcTemplate.query(sql, new Object[]{ true, false, examId}, new RowMapper<CorrectAnswersResponse>() {
+        return jdbcTemplate.query(sql, new Object[]{true, false, examId}, new RowMapper<CorrectAnswersResponse>() {
             @Override
             public CorrectAnswersResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
                 CorrectAnswersResponse result = new CorrectAnswersResponse();
@@ -119,29 +145,4 @@ public class HistoryRepository {
             }
         });
     }
-
-
-
-//public  int getNumberOfCorrectAnswers() {
-//    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-//         PreparedStatement stmt = conn.prepareStatement(
-//                 "SELECT examResult.uid, COUNT(answer.isCorrect) AS total_correct_answers " +
-//                         "FROM history " +
-//                         "JOIN examResult ON history.exam_result_id = examResult.examResultId " +
-//                         "JOIN answer ON history.user_answer_selected = answer.answerId AND answer.isCorrect = 1 " +
-//                         "GROUP BY examResult.uid");
-//         ResultSet rs = stmt.executeQuery()) {
-//
-//        while (rs.next()) {
-//            int uid = rs.getInt("uid");
-//            int totalCorrectAnswers = rs.getInt("total_correct_answers");
-//            System.out.println("UID: " + uid + ", Total Correct Answers: " + totalCorrectAnswers);
-//        }
-//    } catch (SQLException e) {
-//        e.printStackTrace();
-//    }
-
 }
-
-//@Query("SELECT COUNT(h.selectedAnswerId) FROM History h JOIN Answer a ON h.selectedAnswerId = a.answerId JOIN ExamResult e ON h.examResultId = e.examResultId WHERE e.userAnswer.userAnswerId = ?1 AND e.exam.examId = ?2 AND a.isCorrect = true")
-////    int getNumberOfCorrectAnswers(String userId, String  examId);

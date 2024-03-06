@@ -3,13 +3,9 @@ package com.dtu.proexam.model;
 public class CorrectAnswersResponse {
     private String examResultId;
     private String userAnswerId;
-
     public String getUserAnswerName() {
         return userAnswerName;
     }
-
-
-
     private String userAnswerName;
     private String userAnswerEmail;
     private String startTime;

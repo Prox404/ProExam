@@ -133,7 +133,8 @@
 .content_answer{
   display: flex;
   align-items: center;
-  font-weight: bold;
+  font-weight: normal;
+  font-size: 12px;
 }
 .title_answer{
   color: grey;
@@ -142,4 +143,5 @@
 .title_correct_answer{
   color: #46c298;
   padding-bottom: 10px;
+
 }
