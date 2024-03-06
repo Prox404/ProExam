@@ -74,3 +74,85 @@ export const cheatingDetection = ({
         return false;
     }
 }
+
+export const getExamResult = (examResultId) => {
+    try {
+        const res = request.get(`/exam/getExamResult/${examResultId}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+
+export const createExam = ({
+    examName,
+    duration,
+    examStartTime,
+    examEndTime,
+    numberSubmit,
+    keyCode,
+    userId
+}) => {
+    try {
+        const res = request.post(`/exam/store`,{
+            examName,
+            duration,
+            examStartTime,
+            examEndTime,
+            numberSubmit,
+            keyCode,
+            user: {
+                userId
+            }
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const upLoadQuestion = (id, data) => {
+    try {
+        const res = request.post(`/exam/uploadQuestions/${id}`, data);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const getExamById = (id) => {
+    try {
+        const res = request.get(`/exam/get/${id}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const createQuestionManually = ({
+    questions,
+    examId
+}) => {
+    try {
+        const res = request.post(`/exam/storeQuestions/${examId}`,questions);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const getQuestionList = (id) => {
+    try {
+        const res = request.get(`/exam/getQuestions/${id}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}

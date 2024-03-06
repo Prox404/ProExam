@@ -1,6 +1,7 @@
 package com.dtu.proexam.controller;
 
 import java.io.InputStream;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -8,6 +9,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.dtu.proexam.model.*;
+import com.dtu.proexam.repository.*;
+import org.apache.catalina.User;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.dtu.proexam.model.Answer;
-import com.dtu.proexam.model.Exam;
-import com.dtu.proexam.model.ExamResult;
-import com.dtu.proexam.model.History;
-import com.dtu.proexam.model.Question;
-import com.dtu.proexam.model.UserAnswer;
-import com.dtu.proexam.repository.AnswerRepository;
-import com.dtu.proexam.repository.ExamRepository;
-import com.dtu.proexam.repository.ExamResultRepository;
-import com.dtu.proexam.repository.QuestionRepository;
-import com.dtu.proexam.repository.UserAnswerRepository;
-import com.dtu.proexam.repository.UserRepository;
 import com.dtu.proexam.util.GlobalUtil;
 import com.dtu.proexam.util.LoggingUntil;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -50,11 +42,11 @@ public class ExamController {
     private AnswerRepository answerRepository;
     private UserAnswerRepository userAnswerRepository;
     private ExamResultRepository examResultRepository;
+//    private HistoryRepository historyRepository;
     private final float MAX_SCORE = 10;
 
     public ExamController(JdbcTemplate jdbcTemplate, ExamRepository examRepository,
             QuestionRepository questionRepository, AnswerRepository answerRepository,
-            UserRepository userRepository,
             UserAnswerRepository userAnswerRepository,
             ExamResultRepository examResultRepository) {
         this.jdbcTemplate = jdbcTemplate;
@@ -269,9 +261,12 @@ public class ExamController {
             return ResponseEntity.badRequest().body("Exam not found !");
         }
 
-        if (exam.getExamStartTime() == null || exam.getExamStartTime().after(new Date())
-                || exam.getExamEndTime() != null && exam.getExamEndTime().before(new Date())) {
+        if (exam.getExamStartTime() == null ||  exam.getExamStartTime().after(new Date())) {
             return ResponseEntity.badRequest().body("Exam not started !");
+        }
+
+        if (exam.getExamEndTime() != null && exam.getExamEndTime().before(new Date())) {
+            return ResponseEntity.badRequest().body("Exam Ended !");
         }
 
         List<Question> questions = questionRepository.findByExamExamId(exam.getExamId());
@@ -499,7 +494,6 @@ public class ExamController {
     @GetMapping("/getExamResult/{examResultId}")
     public ResponseEntity<?> getExamResult(
             @PathVariable(required = true) String examResultId) {
-
         try {
 
             loggingUntil.info("getExamResult", "examResultId: " + examResultId);
@@ -550,7 +544,149 @@ public class ExamController {
             return ResponseEntity.badRequest().body(basicResponse);
         }
     }
+    @GetMapping("getExam/{uid}")
+    public ResponseEntity<?> getExam(
+            @PathVariable(required = true) String uid) {
+        try {
+            loggingUntil.info("getExam ", "userId: " + uid);
+            if (uid == null || uid.isEmpty()) {
+                return ResponseEntity.badRequest().body("Invalid Account !");
+            }
+            List<Exam> examList = examRepository.findByUser(uid);
+            return ResponseEntity.ok(examList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            BasicResponse basicResponse = new BasicResponse();
+            basicResponse.message = "Error";
+            basicResponse.status = 400;
+            return ResponseEntity.badRequest().body(basicResponse);
+        }
+    }
+    @GetMapping("getExamResult_examid/{examid}")
+    public ResponseEntity<?> getExamResult_examid(
+            @PathVariable(required = true) String examid) {
+        try {
+            loggingUntil.info("getExamResult_examid ", "userId: " + examid);
+            if (examid == null || examid.isEmpty()) {
+                return ResponseEntity.badRequest().body("Invalid Account!");
+            }
+            List<Exam> exams = examRepository.findByExamId(examid);
+            if(exams == null || exams.isEmpty())
+                return ResponseEntity.badRequest().body("No data examId");
+            List<ExamResult> examResultList = examResultRepository.findByExam(examid);
 
+            return ResponseEntity.ok(examResultList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            BasicResponse basicResponse = new BasicResponse();
+            basicResponse.message = "Error";
+            basicResponse.status = 400;
+            return ResponseEntity.badRequest().body(basicResponse);
+        }
+    }
+
+    @GetMapping("getAverageScoreByExamId/{examid}")
+    public ResponseEntity<?> getAverageScoreByExamId(@PathVariable(required = true) String examid) {
+        try {
+            loggingUntil.info("getAverageScoreByExamId ", "getAverageScoreByExamId: " + examid);
+            if (examid == null || examid.isEmpty()) {
+                return ResponseEntity.badRequest().body("Invalid getAverageScoreByExamId !");
+            }
+
+            if(examResultRepository.findAverageScoreByExamId(examid) == null){
+                return ResponseEntity.ok(0);
+            }
+            else{
+                double averageScore = examResultRepository.findAverageScoreByExamId(examid);
+                return ResponseEntity.ok(averageScore);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            BasicResponse basicResponse = new BasicResponse();
+            basicResponse.message = "Error";
+            basicResponse.status = 400;
+            return ResponseEntity.badRequest().body(basicResponse);
+        }
+
+    }
+
+    @PostMapping("/uploadQuestions/{examId}")
+    public ResponseEntity<?> uploadQuestions(@PathVariable String examId, @RequestBody List<Question> questions) {
+        Exam exam = examRepository.findById(examId).orElse(null);
+        if(exam == null) {
+            return ResponseEntity.badRequest().body("Exam not found !");
+        }
+
+        List<Question> nQuestions = questionRepository.findByExamExamId(examId);
+        if(nQuestions.isEmpty()) {
+
+            for (Question question : questions) {
+                question.setExam(exam);
+                if (question.getAnswers().isEmpty()) continue;
+                if (question.getQuestionId() == null || question.getQuestionId().isEmpty())
+                    question.setQuestionId(GlobalUtil.getUUID());
+                if (question.getAnswers().stream().filter(Answer::isIsCorrect).count() > 1)
+                    question.setQuestionType(Question.QuestionType.MULTIPLE_CHOICE);
+                questionRepository.save(question);
+                for (Answer answer : question.getAnswers()) {
+                    if (answer.getAnswerId() == null || answer.getAnswerId().isEmpty())
+                        answer.setAnswerId(GlobalUtil.getUUID());
+                    answer.setQuestion(question);
+                    answerRepository.save(answer);
+                }
+            }
+        } else {
+            return ResponseEntity.badRequest().body(new BasicResponse("Questions already exist", 400));
+        }
+        return ResponseEntity.ok(new BasicResponse("Store questions successfully", 200, questions));
+    }
+
+    @GetMapping("/get/{examId}")
+    public ResponseEntity<?> checkExam(@PathVariable String examId) {
+        Exam exam = examRepository.findById(examId).orElse(null);
+        if(exam == null) {
+            return ResponseEntity.badRequest().body("Exam not found !");
+        }
+        return ResponseEntity.ok(new BasicResponse("Success", 200, exam));
+    }
+
+    @GetMapping("/getQuestions/{examId}")
+    public ResponseEntity<?> getQuestions(@PathVariable String examId) {
+        Exam exam = examRepository.findById(examId).orElse(null);
+        if(exam == null) {
+            return ResponseEntity.badRequest().body(new BasicResponse("Exam not found", 400));
+        }
+        List<Question> questions = questionRepository.findByExamExamId(examId);
+        if(questions.isEmpty()) {
+            return ResponseEntity.ok(new BasicResponse("No questions found", 200, new ArrayList<Question>()));
+        }
+        return ResponseEntity.ok(new BasicResponse("Success", 200, questions));
+    }
+
+//    @GetMapping("getNumberCorrect/{examid}/{userId}")
+//    public ResponseEntity<?> getNumberCorrect(@PathVariable(required = true) String examid,@PathVariable(required = true) String userId) {
+////        try {
+////            loggingUntil.info("getNumberCorrect ", "examid: " + examid);
+////            if (examid == null || examid.isEmpty() || userId==null || userId.isEmpty()) {
+////                return ResponseEntity.badRequest().body("Invalid getAverageScoreByExamId !");
+////            }
+////
+////            if(historyRepository.getNumberOfCorrectAnswers(userId,examid) == 0){
+//                return ResponseEntity.ok(0);
+////            }
+////            else{
+////                int numberCorrect = historyRepository.getNumberOfCorrectAnswers(userId,examid);
+////                return ResponseEntity.ok(numberCorrect);
+////            }
+////        } catch (Exception e) {
+////            e.printStackTrace();
+////            BasicResponse basicResponse = new BasicResponse();
+////            basicResponse.message = "Error";
+////            basicResponse.status = 400;
+////            return ResponseEntity.badRequest().body(basicResponse);
+////        }
+//
+//    }
     public class AnswerWithQuestion extends Answer {
         private String questionId;
 

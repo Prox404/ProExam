@@ -32,12 +32,15 @@ function App() {
         white: '#fff',
         textBlack: mode ? '#fff' : '#000',
         textWhite: mode ? '#000' : '#fff',
-        defaultBackground: mode ? '#121212' : '#fff',
+        defaultBackground: mode ? '#252525' : '#F2F7FF',
         cardBackground: mode ? '#202020' : '#fff',
         cardSecondaryBackground: mode ? '#3a3a3a' : '#f5f5f5',
         textColor: mode ? '#fff' : '#000',
         textColorSecondary: mode ? '#fff' : '#000',
         lineColor: mode ? '#3a3a3a' : '#C1C1C1',
+        scoreExam: mode? '#747474' : '#F2F7FF',
+        primaryCard: mode ? '#333' : '#435EBE',
+        
       },
     })
 

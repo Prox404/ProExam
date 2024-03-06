@@ -27,6 +27,7 @@ import {
     useTheme
 } from '@mui/material';
 import * as validate from '~/utils/validateData';
+import { useNavigate } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -253,6 +254,7 @@ export default function Header({ ...props }) {
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
@@ -445,6 +447,7 @@ export default function Header({ ...props }) {
                 horizontal: 'right',
             }}
             open={isMobileMenuOpen}
+            open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
 
@@ -459,11 +462,25 @@ export default function Header({ ...props }) {
                 </>
             }
 
+            {
+                isLogin && <>
+                    <MenuItem>
+                        <Button onClick={() => {navigate('/dashboard'); handleMobileMenuClose()} }
+                            sx={{ width: '100%' }}
+                        >
+                            Dashboard
+                        </Button>
+                    </MenuItem>
+                </>
+            }
+
             <MenuItem onClick={handleChange}>
                 <IconButton sx={{ ml: 1 }} color="inherit">
                     {mode ? <Brightness7Icon /> : <Brightness4Icon />}
                 </IconButton>
-                <p>
+                <p style={{
+                    margin: 0
+                }}>
                     {mode ? 'Light' : 'Dark'} Mode
                 </p>
             </MenuItem>
@@ -477,12 +494,17 @@ export default function Header({ ...props }) {
                     backgroundColor: mode ? '#333' : '#fff',
                 }}>
                     <Toolbar>
-
                         <Typography
                             variant="h6"
                             noWrap
                             component="div"
-                            sx={{ display: { sm: 'block' } }}
+                            sx={{
+                                display: { sm: 'block' },
+                                '&:hover': {
+                                    cursor: 'pointer'
+                                }
+                            }}
+                            onClick={() => navigate('/')}
                         >
                             Pro Exam
                         </Typography>
@@ -508,6 +530,11 @@ export default function Header({ ...props }) {
                         </Box>
                         {
                             isLogin && user ? <>
+                                <Button onClick={() => navigate('/dashboard')}
+                                    sx={{ display: { xs: 'none', md: 'flex' }, marginRight: '10px' }}
+                                >
+                                    Dashboard
+                                </Button>
                                 <Avatar aria-haspopup="true"
                                     onClick={handleProfileMenuOpen}
                                     {...stringAvatar(user?.userName)}
@@ -547,7 +574,7 @@ export default function Header({ ...props }) {
                 onRequestClose={() => setModalIsOpen(false)}
             >
                 {modal}
-                <IconButton sx={{
+                t <IconButton sx={{
                     position: 'absolute',
                     top: '10px',
                     right: '10px',

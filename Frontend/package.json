@@ -22,9 +22,12 @@
     "@tensorflow/tfjs-core": "^3.7.0",
     "animate.css": "^4.1.1",
     "axios": "^1.6.7",
+    "date-fns": "^3.3.1",
     "devtools-detect": "^4.0.1",
+    "mammoth": "^1.7.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
+    "react-circular-progressbar": "^2.1.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
     "react-redux": "^9.1.0",
@@ -33,7 +36,10 @@
     "react-webcam": "^7.2.0",
     "redux": "^5.0.1",
     "scatter-gl": "0.0.8",
-    "use-debounce": "^10.0.0"
+    "use-debounce": "^10.0.0",
+    "uuid": "^9.0.1",
+    "xlsx": "^0.18.5",
+    "xlsx-style": "^0.8.13"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

@@ -76,7 +76,7 @@ function Home() {
             }
         }}>
             <Grid container height={'100%'} spacing={0}>
-                <Grid height={'100%'} item xs={12} sm={7}>
+                    <Grid height={'100%'} item xs={12} sm={7}>
                     <Item className='animate__animated animate__zoomIn' sx={{
                         display: 'flex',
                         flexDirection: 'column',

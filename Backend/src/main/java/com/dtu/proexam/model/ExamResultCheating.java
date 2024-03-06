@@ -10,6 +10,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "exam_result_cheating")
 public class ExamResultCheating {
@@ -27,6 +29,7 @@ public class ExamResultCheating {
     private Cheating cheating;
 
     @Column(name = "cheating_time")
+    @JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Asia/Ho_Chi_Minh")
     private Date cheatingTime;
 
     public ExamResultCheating() {
