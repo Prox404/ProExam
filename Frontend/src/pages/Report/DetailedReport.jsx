@@ -207,11 +207,23 @@ function DetailedReport({examId}) {
                                         <div className={styles['box_answer_selected']}>
                                             <div className={styles['response_answer']}>
                                                 <div className={styles['title_answer']}>Answer</div>
-                                                <div className={styles['content_answer']}><CheckIcon fontSize={"12px"}
-                                                                                                     style={{
-                                                                                                         marginRight: '4px',
-                                                                                                         color: '#5ee3b6'
-                                                                                                     }}/>{row.answer_text}
+                                                <div className={styles['content_answer']}>
+                                                    {
+                                                        row.is_correct === true ?(
+                                                            <CheckIcon fontSize={"12px"}
+                                                                       style={{
+                                                                           marginRight: '4px',
+                                                                           color: '#5ee3b6'
+                                                                       }}/>
+                                                        ):(
+                                                            <CloseIcon fontSize={"12px"}
+                                                                       style={{
+                                                                           marginRight: '4px',
+                                                                           color: '#bc0835'
+                                                                       }}/>
+                                                        )
+                                                    }
+                                                    {row.answer_text}
                                                 </div>
                                             </div>
                                             <div className={styles['response_answer']}>
