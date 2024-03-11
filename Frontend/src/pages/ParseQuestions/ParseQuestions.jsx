@@ -277,6 +277,14 @@ function ParseQuestions() {
                     if (deleteEnabled) {
                       handleDeleteAnswer(index, answerIndex);
                     }
+                    if (
+                      deleteEnabled == false &&
+                      question.answers.length == 2
+                    ) {
+                      setStatusA("warning");
+                      setMessageA("Need at least two answer !");
+                      setIsOpenA(true);
+                    }
                   }}
                 >
                   <CloseIcon />
