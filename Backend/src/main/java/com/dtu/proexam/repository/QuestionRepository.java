@@ -15,4 +15,6 @@ public interface QuestionRepository extends JpaRepository<Question, String> {
 
 
     void deleteQuestionsByExam_ExamId(String examId);
+
+    long countByExam_ExamId(String examId);
 }

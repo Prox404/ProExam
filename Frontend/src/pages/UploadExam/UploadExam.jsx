@@ -46,12 +46,12 @@ function UploadExam() {
     let [newQuestion, setNewQuestion] = useState(null);
     const [isExam, setIsExam] = useState(false);
     // const history = userHistory();
-    useEffect(()=>{
-        if(!JSON.parse(localStorage.getItem('user'))){
+    useEffect(() => {
+        if (!JSON.parse(localStorage.getItem('user'))) {
 
-          navigate('/');
+            navigate('/');
         }
-      },[]);
+    }, []);
     let questionObject = null;
     let answerRow = null;
     const [questions, setQuestions] = useState([])
@@ -73,7 +73,14 @@ function UploadExam() {
         if (event.target.files && event.target.files.length > 0) {
             setSelectFile(event.target.files[0]);
             const file = event.target.files[0];
-
+            if (!file.name.toLowerCase().endsWith('.docx')) {
+                setMessage("Invalid file format, please use .docx format!")
+                removeFile();
+                setOpenAlertError(true);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                setOpenAlertError(false);
+                return;
+            }
             const fileReader = new FileReader();
             fileReader.onload = async (data) => {
                 const content = data.target.result;
@@ -90,7 +97,6 @@ function UploadExam() {
                             questionText: question[1].trim(),
                             answers: []
                         }
-                        // console.log(questionObject.title);
                     } else if (answer) {
                         if (questionObject && questionObject.answers) {
                             const cleanedAnswerText = answer[1].replace('*', '').trim().toLowerCase();
@@ -106,15 +112,26 @@ function UploadExam() {
                                 await new Promise(resolve => setTimeout(resolve, 1));
                             }
                         }
-                        // console.log(questionObject.answer);
                     }
 
                     if (index === lines.length - 1 && questionObject)
                         listTemp.push(questionObject)
                 }
-                setQuestions(listTemp)
+                if (listTemp.length != 0)
+                    setQuestions(listTemp)
+                else {
+                    setMessage("File has no data or is invalid, please enter again!")
+                    removeFile();
+                    setOpenAlertError(true);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    setOpenAlertError(false);
+                }
             }
             fileReader.readAsArrayBuffer(file);
+        } else {
+            setOpenAlertError(true);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            setOpenAlertError(false);
         }
     }
 
@@ -172,7 +189,7 @@ function UploadExam() {
     };
 
     const removeAnswer = async (index) => {
-        if(newQuestion.answers.length === 1) {
+        if (newQuestion.answers.length === 1) {
             setMessage("There must be at least one answer!");
             setOpenAlertWarning(true);
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -203,7 +220,7 @@ function UploadExam() {
     }
 
     const addNewQuestion = async () => {
-        if(!openEdit) {
+        if (!openEdit) {
             let question = {
                 questionText: '',
                 answers: [{
@@ -303,20 +320,45 @@ function UploadExam() {
         };
     }
 
+    const handleFileSelection = (file) => {
+        setSelectFile(file);
+    };
+
     const removeQuestion = (async (index) => {
-        if(openEdit && index !== indexEdit) {
+        if (openEdit && index !== indexEdit) {
             setMessage("You are in the editing process, please complete it!");
             setOpenAlertWarning(true);
             await new Promise(resolve => setTimeout(resolve, 1000));
             setOpenAlertWarning(false);
         } else {
-            setOpenEdit(!openEdit);
+            setOpenEdit(false);
             setQuestions((prev) => prev.filter((_, indexValue) => indexValue !== index));
-            if(questions.filter((_, indexValue) => indexValue !== index).length === 0) {
+            if (questions.filter((_, indexValue) => indexValue !== index).length === 0) {
                 removeFile()
             }
         }
     })
+    const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Xử lý các sự kiện kéo và thả ở đây (nếu cần)
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const droppedFiles = e.dataTransfer.files;
+        if (droppedFiles.length > 0) {
+            const file = droppedFiles[0];
+            const fakeEvent = {
+                target: {
+                    files: [file]
+                }
+            };
+            handleOnChange(fakeEvent);
+        }
+    };
 
     return (
         <>
@@ -325,7 +367,7 @@ function UploadExam() {
                 sx={{
                     backgroundColor: "white",
                     borderRadius: 10,
-                    margin: '40px',
+                    margin: '-16px 40px 40px 40px',
                     height: {
                         xs: 'auto',
                         sm: 'calc(100vh - var(--header-height) - 80px)'
@@ -347,6 +389,9 @@ function UploadExam() {
                               }}>
                             <Item>
                                 <div
+                                    onDragOver={handleDrag}
+                                    onDrop={handleDrop}
+                                    onDragLeave={handleDrag}
                                     className={styles['file']}
                                     style={{
                                         display: "flex",
@@ -551,7 +596,8 @@ function UploadExam() {
                         alignItems: "center"
                     }}>
                         <img src={not_file} alt={"img empty"} style={{width: '30%', marginBottom: "10px"}}/>
-                        <Typography variant={"h5"} style={{marginBottom: "10px", color: "#757575"}}>This test does not exist!</Typography>
+                        <Typography variant={"h5"} style={{marginBottom: "10px", color: "#757575"}}>This test does not
+                            exist!</Typography>
                         <Button
                             className={styles['search-form']}
                             style={{
@@ -578,7 +624,7 @@ function UploadExam() {
                 open={openAlert} autoHideDuration={6000} onClose={() => {
             }}>
                 <div>
-                    <AlertSuccess message = {'Upload successful.'}/>
+                    <AlertSuccess message={'Upload successful.'}/>
                 </div>
             </Snackbar>
             <Snackbar

@@ -110,10 +110,8 @@ public class ExamController {
 	}
 	@GetMapping("/exams/{userId}")
 	public ResponseEntity<List<Exam>> getExams(@PathVariable String userId) {
-		System.out.println(userId);
 		Users user = userRepository.findById(userId).orElse(null);
 		if(user != null) {
-			System.out.println(userId);
 			List<Exam> exams = examRepository.findAllByUserUserIdOrderByExamStartTimeDesc(userId);
 			return ResponseEntity.ok(exams);
 		} else {
@@ -167,6 +165,16 @@ public class ExamController {
 		Exam exam = examRepository.findById(examId).orElse(null);
 		boolean checked = (exam != null);
 		return ResponseEntity.ok(checked);
+	}
+
+	@GetMapping("/questions/{examId}")
+	public ResponseEntity<?> getQuestionNum(@PathVariable String examId) {
+		Exam exam = examRepository.findById(examId).orElse(null);
+		long questions = 0;
+		if(exam != null) {
+			questions = questionRepository.countByExam_ExamId(examId);
+		}
+		return ResponseEntity.ok(questions);
 	}
 
 	@PostMapping("/uploadQuestions/{examId}")
