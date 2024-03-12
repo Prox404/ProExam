@@ -271,7 +271,7 @@ export default function StartedExam() {
             localStorage.setItem('exam', JSON.stringify(res));
             navigate('/take-exam');
         } else {
-            handleShowSnackBar(res?.data?.message || 'Error taking the exam !');
+            handleShowSnackBar(res?.message || 'Error taking the exam !');
         }
         setLoading(false);
     }

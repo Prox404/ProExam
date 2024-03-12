@@ -156,3 +156,33 @@ export const getQuestionList = (id) => {
         return false;
     }
 }
+
+export const getExamList = (user_id) => {
+    try {
+        const res = request.get(`/exam/getExamList/${user_id}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const getExamDetail = (exam_id) => {
+    try {
+        const res = request.get(`/exam/getExamDetail/${exam_id}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const getAverageScore = (exam_id) => {
+    try {
+        const res = request.get(`/exam/getAverageScoreByExamId/${exam_id}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}

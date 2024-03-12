@@ -42,7 +42,7 @@ public class ExamController {
     private AnswerRepository answerRepository;
     private UserAnswerRepository userAnswerRepository;
     private ExamResultRepository examResultRepository;
-//    private HistoryRepository historyRepository;
+    // private HistoryRepository historyRepository;
     private final float MAX_SCORE = 10;
 
     public ExamController(JdbcTemplate jdbcTemplate, ExamRepository examRepository,
@@ -261,12 +261,12 @@ public class ExamController {
             return ResponseEntity.badRequest().body("Exam not found !");
         }
 
-        if (exam.getExamStartTime() == null ||  exam.getExamStartTime().after(new Date())) {
+        if (exam.getExamStartTime() == null || exam.getExamStartTime().after(new Date())) {
             return ResponseEntity.badRequest().body("Exam not started !");
         }
 
         if (exam.getExamEndTime() != null && exam.getExamEndTime().before(new Date())) {
-            return ResponseEntity.badRequest().body("Exam Ended !");
+            return ResponseEntity.badRequest().body(new BasicResponse("Exam ended !", 400));
         }
 
         List<Question> questions = questionRepository.findByExamExamId(exam.getExamId());
@@ -280,7 +280,7 @@ public class ExamController {
                                 Answer answerCopy = new Answer();
                                 answerCopy.setAnswerId(answer.getAnswerId());
                                 answerCopy.setAnswerText(answer.getAnswerText());
-                                answerCopy.setIsCorrect(false); 
+                                answerCopy.setIsCorrect(false);
                                 newAnswers.add(answerCopy);
                             });
                     // Thay đổi danh sách câu trả lời của câu hỏi
@@ -459,7 +459,8 @@ public class ExamController {
 
                 question.getAnswers().forEach(answer -> {
                     if (isMultipleChoice) {
-                        float scorePerAnswer = scorePerQuestion / question.getAnswers().stream().filter(Answer::isIsCorrect).count();
+                        float scorePerAnswer = scorePerQuestion
+                                / question.getAnswers().stream().filter(Answer::isIsCorrect).count();
                         if (answer.isIsCorrect() && histories.stream()
                                 .anyMatch(history -> history.getQuestionId().equals(question.getQuestionId())
                                         && history.getSelectedAnswerId().equals(answer.getAnswerId()))) {
@@ -544,6 +545,7 @@ public class ExamController {
             return ResponseEntity.badRequest().body(basicResponse);
         }
     }
+
     @GetMapping("getExam/{uid}")
     public ResponseEntity<?> getExam(
             @PathVariable(required = true) String uid) {
@@ -562,6 +564,7 @@ public class ExamController {
             return ResponseEntity.badRequest().body(basicResponse);
         }
     }
+
     @GetMapping("getExamResult_examid/{examid}")
     public ResponseEntity<?> getExamResult_examid(
             @PathVariable(required = true) String examid) {
@@ -571,7 +574,7 @@ public class ExamController {
                 return ResponseEntity.badRequest().body("Invalid Account!");
             }
             List<Exam> exams = examRepository.findByExamId(examid);
-            if(exams == null || exams.isEmpty())
+            if (exams == null || exams.isEmpty())
                 return ResponseEntity.badRequest().body("No data examId");
             List<ExamResult> examResultList = examResultRepository.findByExam(examid);
 
@@ -593,10 +596,9 @@ public class ExamController {
                 return ResponseEntity.badRequest().body("Invalid getAverageScoreByExamId !");
             }
 
-            if(examResultRepository.findAverageScoreByExamId(examid) == null){
+            if (examResultRepository.findAverageScoreByExamId(examid) == null) {
                 return ResponseEntity.ok(0);
-            }
-            else{
+            } else {
                 double averageScore = examResultRepository.findAverageScoreByExamId(examid);
                 return ResponseEntity.ok(averageScore);
             }
@@ -613,16 +615,17 @@ public class ExamController {
     @PostMapping("/uploadQuestions/{examId}")
     public ResponseEntity<?> uploadQuestions(@PathVariable String examId, @RequestBody List<Question> questions) {
         Exam exam = examRepository.findById(examId).orElse(null);
-        if(exam == null) {
+        if (exam == null) {
             return ResponseEntity.badRequest().body("Exam not found !");
         }
 
         List<Question> nQuestions = questionRepository.findByExamExamId(examId);
-        if(nQuestions.isEmpty()) {
+        if (nQuestions.isEmpty()) {
 
             for (Question question : questions) {
                 question.setExam(exam);
-                if (question.getAnswers().isEmpty()) continue;
+                if (question.getAnswers().isEmpty())
+                    continue;
                 if (question.getQuestionId() == null || question.getQuestionId().isEmpty())
                     question.setQuestionId(GlobalUtil.getUUID());
                 if (question.getAnswers().stream().filter(Answer::isIsCorrect).count() > 1)
@@ -644,7 +647,7 @@ public class ExamController {
     @GetMapping("/get/{examId}")
     public ResponseEntity<?> checkExam(@PathVariable String examId) {
         Exam exam = examRepository.findById(examId).orElse(null);
-        if(exam == null) {
+        if (exam == null) {
             return ResponseEntity.badRequest().body("Exam not found !");
         }
         return ResponseEntity.ok(new BasicResponse("Success", 200, exam));
@@ -653,40 +656,37 @@ public class ExamController {
     @GetMapping("/getQuestions/{examId}")
     public ResponseEntity<?> getQuestions(@PathVariable String examId) {
         Exam exam = examRepository.findById(examId).orElse(null);
-        if(exam == null) {
+        if (exam == null) {
             return ResponseEntity.badRequest().body(new BasicResponse("Exam not found", 400));
         }
         List<Question> questions = questionRepository.findByExamExamId(examId);
-        if(questions.isEmpty()) {
+        if (questions.isEmpty()) {
             return ResponseEntity.ok(new BasicResponse("No questions found", 200, new ArrayList<Question>()));
         }
         return ResponseEntity.ok(new BasicResponse("Success", 200, questions));
     }
 
-//    @GetMapping("getNumberCorrect/{examid}/{userId}")
-//    public ResponseEntity<?> getNumberCorrect(@PathVariable(required = true) String examid,@PathVariable(required = true) String userId) {
-////        try {
-////            loggingUntil.info("getNumberCorrect ", "examid: " + examid);
-////            if (examid == null || examid.isEmpty() || userId==null || userId.isEmpty()) {
-////                return ResponseEntity.badRequest().body("Invalid getAverageScoreByExamId !");
-////            }
-////
-////            if(historyRepository.getNumberOfCorrectAnswers(userId,examid) == 0){
-//                return ResponseEntity.ok(0);
-////            }
-////            else{
-////                int numberCorrect = historyRepository.getNumberOfCorrectAnswers(userId,examid);
-////                return ResponseEntity.ok(numberCorrect);
-////            }
-////        } catch (Exception e) {
-////            e.printStackTrace();
-////            BasicResponse basicResponse = new BasicResponse();
-////            basicResponse.message = "Error";
-////            basicResponse.status = 400;
-////            return ResponseEntity.badRequest().body(basicResponse);
-////        }
-//
-//    }
+    @GetMapping("/getExamList/{userId}")
+    public ResponseEntity<?> getExamList(@PathVariable String userId) {
+        String sql = "SELECT exam.*, COUNT(DISTINCT user_answer_id) AS totalParticipant " +
+                "FROM exam " +
+                "LEFT JOIN exam_result ON exam.exam_id = exam_result.exam_id " +
+                "WHERE exam.user_id = '" + userId + "' " +
+                "GROUP BY exam.exam_id, exam.exam_name, exam.exam_start_time, exam.exam_end_time, " +
+                "exam.number_submit, exam.key_code, exam.is_public, exam.duration, exam.user_id";
+        List<ExamWithParticipantCountDTO> examWithParticipantCountDTOList = jdbcTemplate.query(sql,
+                (rs, rowNum) -> new ExamWithParticipantCountDTO(rs.getString("exam_id"), rs.getString("exam_name"),
+                        rs.getDate("exam_start_time"), rs.getDate("exam_end_time"), rs.getInt("number_submit"),
+                        rs.getInt("key_code"), rs.getInt("is_public"), rs.getInt("duration"),
+                        rs.getInt("totalParticipant")));
+        if (examWithParticipantCountDTOList.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new BasicResponse("No exam found", 400, new ArrayList<ExamWithParticipantCountDTO>()));
+        } else {
+            return ResponseEntity.ok(new BasicResponse("Success", 200, examWithParticipantCountDTOList));
+        }
+    }
+
     public class AnswerWithQuestion extends Answer {
         private String questionId;
 
@@ -705,6 +705,59 @@ public class ExamController {
 
     }
 
+    @GetMapping("/getExamDetail/{examId}")
+    public ResponseEntity<?> getExamDetail(@PathVariable String examId) {
+        String sql = "SELECT exam.*, COUNT(DISTINCT user_answer_id) AS totalParticipant " +
+        "FROM exam " +
+        "LEFT JOIN exam_result ON exam.exam_id = exam_result.exam_id " +
+        "WHERE exam.exam_id = '" + examId + "' "+
+        "GROUP BY exam.exam_id, exam.exam_name, exam.exam_start_time, exam.exam_end_time, " +
+                "exam.number_submit, exam.key_code, exam.is_public, exam.duration, exam.user_id";
+
+        ExamWithParticipantCountDTO exam = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ExamWithParticipantCountDTO(rs.getString("exam_id"), rs.getString("exam_name"),
+            rs.getDate("exam_start_time"), rs.getDate("exam_end_time"), rs.getInt("number_submit"),
+            rs.getInt("key_code"), rs.getInt("is_public"), rs.getInt("duration"),
+            rs.getInt("totalParticipant")));
+
+
+        List<Question> questions = questionRepository.findByExamExamId(examId);
+        if (questions.isEmpty()) {
+            questions = new ArrayList<Question>();
+        }
+        List<ExamResult> examResults = examResultRepository.findByExam(examId);
+        List<ExamResultHistory> examResultHistories = new ArrayList<ExamResultHistory>();
+
+        examResults.forEach(examResult -> {
+            List<History> histories = jdbcTemplate.query("SELECT * FROM History WHERE exam_result_id = '" + examResult.getExamResultId() + "'",
+                    (rs, rowNum) -> new History(rs.getString("exam_result_id"), rs.getString("selected_answer_id"), rs.getString("question_id")));
+            examResultHistories.add(new ExamResultHistory(examResult, histories));
+        });
+        
+        ExamDetailResponseData examDetailResponseData = new ExamDetailResponseData(exam, questions, examResultHistories);
+        return ResponseEntity.ok(new BasicResponse("Success", 200, examDetailResponseData));
+    }
+
+    public class ExamResultHistory{
+        public ExamResult examResult;
+        public List<History> histories;
+
+        public ExamResultHistory(ExamResult examResult, List<History> histories) {
+            this.examResult = examResult;
+            this.histories = histories;
+        }
+    }
+
+    public class ExamDetailResponseData {
+        public ExamWithParticipantCountDTO exam;
+        public List<Question> questions;
+        public List<ExamResultHistory> examResultHistories; 
+
+        public ExamDetailResponseData(ExamWithParticipantCountDTO exam, List<Question> questions, List<ExamResultHistory> examResultHistories) {
+            this.exam = exam;
+            this.questions = questions;
+            this.examResultHistories = examResultHistories;
+        }
+    }
     public class ExamResultResponse {
         public String message;
         public int status;
@@ -741,6 +794,35 @@ public class ExamController {
         public UserAnswer userAnswer;
         public String ExamResultId;
         public Date ExamResultStartTime;
+    }
+
+    public class ExamDTO {
+        public String examId;
+        public String examName;
+        public Date examStartTime;
+        public Date examEndTime;
+        public int numberSubmit;
+        public int keyCode;
+        public int isPublic;
+        public int duration;
+        public int totalParticipant;
+
+        public ExamDTO() {
+        }
+
+        public ExamDTO(String examId, String examName, Date examStartTime, Date examEndTime, int numberSubmit,
+                int keyCode,
+                int isPublic, int duration, int totalParticipant) {
+            this.examId = examId;
+            this.examName = examName;
+            this.examStartTime = examStartTime;
+            this.examEndTime = examEndTime;
+            this.numberSubmit = numberSubmit;
+            this.keyCode = keyCode;
+            this.isPublic = isPublic;
+            this.duration = duration;
+            this.totalParticipant = totalParticipant;
+        }
     }
 
 }

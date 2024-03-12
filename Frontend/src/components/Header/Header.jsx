@@ -406,7 +406,7 @@ export default function Header({ ...props }) {
                     sm: '0 0 0 10px'
                 },
             },
-            children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+            children: `${name.split(' ')[0][0]}${name.split(' ')[1]? name.split(' ')[1][0] : ''}`,
         };
     }
 
@@ -446,7 +446,6 @@ export default function Header({ ...props }) {
                 vertical: 'top',
                 horizontal: 'right',
             }}
-            open={isMobileMenuOpen}
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
@@ -574,7 +573,7 @@ export default function Header({ ...props }) {
                 onRequestClose={() => setModalIsOpen(false)}
             >
                 {modal}
-                t <IconButton sx={{
+                <IconButton sx={{
                     position: 'absolute',
                     top: '10px',
                     right: '10px',
