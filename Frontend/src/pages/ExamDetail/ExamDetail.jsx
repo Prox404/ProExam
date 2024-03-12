@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
   Autocomplete,
   Box, IconButton,
@@ -15,279 +15,125 @@ import {
 } from "@mui/material";
 import { useParams } from 'react-router-dom';
 import Header from '../../components/Header';
-import CloseIcon from '@mui/icons-material/Close';
-import { getQuestion } from '../../services/examService';
-
+import { getExamAndTime } from '../../services/examService';
+import Question from '~/components/Question';
+import ExamInformation from '~/components/ExamInformation';
 const ExamDetail = () => {
+
   const { id } = useParams();
+  const [questionsTime, setQuestionsTime] = useState({});
   const [questions, setQuestions] = useState([]);
-  const [time, setTime] = useState([]);
+  const [time, setTime] = useState({});
+  const examTimeRef = useRef();
+  const questionRefs = useRef([]);
 
   useEffect(() => {
-
+    if (questionsTime?.questions?.length > 0) {
+      let newList = questionsTime.questions;
+      newList.forEach(item => { delete item.exam });
+      setQuestions(newList)
+    }
+    setTime({
+      examName: questionsTime?.exam?.examName,
+      duration: Number(questionsTime?.exam?.duration) / 60,
+      openDate: new Date(questionsTime?.exam?.examStartTime).getFullYear()
+        + '-' +
+        ((new Date(questionsTime?.exam?.examStartTime).getMonth() > 8) ? (new Date(questionsTime?.exam?.examStartTime).getMonth() + 1) : '0' + (new Date(questionsTime?.exam?.examStartTime).getMonth() + 1))
+        + '-' + ((new Date(questionsTime?.exam?.examStartTime).getDate() > 9) ? (new Date(questionsTime?.exam?.examStartTime).getDate()) : '0' + (new Date(questionsTime?.exam?.examStartTime).getDate())),
+      openTime: ((new Date(questionsTime?.exam?.examStartTime).getHours() > 9) ? new Date(questionsTime?.exam?.examStartTime).getHours() : '0' + new Date(questionsTime?.exam?.examStartTime).getHours())
+        + ':' + ((new Date(questionsTime?.exam?.examStartTime).getMinutes() > 9) ? new Date(questionsTime?.exam?.examStartTime).getMinutes() : '0' + new Date(questionsTime?.exam?.examStartTime).getMinutes()),
+      closeDate: new Date(questionsTime?.exam?.examEndTime).getFullYear()
+        + '-' +
+        ((new Date(questionsTime?.exam?.examEndTime).getMonth() > 8) ? (new Date(questionsTime?.exam?.examEndTime).getMonth() + 1) : '0' + (new Date(questionsTime?.exam?.examEndTime).getMonth() + 1))
+        + '-' + ((new Date(questionsTime?.exam?.examEndTime).getDate() > 9) ? (new Date(questionsTime?.exam?.examEndTime).getDate()) : '0' + (new Date(questionsTime?.exam?.examEndTime).getDate())),
+      closeTime: ((new Date(questionsTime?.exam?.examEndTime).getHours() > 9) ? new Date(questionsTime?.exam?.examEndTime).getHours() : '0' + new Date(questionsTime?.exam?.examEndTime).getHours())
+        + ':' + ((new Date(questionsTime?.exam?.examEndTime).getMinutes() > 9) ? new Date(questionsTime?.exam?.examEndTime).getMinutes() : '0' + new Date(questionsTime?.exam?.examEndTime).getMinutes()),
+      numberSubmit: questionsTime?.exam?.numberSubmit,
+      examCode: questionsTime?.exam?.keyCode,
+    });
+  }, [questionsTime]);
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        // Gọi các hàm asynchronous ở đây
-        const questions = await getQuestion({ idExam: id });
-        setQuestions(questions);
+        const questionsTime = await getExamAndTime({ idExam: id });
+        setQuestionsTime(questionsTime);
       } catch (error) {
         console.error('Error:', error);
       }
     }
     fetchData();
   }, [])
-  console.log(questions)
 
+  const onUpdateExam = () => {
+    const examTime = examTimeRef.current.getData();
+    console.log(examTime);
+
+    let newQuestionRef = questionRefs.current.filter(item => {
+      if (item !== null) {
+        return item;
+      }
+    });
+    const listQuestion = newQuestionRef.map((ref) => ref.getData());
+    console.log(listQuestion);
+  };
   return (
     <div>
-      <Header />
       <Box sx={{
         display: 'flex',
         flexDirection: 'row',
         height: 'auto',
-        width: '100%',
-        minHeight: 'calc(100vh - var(--header-height))',
+        minHeight: '100vh',
         background: '#D3E4FF',
+        padding: '20px'
       }}>
+        <Box className='QuestionArray' sx={{
+          width: '70%',
+          height: 'fit-content',
+          background: '#fff',
+          borderRadius: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px',
+          paddingTop: '20px',
+          paddingBottom: '20px',
+        }}>
+          {questions?.map((question, questionIndex) => (
+            <Question key={`${question.questionId}`} ref={(ref) => (questionRefs.current[questionIndex] = ref)} listQuestion={questions} index={questionIndex} setQuestions={setQuestions} question={question} />
+          ))}
+        </Box>
         <Box sx={{
-          alignItems: 'left',
-          flex: '1',
+          width: '25%',
           background: '#fff',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: '20px',
+          position: 'fixed',
+          top: '0',
+          right: '0',
+          height: '100vh',
         }}>
-          <Typography sx={{
-            fontSize: '21px',
-            fontWeight: '500',
-            textAlign: 'center',
-            marginBottom: '15px'
-          }}>
-            Set Exam Time
-          </Typography>
-          <TextField
-            type="text"
-            label="Exam Name"
-            size='small'
+          <ExamInformation timeOfExam={time} ref={examTimeRef} />
+          <Button
+            onClick={() => onUpdateExam()}
             sx={{
-              width: '80%',
-              '& input': {
-                textAlign: 'center'
-              }
-            }}
-          />
-
-          <TextField
-            type="number"
-            label="Minute"
-            size='small'
-            sx={{
-              width: '80%',
-              '& input': {
-                textAlign: 'center'
-              }
-            }}
-          />
-          <TextField
-            type="date"
-            label="Select Start Date"
-            size='small'
-            sx={{
-              width: '80%',
-              '& input': {
-                textAlign: 'center'
-              }
-            }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            type='time'
-            label='Select Start Time'
-            size='small'
-            sx={{
-              width: '80%',
-            }}
-
-            InputLabelProps={{
-              shrink: true,
-            }} />
-
-          <TextField
-            type="date"
-            label="Select Start Date"
-            size='small'
-            sx={{
-              width: '80%',
-              '& input': {
-                textAlign: 'center'
-              }
-            }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            type='time'
-            label='Select Start Time'
-            size='small'
-            sx={{
-              width: '80%',
-            }}
-
-            InputLabelProps={{
-              shrink: true,
-            }} />
-          <TextField
-            type="number"
-            label="Number Submit"
-            size="small"
-            sx={{
-              width: '80%',
-            }}
-          />
-          {/* box phai */}
-        </Box>
-        <Box sx={{
-          flex: '3',
-          display: 'flex',
-          gap: '20px',
-          height: 'auto',
-          justifyContent: 'center',
-          padding: '20px'
-
-        }}>
-          <Box className='QuestionArray' sx={{
-            width: '65.667%',
-            height: 'fit-content',
-            background: '#fff',
-            borderRadius: '20px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '20px',
-            paddingTop: '20px',
-            paddingBottom: '20px'
-
-          }}>
-            {questions.map(question => (
-              <Box key={`${question.questionId}`} className='Question' sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                width: '85%',
-                height: 'auto',
-                gap: '10px'
-              }}>
-                <TextField
-                  label='Question'
-                  value={`${question.questionText}`}
-                  sx={{
-                    width: '100%',
-                  }} />
-                <Box className='AnswerArrays' sx={{
-                  width: '100%',
-                  // background: 'red',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
-                  alignItems: 'center'
-                }} >
-                  {question.answers?.map(answer =>(
-                  <Box className='Answer' key={answer.answerId} sx={{
-                    width: '100%',
-                    height: '40px',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '10px',
-                    alignItems: 'center'
-                  }}>
-                    <button style={{
-                      height: '75%',
-                      width: '5.215%',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      background: 'none',
-                      border: 'none'
-                    }}>
-                      <CloseIcon style={{
-                        fontSize: '30px',
-                        color: 'red'
-                      }} />
-                    </button>
-                    <Checkbox checked={(answer.isCorrect)?true:false} sx={{
-                      height: '75%',
-                      width: '5.215%',
-                      '& .MuiSvgIcon-root': {
-                        fontSize: '35px', // Kích thước của checkbox
-                      },
-                    }} />
-                    <TextField
-                      label='Answer'
-                      size='small'
-                      value={answer.answerText}
-                      sx={{
-                        width: '85.57%',
-                      }} />
-                  </Box>
-                  ))}
-
-                </Box>
-                <Box className='QuestionButton' sx={{
-                  width: '100%',
-                  height: '30px',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between'
-                  // background: 'red'
-                }}>
-                  <button className='btnCreateAns' style={{
-                    height: '30px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    background: 'none',
-                    border: '2px solid',
-                    borderRadius: '10px',
-                    borderColor: '#435EBE',
-                    color: '#435EBE'
-                  }}>
-                    + Create New Answer
-                  </button>
-                  <button className='btnDelQues' style={{
-                    height: '30px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    background: 'none',
-                    border: '2px solid',
-                    borderRadius: '10px',
-                    borderColor: '#E05151',
-                    color: '#E05151'
-                  }}>
-                    - Delete Question
-                  </button>
-                </Box>
-              </Box>
-            ))}
-
-
-
-          </Box>
-          <Box className='UploadFile' sx={{
-            width: '33.333%',
-            height: '200px',
-            background: '#fff',
-            borderRadius: '20px'
-          }}
-          >
-          </Box>
+              background: '#4285F4',
+              color: '#fff',
+              width: '50%',
+              borderRadius: '10px',
+              fontSize: '20px',
+              '&:hover': {
+                background: '#fff',
+                color: '#4285F4',
+                border: '2px solid #999'
+              },
+            }}>
+            Update
+          </Button>
         </Box>
       </Box>
-    </div >
+    </div>
   )
 }
 

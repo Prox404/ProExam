@@ -17,6 +17,7 @@ import ParseQuestions from "~/pages/ParseQuestions";
 import ViewScoreExam from '~/pages/ViewScoreExam-Test';
 import ThangDzvcl from '~/pages/ThangDzvcl';
 import ExamDetail from '~/pages/ExamDetail';
+import ExamList from "~/pages/ExamList/ExamList";
 
 // Public routes
 const publicRoutes = [
@@ -25,6 +26,7 @@ const publicRoutes = [
   { path: config.routes.codeExam, component: CodeExam },
   { path: config.routes.takeExam, component: TakeExam, layout: BlankLayout },
   { path: config.routes.setTime, component: SetTime },
+  { path: config.routes.examList, component: ExamList },
   { path: config.routes.takeExam, component: TakeExam, layout: ExamLayout },
   { path: config.routes.startedExam, component: StartedExam, layout: ExamLayout },
   { path: config.routes.viewScoreExam, component: ViewScoreExam, layout: BlankLayout },

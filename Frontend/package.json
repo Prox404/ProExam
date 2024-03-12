@@ -24,6 +24,7 @@
     "animate.css": "^4.1.1",
     "axios": "^1.6.7",
     "bootstrap": "^5.3.3",
+    "date-fns": "^3.3.1",
     "mammoth": "^1.7.0",
     "devtools-detect": "^4.0.1",
     "prop-types": "^15.8.1",

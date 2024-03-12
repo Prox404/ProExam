@@ -11,11 +11,11 @@ export const isValidKeyCode = (keyCode) => {
 }
 
 // thang
-export const getQuestion = ({
+export const getExamAndTime = ({
     idExam
 }) => {
     try {
-        const res = request.get(`/exam/getQuestion?examId=${idExam}`);
+        const res = request.get(`/exam/getExamAndTime?examId=${idExam}`);
         return res;
     } catch (error) {
         console.log(error);

@@ -13,5 +13,6 @@ public interface AnswerRepository extends JpaRepository<Answer, String> {
     Answer findByAnswerIdAndQuestion(String answerId, Question question);
 
     List<Answer> findByQuestionQuestionId(String questionId);
-    
+
+    void deleteAnswersByQuestion(Question question);
 }

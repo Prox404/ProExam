@@ -10,10 +10,23 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.dtu.proexam.ProexamApplication;
 import com.dtu.proexam.model.Answer;
 import com.dtu.proexam.model.Exam;
 import com.dtu.proexam.model.ExamResult;
@@ -30,14 +43,12 @@ import com.dtu.proexam.util.GlobalUtil;
 import com.dtu.proexam.util.LoggingUntil;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/exam")
 public class ExamController {
+
 	private JdbcTemplate jdbcTemplate;
 	LoggingUntil loggingUntil;
 	private final ExamRepository examRepository;
@@ -82,19 +93,23 @@ public class ExamController {
 		examRepository.save(exam);
 		return ResponseEntity.ok(exam);
 	}
-// lấy thời gian và bộ câu hỏi
+
+	private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ExamController.class);
+	
+	// lấy thời gian và bộ câu hỏi
 	@GetMapping("/getExamAndTime")
 	public ResponseEntity<?> getInformationExam(@RequestParam String examId) {
-		ResponseEntity<?> questionsResponse = getQuestion(examId);
-	    if (questionsResponse.getStatusCodeValue() != 200) {
-	    	return questionsResponse;
-	    }
-	    Exam exam = examRepository.findById(examId).orElse(null);
-	    if (exam == null) {
-	        return ResponseEntity.badRequest().body("Exam not found !");
-	    }
-	    List<Question> questions = (List<Question>) questionsResponse.getBody();
-	    return ResponseEntity.ok(new ExamAndQuestionsResponse(exam, questions));
+		ResponseEntity<?> questionsResponse = getQuestionNotRandom(examId);
+		logger.info("Exam Id: "+ examId);
+		if (questionsResponse.getStatusCodeValue() != 200) {
+			return questionsResponse;
+		}
+		Exam exam = examRepository.findById(examId).orElse(null);
+		if (exam == null) {
+			return ResponseEntity.badRequest().body("Exam not found !");
+		}
+		List<Question> questions = (List<Question>) questionsResponse.getBody();
+		return ResponseEntity.ok(new ExamAndQuestionsResponse(exam, questions));
 	}
 
 	@GetMapping("/get")
@@ -122,7 +137,6 @@ public class ExamController {
 	@PostMapping("/storeQuestions/{examId}")
 	public ResponseEntity<?> postMethodName(@PathVariable String examId,
 			@RequestBody List<Question> questions) {
-
 		Exam exam = examRepository.findById(examId).orElse(null);
 		if (exam == null) {
 			return ResponseEntity.badRequest().body("Exam not found !");
@@ -137,6 +151,7 @@ public class ExamController {
 			if (question.getQuestionId() == null || question.getQuestionId().isEmpty()) {
 				question.setQuestionId(GlobalUtil.getUUID());
 			}
+			
 			// check if number of correct answer is valid
 			long correctAnswerCount = question.getAnswers().stream().filter(Answer::isIsCorrect)
 					.count();
@@ -170,7 +185,6 @@ public class ExamController {
 
 	@GetMapping("/getRandomQuestion")
 	public ResponseEntity<?> getRandom(@RequestParam String examId) {
-
 		Exam exam = examRepository.findById(examId).orElse(null);
 		if (exam == null) {
 			return ResponseEntity.badRequest().body("Exam not found !");
@@ -192,7 +206,6 @@ public class ExamController {
 
 	@GetMapping("/getQuestion")
 	public ResponseEntity<?> getQuestion(@RequestParam String examId) {
-
 		Exam exam = examRepository.findById(examId).orElse(null);
 		if (exam == null) {
 			return ResponseEntity.badRequest().body("Exam not found !");
@@ -209,10 +222,21 @@ public class ExamController {
 		return ResponseEntity.ok(questions);
 	}
 
+	public ResponseEntity<?> getQuestionNotRandom(String examId) {
+		Exam exam = examRepository.findById(examId).orElse(null);
+		if (exam == null) {
+			return null;
+		}
+		List<Question> questions = questionRepository.findByExamExamId(examId);
+		questions.forEach(question -> {
+			List<Answer> answers = question.getAnswers();
+		});
+		return ResponseEntity.ok(questions);
+	}
+
 	@PostMapping("/uploadQuestionList/{examId}")
 	public ResponseEntity<?> uploadQuestionList(@PathVariable String examId,
 			@RequestParam("file") MultipartFile file) {
-
 		try {
 			if (!file.getContentType().equals("application/msword")) {
 				return ResponseEntity.badRequest().body("Only .doc files are allowed.");
@@ -263,7 +287,6 @@ public class ExamController {
 					}
 					Answer answer = new Answer(answerText, isCorrect);
 					answer.setAnswerId(GlobalUtil.getUUID());
-					;
 					question.getAnswers().add(answer);
 				}
 			}
@@ -275,7 +298,6 @@ public class ExamController {
 	@PostMapping("/takeExam/{keyCode}")
 	public ResponseEntity<?> takeExam(@PathVariable(required = true) int keyCode,
 			@RequestBody ObjectNode objectNode) {
-
 		String userEmail = objectNode.get("userEmail").asText();
 		String userName = objectNode.get("userName").asText();
 
@@ -332,7 +354,6 @@ public class ExamController {
 			takeExamResponse.questions = questions;
 			takeExamResponse.status = 201;
 			takeExamResponse.userAnswer = userAnswer;
-
 		} else {
 			userAnswer.setUserAnswerEmail(userEmail);
 			userAnswer.setUserAnswerName(userName);
@@ -343,7 +364,6 @@ public class ExamController {
 			takeExamResponse.questions = questions;
 			takeExamResponse.status = 200;
 			takeExamResponse.userAnswer = userAnswer;
-
 		}
 
 		ExamResult examResult = new ExamResult();
@@ -358,13 +378,11 @@ public class ExamController {
 		takeExamResponse.ExamResultStartTime = examResult.getStartTime();
 
 		return ResponseEntity.ok(takeExamResponse);
-
 	}
 
 	@PostMapping("/chooseAnwser/{examResultId}")
 	public ResponseEntity<?> chooseAnwser(@PathVariable(required = true) String examResultId,
 			@RequestBody ObjectNode objectNode) {
-
 		try {
 			String questionId = objectNode.get("questionId").asText();
 			ArrayNode selectedAnswerIdsNode = (ArrayNode) objectNode.get("selectedAnswerIds");
@@ -445,9 +463,7 @@ public class ExamController {
 
 	@GetMapping("/submitExam/{examResultId}")
 	public ResponseEntity<?> submitExam(@PathVariable(required = true) String examResultId) {
-
 		try {
-
 			loggingUntil.info("submitExam", "examResultId: " + examResultId);
 
 			if (examResultId == null || examResultId.isEmpty()) {
@@ -517,7 +533,6 @@ public class ExamController {
 			examResultRepository.save(examResult);
 
 			return ResponseEntity.ok(new BasicResponse("Success", 200, examResult));
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			BasicResponse basicResponse = new BasicResponse();
@@ -529,9 +544,7 @@ public class ExamController {
 
 	@GetMapping("/getExamResult/{examResultId}")
 	public ResponseEntity<?> getExamResult(@PathVariable(required = true) String examResultId) {
-
 		try {
-
 			loggingUntil.info("getExamResult", "examResultId: " + examResultId);
 
 			if (examResultId == null || examResultId.isEmpty()) {
@@ -566,14 +579,12 @@ public class ExamController {
 						.findByExamExamId(exam.getExamId());
 				examResultResponse.histories = histories;
 				return ResponseEntity.ok(examResultResponse);
-
 			} else {
 				BasicResponse basicResponse = new BasicResponse();
 				basicResponse.message = "Exam is not ended";
 				basicResponse.status = 400;
 				return ResponseEntity.badRequest().body(basicResponse);
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			BasicResponse basicResponse = new BasicResponse();
@@ -584,6 +595,7 @@ public class ExamController {
 	}
 
 	public class AnswerWithQuestion extends Answer {
+
 		private String questionId;
 
 		public AnswerWithQuestion(String answerId, String answerText, boolean isCorrect,
@@ -599,10 +611,10 @@ public class ExamController {
 		public void setQuestionId(String questionId) {
 			this.questionId = questionId;
 		}
-
 	}
 
 	public class ExamResultResponse {
+
 		public String message;
 		public int status;
 		public ExamResult examResult;
@@ -611,6 +623,7 @@ public class ExamController {
 	}
 
 	public class BasicResponse {
+
 		public String message;
 		public int status;
 		public Object data;
@@ -628,33 +641,110 @@ public class ExamController {
 			this.status = status;
 			this.data = data;
 		}
-
 	}
-	
+
 	public class ExamAndQuestionsResponse {
-	    private Exam exam;
-	    private List<Question> questions;
 
-	    public ExamAndQuestionsResponse(Exam exam, List<Question> questions) {
-	        this.exam = exam;
-	        this.questions = questions;
-	    }
+		private Exam exam;
+		private List<Question> questions;
 
-	    public Exam getExam() {
-	        return exam;
-	    }
+		public ExamAndQuestionsResponse(Exam exam, List<Question> questions) {
+			this.exam = exam;
+			this.questions = questions;
+		}
 
-	    public List<Question> getQuestions() {
-	        return questions;
-	    }
+		public Exam getExam() {
+			exam.setUser(null);
+			return exam;
+		}
+
+		public List<Question> getQuestions() {
+			return questions;
+		}
 	}
 
 	public class TakeExamResponse {
+
 		public String message;
 		public List<Question> questions;
 		public int status;
 		public UserAnswer userAnswer;
 		public String ExamResultId;
 		public Date ExamResultStartTime;
+	}
+
+
+	@GetMapping("/{examId}")
+	public ResponseEntity<?> checkExam(@PathVariable String examId) {
+		Exam exam = examRepository.findById(examId).orElse(null);
+		boolean checked = (exam != null);
+		return ResponseEntity.ok(checked);
+	}
+
+	@PostMapping("/uploadQuestions/{examId}")
+	public ResponseEntity<?> uploadQuestions(@PathVariable String examId,
+			@RequestBody List<Question> questions) {
+		Exam exam = examRepository.findById(examId).orElse(null);
+		if (exam == null) {
+			return ResponseEntity.badRequest().body("Exam not found !");
+		}
+
+		List<Question> nQuestions = questionRepository.findByExamExamId(examId);
+		if (nQuestions.isEmpty()) {
+			for (Question question : questions) {
+				question.setExam(exam);
+				if (question.getAnswers().isEmpty())
+					continue;
+				if (question.getQuestionId() == null || question.getQuestionId().isEmpty())
+					question.setQuestionId(GlobalUtil.getUUID());
+				if (question.getAnswers().stream().filter(Answer::isIsCorrect).count() > 1)
+					question.setQuestionType(Question.QuestionType.MULTIPLE_CHOICE);
+				questionRepository.save(question);
+				for (Answer answer : question.getAnswers()) {
+					if (answer.getAnswerId() == null || answer.getAnswerId().isEmpty())
+						answer.setAnswerId(GlobalUtil.getUUID());
+					answer.setQuestion(question);
+					answerRepository.save(answer);
+				}
+			}
+		} else {
+			return ResponseEntity.ok(false);
+		}
+		return ResponseEntity.ok(questions);
+	}
+
+	@GetMapping("/exams")
+	public ResponseEntity<List<Exam>> getExams() {
+		List<Exam> exams = examRepository.findAll(Sort.by(Sort.Direction.DESC, "examStartTime"));
+		return ResponseEntity.ok(exams);
+	}
+
+	@Transactional
+	@DeleteMapping("/removeExam/{examId}")
+	public ResponseEntity<?> removeExam(@PathVariable String examId) {
+		try {
+			Exam exam = examRepository.findById(examId).orElse(null);
+			if (exam != null) {
+				// Delete answers associated with questions of the exam
+				List<Question> questions = questionRepository.findByExamExamId(examId);
+				if (questions != null && !questions.isEmpty()) {
+					for (Question question : questions) {
+						answerRepository.deleteAnswersByQuestion(question);
+					}
+				}
+
+				// Delete questions associated with the exam
+				questionRepository.deleteQuestionsByExam_ExamId(examId);
+
+				// Delete the exam
+				examRepository.deleteById(examId);
+			}
+			return ResponseEntity.ok("Exam removed successfully!");
+		} catch (Exception e) {
+			// Log the exception details
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("An error occurred while removing the exam.");
+		}
 	}
 }
