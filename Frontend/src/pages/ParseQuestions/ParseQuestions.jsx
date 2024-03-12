@@ -279,7 +279,7 @@ function ParseQuestions() {
                     }
                     if (
                       deleteEnabled == false &&
-                      question.answers.length == 2
+                      question.answers.length <= 2
                     ) {
                       setStatusA("warning");
                       setMessageA("Need at least two answer !");
