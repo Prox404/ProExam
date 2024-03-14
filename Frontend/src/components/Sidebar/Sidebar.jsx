@@ -78,7 +78,7 @@ function Sidebar({ isActive = true, onActive }) {
     }, []);
 
     useEffect(() => {
-        if (location.includes('discover')) {
+        if (location.includes('discover') || location.includes('dashboard') {
             setclickItem(0);
         }
         else if (location.includes('exams')) {

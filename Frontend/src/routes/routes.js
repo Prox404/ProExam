@@ -27,7 +27,7 @@ const publicRoutes = [
     { path: '*', component: NotFound, layout: BlankLayout },
     { path: config.routes.startedExam, component: StartedExam, layout: ExamLayout },
     { path: config.routes.examResult, component: ViewScoreExam, layout: BlankLayout },
-    { path: config.routes.homeCreateExam,component:HomeCreateExam},
+    { path: config.routes.homeCreateExam,component: Discover, layout: DashboardLayout},
     { path: config.routes.report, component: Report, layout: DashboardLayout },
     { path: config.routes.createExam, component: SetTime, layout: DashboardLayout},
     { path: config.routes.uploadQuestion, component: UploadExam },
