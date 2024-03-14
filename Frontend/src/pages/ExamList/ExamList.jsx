@@ -20,6 +20,7 @@ import * as path from "path";
 // import AlertSuccess from "~/utils/alertSuccess.jsx";
 import imgEmptyData from "/src/assets/img_empty_data.svg";
 import { ddMMyyyy } from "~/utils/timeUtils";
+import { AccessTime } from "@mui/icons-material";
 // import avatar from "/src/assets/avatar.png";
 
 function ExamList() {
@@ -211,7 +212,7 @@ function ExamList() {
                         }}>
                             <Box className={styles['search-form']}
                                 style={{
-                                    margin: "15px 15px 15px 30px",
+                                    margin: "15px",
                                 }}>
                                 <input
                                     type={"text"}
@@ -273,10 +274,15 @@ function ExamList() {
                                                         alignItems: 'center',
                                                         justifyItems: 'center'
                                                     }}>
-                                                        <Typography sx={{ fontSize: 13 }}><CodeIcon />Key: {exam.keyCode}</Typography>
-                                                        <Typography sx={{ fontSize: 13, marginLeft: '20px !important' }}><ListIcon />Questions: {exam.countQuestion}</Typography>
+                                                        <Typography sx={{ fontSize: 13, display: 'flex', alignContent: 'center' }}><CodeIcon />Key: {exam.keyCode}</Typography>
+                                                        <Typography sx={{ fontSize: 13, marginLeft: '20px !important', display: 'flex', alignContent: 'center'  }}><ListIcon />Questions: {exam.countQuestion}</Typography>
                                                     </Box>
-                                                    <Typography sx={{ fontSize: 12 }}>{formatDate(exam.examStartTime)} - {formatDate(exam.examEndTime)}</Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                    }}>
+                                                        <AccessTime />
+                                                    <Typography sx={{ fontSize: 12 }}> {formatDate(exam.examStartTime)} - {formatDate(exam.examEndTime)}</Typography></Box>
                                                 </Box>
                                                 <Box>
                                                     <IconButton
@@ -305,7 +311,9 @@ function ExamList() {
                                                 flex: 1
                                             }}
                                                 onClick={detailExam(exam)}>
-                                                {/* <Avatar src={avatar} sx={{width: '20px', height: '20px'}}/> */}
+                                                <Avatar sx={{width: '20px', height: '20px', bgcolor: '#673ab7', fontSize: '12px'}}>
+                                                    {user?.userName.split(' ')[0].charAt(0).toUpperCase() + user?.userName.split(' ')[1]?.charAt(0).toUpperCase()}
+                                                </Avatar>
                                                 <Typography sx={{ fontSize: 12, marginLeft: '10px !important' }}>{user?.userName}</Typography>
                                             </Box>
                                         </Box>
