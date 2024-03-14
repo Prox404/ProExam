@@ -1,0 +1,36 @@
+.background {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -1;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-image: url('../../assets/texture_bg.jpg');
+        background-size: 150px;
+        background-repeat: repeat;
+        z-index: -1;
+        animation: spin 25s linear infinite;
+        scale: 3;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+
+    }
+
+    100% {
+        transform: rotate(360deg);
+
+    }
+}

@@ -8,6 +8,10 @@ const routes = {
     createExam: '/create-exam',
     uploadQuestion: '/upload-question/:id',
     addQuestion: '/add-question/:id',
+    discovery: '/discovery',
+    library: '/exams',
+    reportDetail: '/report/detail/:examId',
+    examDetail: '/exams/detail/:id',
 };
 
 export default routes;

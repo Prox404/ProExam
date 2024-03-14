@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface QuestionRepository extends JpaRepository<Question, String> {
     List<Question> findByExamExamId(String examId);
+    void deleteQuestionsByExam_ExamId(String examId);
+    long countByExam_ExamId(String examId);
 }
