@@ -43,7 +43,7 @@ function Report() {
 
     const handleRowClick = (examId) => {
         console.log('examId', examId);
-        navigate(`/report/exam-detail/${examId}`);
+        navigate(`/report/detail/${examId}`);
     }
 
     console.log(isListEmpty.length)

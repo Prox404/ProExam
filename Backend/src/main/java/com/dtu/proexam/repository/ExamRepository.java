@@ -22,4 +22,6 @@ public interface ExamRepository extends JpaRepository<Exam, String> {
     @Query("SELECT er FROM Exam er WHERE er.user.userId = ?1")
     List<Exam> findByUser(String uid);
 
+    List<Exam> findAllByUserUserIdOrderByExamStartTimeDesc(String userId);
+
 }

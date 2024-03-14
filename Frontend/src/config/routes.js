@@ -9,8 +9,9 @@ const routes = {
     uploadQuestion: '/upload-question/:id',
     addQuestion: '/add-question/:id',
     discovery: '/discovery',
-    library: '/library',
-    examDetail: '/report/exam-detail/:examId',
+    library: '/exams',
+    reportDetail: '/report/detail/:examId',
+    examDetail: '/exams/detail/:id',
 };
 
 export default routes;

@@ -186,3 +186,83 @@ export const getAverageScore = (exam_id) => {
         return false;
     }
 }
+
+export const getQuestion = ({
+    idExam
+}) => {
+    try {
+        const res = request.get(`/exam/getQuestion?examId=${idExam}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const getExams = (
+    userId
+) => {
+    try {
+        console.log(userId);
+        const res = request.get(`/exam/exams/${userId}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const getQuestions = (
+    examId
+) => {
+    try {
+        const res = request.get(`/exam/questions/${examId}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+export const removeExam = (
+    examId
+) => {
+    try {
+        const res = request.del(`/exam/removeExam/${examId}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const getExamAndTime = ({
+    idExam
+}) => {
+    try {
+        const res = request.get(`/exam/getExamAndTime?examId=${idExam}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const update = (data) => {
+    try {
+        const res = request.post(`/exam/update`, data);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const deleteAnwser = (answerId) => {
+    try {
+        const res = request.del(`/exam/removeAnswer/${answerId}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}

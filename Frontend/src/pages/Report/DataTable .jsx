@@ -144,8 +144,8 @@ function DataTable({ data, handleRowClick }) {
                                     </div>
                                 </div>
                             </td>
-                            <td>{format(row?.examStartTime, 'dd-MM-yyyy hh:mm')}</td>
-                            <td>{row?.examEndTime ? format(row?.examEndTime || new Date(), 'dd-MM-yyyy hh:mm') : 'No limit' }</td>
+                            <td>{format(row?.examStartTime, 'hh:mm')}</td>
+                            <td>{row?.examEndTime ? format(row?.examEndTime || new Date(), 'hh:mm') : 'No limit' }</td>
                             <td onClick={(event) => { event.stopPropagation(); handleClick(event, index) }} className={'dropdown'}>
                                 <div>
                                     <MoreVertIcon fontSize={"small"} aria-controls="simple-menu"

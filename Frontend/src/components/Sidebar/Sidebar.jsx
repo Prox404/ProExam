@@ -12,7 +12,7 @@ function Sidebar({ isActive = true, onActive }) {
 
     const listItem = [
         { name: 'Discover', icon: <Map />, link: '/discovery' },
-        { name: 'Library', icon: <MenuBook />, link: '/library' },
+        { name: 'Exams', icon: <MenuBook />, link: '/exams' },
         { name: 'Report', icon: <QueryStats />, link: '/report' },
         { name: 'Settings', icon: <Settings />, link: '/settings' },
     ];
@@ -81,7 +81,7 @@ function Sidebar({ isActive = true, onActive }) {
         if (location.includes('discover')) {
             setclickItem(0);
         }
-        else if (location.includes('library')) {
+        else if (location.includes('exams')) {
             setclickItem(1);
         }
         else if (location.includes('report')) {

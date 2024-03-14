@@ -17,6 +17,8 @@ import ParseQuestions from '~/pages/ParseQuestions';
 import Discover from '~/pages/Discover';
 import Library from '~/pages/Library';
 import DetailedReport from '~/pages/DetailedReport';
+import ExamList from '~/pages/ExamList';
+import ExamDetail from '~/pages/ExamDetail';
 
 // Public routes
 const publicRoutes = [
@@ -31,8 +33,10 @@ const publicRoutes = [
     { path: config.routes.uploadQuestion, component: UploadExam },
     { path: config.routes.addQuestion, component: ParseQuestions },
     { path: config.routes.discovery, component: Discover, layout: DashboardLayout },
-    { path: config.routes.library, component: Library, layout: DashboardLayout },
-    { path: config.routes.examDetail, component: DetailedReport, layout: DashboardLayout },
+    { path: config.routes.reportDetail, component: DetailedReport, layout: DashboardLayout },
+    { path: config.routes.library, component: ExamList, layout: DashboardLayout },
+    { path: config.routes.examDetail, component: ExamDetail, layout: DashboardLayout },
+
 ];
 
 const privateRoutes = [];
