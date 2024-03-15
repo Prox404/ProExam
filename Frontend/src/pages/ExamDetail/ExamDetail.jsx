@@ -3,14 +3,17 @@ import {
     Box,
     Snackbar,
     Button,
-    Alert
+    Alert,
+    IconButton
 } from "@mui/material";
+import {KeyboardArrowRight} from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import { createQuestionManually, getExamAndTime, update } from '../../services/examService';
 import Question from '~/components/Question';
 import ExamInformation from '~/components/ExamInformation';
 import { format } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
+import styles from './ExamDetails.module.scss';
 import { ddMMyyyy } from '~/utils/timeUtils';
 import { useTheme } from '@mui/material';
 const ExamDetail = () => {
@@ -22,6 +25,7 @@ const ExamDetail = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [severity, setSeverity] = useState('error');
     const [content, setContent] = useState('');
+    const [panelActive, setPanelActive] = useState(true);
     const examTimeRef = useRef();
     const questionRefs = useRef([]);
     const theme = useTheme();
@@ -89,7 +93,6 @@ const ExamDetail = () => {
 
     const onUpdateExam = async () => {
         const examTime = examTimeRef.current.getData();
-        console.log(examTime);
         const user = localStorage.getItem('user');
         const examData = {
             examId: id,
@@ -112,7 +115,6 @@ const ExamDetail = () => {
             return
         }
 
-        console.log(examData);
         let newQuestionRef = questionRefs.current.filter(item => {
             if (item !== null) {
                 return item;
@@ -130,6 +132,29 @@ const ExamDetail = () => {
             return
         }
     };
+    const onTurnOff = () => {
+        const examInfo = document.querySelector(`.${styles.ExamInfoIn}`);
+        const questionsComponent = document.getElementsByClassName('QuestionArray')[0];
+        const arrowRight = document.getElementsByClassName('ArrowRight')[0];
+        examInfo.classList.remove(`${styles.ExamInfoIn}`);
+        examInfo.classList.add(`${styles.ExamInfoOut}`);
+        arrowRight.style.visibility = 'visible';
+        setTimeout(()=>{
+            examInfo.style.display = 'none';
+            questionsComponent.style.paddingLeft = '0px';
+        },300);
+    }
+    const onTurnOn = () => {
+        const examInfo = document.querySelector(`.${styles.ExamInfoOut}`);
+        const questionsComponent = document.getElementsByClassName('QuestionArray')[0];
+        const arrowRight = document.getElementsByClassName('ArrowRight')[0];
+        examInfo.classList.remove(`${styles.ExamInfoOut}`);
+        examInfo.classList.add(`${styles.ExamInfoIn}`);
+        arrowRight.style.visibility = 'hidden';
+        examInfo.style.display = 'flex';
+        questionsComponent.style.paddingLeft = '300px';
+        
+    }
     return (
         <div>
             <Box sx={{
@@ -173,7 +198,9 @@ const ExamDetail = () => {
                         </Button>
                     </Box>
                 </Box>
-                <Box sx={{
+                <Box
+                    className={`${styles.ExamInfoIn}`}
+                    sx={{
                     width: {
                         xs: '100%',
                         md: '300px'
@@ -198,8 +225,9 @@ const ExamDetail = () => {
                         md: '0'
                     },
                     padding: '20px 0',
+                    overflow: 'auto'
                 }}>
-                    <ExamInformation timeOfExam={time} ref={examTimeRef} />
+                    <ExamInformation timeOfExam={time} onTurnOff={onTurnOff} ref={examTimeRef} />
                     <Button
                         onClick={() => onUpdateExam()}
                         variant='contained'
@@ -208,6 +236,28 @@ const ExamDetail = () => {
                         Update
                     </Button>
                 </Box>
+                
+                    <IconButton
+                     className='ArrowRight'
+                     sx={{
+                        position: 'fixed',
+                        top: 'calc(50% - 50px)',
+                        marginLeft: '-20px',
+                        height: '100px',
+                        width: '15px',
+                        visibility: 'hidden',
+                        borderRadius: '0 5px 5px 0',
+                        backgroundColor: '#fff',
+                        '&:hover':{
+                            backgroundColor: '#efefef'
+                        }
+                    }}
+                        onClick={onTurnOn}
+                    >
+                        <KeyboardArrowRight sx={{fontSize: '25px'}}/>
+                    </IconButton>
+                
+                
             </Box>
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar} >
                 <Alert

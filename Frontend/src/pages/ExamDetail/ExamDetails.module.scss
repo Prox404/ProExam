@@ -1,0 +1,28 @@
+@keyframes slideIn {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  100% {
+    width: 300px;
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  from {
+    width: 300px;
+    opacity: 1;
+  }
+  to {
+    width: 0;
+    opacity: 0;
+  }
+}
+.ExamInfoIn {
+  transition: width 0.5s ease, opacity 0.5s ease; 
+  animation: slideIn 0.5s ease forwards; 
+}
+.ExamInfoOut {
+  transition: width 0.5s ease, opacity 0.5s ease; 
+  animation: fadeOut 0.5s ease forwards; 
+}
