@@ -252,18 +252,22 @@ public class ExamController {
         loggingUntil.info("takeExam", "keyCode: " + keyCode + " userEmail: " + userEmail + " userName: " + userName);
 
         if (userEmail == null || userEmail.isEmpty() || userName == null || userName.isEmpty()) {
-            return ResponseEntity.badRequest().body("Invalid Account !");
+            return ResponseEntity.badRequest().body(new BasicResponse("Invalid Account !", 400));
         }
 
         List<Exam> exams = examRepository.findByKeyCode(keyCode);
         if (exams.size() == 0) {
-            return ResponseEntity.badRequest().body("Exam not found !");
+            return ResponseEntity.badRequest().body(new BasicResponse("Exam not found !", 400));
         }
 
         Exam exam = exams.get(0);
 
         if (exam == null) {
-            return ResponseEntity.badRequest().body("Exam not found !");
+            return ResponseEntity.badRequest().body(new BasicResponse("Exam not found !", 400));
+        }
+
+        if (exam.getIsPublic() == 0) {
+            return ResponseEntity.badRequest().body(new BasicResponse("Exam is not public !", 400));
         }
 
         if (exam.getExamStartTime() == null || exam.getExamStartTime().after(new Date())) {
@@ -832,6 +836,21 @@ public class ExamController {
 		return ResponseEntity.ok(new ExamAndQuestionsResponse(exam, questions));
 	}
 
+    @GetMapping("/publicExam")
+    public ResponseEntity<?> publicExam(@RequestParam String examId, boolean isPublic) {
+        if (examId == null || examId.isEmpty() ){
+            return ResponseEntity.ok(new BasicResponse("Missing exam id", 400, 0));
+        }
+        Exam exam = examRepository.findById(examId).orElse(null);
+        if(exam != null) {
+            exam.setIsPublic(isPublic ? 1 : 0);
+            examRepository.save(exam);
+            return ResponseEntity.ok(new BasicResponse("Successful !", 200, 1));
+        } else {
+            return ResponseEntity.ok(new BasicResponse("Invalid exam", 400, 0));
+        }
+    }
+
     @DeleteMapping("/removeAnswer/{anwserId}")
     public ResponseEntity<?> removeAnwser(@PathVariable String anwserId) {
         try {
@@ -853,6 +872,9 @@ public class ExamController {
                     .body(new BasicResponse("Error removing anwser", 500));
         }      
     }
+
+    
+    
 
     public class ExamAndQuestionsResponse {
 

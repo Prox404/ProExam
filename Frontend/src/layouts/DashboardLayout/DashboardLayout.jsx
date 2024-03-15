@@ -28,13 +28,14 @@ function DashboardLayout({ children }) {
             flexDirection: 'row',
             minHeight: '100vh',
             width: '100%',
+            '--sidebar-size': sidebarActice ? '250px' : '70px',
         }}>
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 width: {
-                    xs: '70px',
-                    md: sidebarActice ? '250px' : '70px',
+                    xs: 'var(--sidebar-inactive)',
+                    md: sidebarActice ? 'var(--sidebar-active)' : 'var(--sidebar-inactive)',
                 },
                 transition: 'width 0.3s',
                 overflow: 'hidden',
@@ -45,8 +46,8 @@ function DashboardLayout({ children }) {
             <Box sx={{
                 flex: 1,
                 paddingLeft: {
-                    xs: '70px',
-                    md: sidebarActice ? '250px' : '70px',
+                    xs: 'var(--sidebar-inactive)',
+                    md: sidebarActice ? 'var(--sidebar-active)' : 'var(--sidebar-inactive)',
                 },
             }}>
                 <Box sx={{

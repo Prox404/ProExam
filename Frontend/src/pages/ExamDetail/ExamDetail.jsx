@@ -12,6 +12,7 @@ import ExamInformation from '~/components/ExamInformation';
 import { format } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { ddMMyyyy } from '~/utils/timeUtils';
+import { useTheme } from '@mui/material';
 const ExamDetail = () => {
 
     const { id } = useParams();
@@ -23,6 +24,7 @@ const ExamDetail = () => {
     const [content, setContent] = useState('');
     const examTimeRef = useRef();
     const questionRefs = useRef([]);
+    const theme = useTheme();
 
     const handleShowSnackBar = (content, severity = "error") => {
         setSeverity(severity);
@@ -74,12 +76,10 @@ const ExamDetail = () => {
             questionText: '',
             answers: [
                 {
-                    answerId: uuidv4(),
                     answerText: '',
                     isCorrect: false,
                 },
                 {
-                    answerId: uuidv4(),
                     answerText: '',
                     isCorrect: true,
                 }
@@ -144,7 +144,7 @@ const ExamDetail = () => {
 
             }}>
                 <Box className='QuestionArray' sx={{
-                    paddingRight: {
+                    paddingLeft: {
                         xs: '0',
                         md: '300px'
                     },
@@ -155,7 +155,7 @@ const ExamDetail = () => {
 
                 }}>
                     <Box sx={{
-                        background: '#fff',
+                        background: theme.palette.cardBackground,
                         borderRadius: '20px',
                         width: '100%',
                         display: 'flex',
@@ -178,7 +178,7 @@ const ExamDetail = () => {
                         xs: '100%',
                         md: '300px'
                     },
-                    background: '#fff',
+                    background: theme.palette.cardBackground,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -188,7 +188,7 @@ const ExamDetail = () => {
                         md: 'fixed'
                     },
                     top: '0',
-                    right: '0',
+                    left: 'var(--sidebar-size)',
                     height: {
                         xs: 'auto',
                         md: '100vh'
