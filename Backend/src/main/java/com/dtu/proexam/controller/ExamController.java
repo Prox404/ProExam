@@ -45,6 +45,7 @@ public class ExamController {
     private UserAnswerRepository userAnswerRepository;
     private ExamResultRepository examResultRepository;
     private UserRepository userRepository;
+    private ExamResultCheatingRepository examResultCheatingRepository;
     // private HistoryRepository historyRepository;
     private final float MAX_SCORE = 10;
 
@@ -52,6 +53,7 @@ public class ExamController {
             QuestionRepository questionRepository, AnswerRepository answerRepository,
             UserAnswerRepository userAnswerRepository,
             UserRepository userRepository,
+            ExamResultCheatingRepository examResultCheatingRepository,
             ExamResultRepository examResultRepository) {
         this.jdbcTemplate = jdbcTemplate;
         loggingUntil = new LoggingUntil();
@@ -60,6 +62,7 @@ public class ExamController {
         this.answerRepository = answerRepository;
         this.userAnswerRepository = userAnswerRepository;
         this.examResultRepository = examResultRepository;
+        this.examResultCheatingRepository = examResultCheatingRepository;
         this.userRepository = userRepository;
     }
 
@@ -733,13 +736,19 @@ public class ExamController {
         if (questions.isEmpty()) {
             questions = new ArrayList<Question>();
         }
+        questions.forEach(question -> {
+            question.setExam(null);
+
+        });
         List<ExamResult> examResults = examResultRepository.findByExam(examId);
         List<ExamResultHistory> examResultHistories = new ArrayList<ExamResultHistory>();
 
         examResults.forEach(examResult -> {
+            examResult.setExam(null);
             List<History> histories = jdbcTemplate.query("SELECT * FROM History WHERE exam_result_id = '" + examResult.getExamResultId() + "'",
                     (rs, rowNum) -> new History(rs.getString("exam_result_id"), rs.getString("selected_answer_id"), rs.getString("question_id")));
-            examResultHistories.add(new ExamResultHistory(examResult, histories));
+            List<ExamResultCheating> examResultCheatings =  examResultCheatingRepository.findByExamResultExamResultId(examResult.getExamResultId());
+                    examResultHistories.add(new ExamResultHistory(examResult, histories, examResultCheatings));
         });
         
         ExamDetailResponseData examDetailResponseData = new ExamDetailResponseData(exam, questions, examResultHistories);
@@ -899,10 +908,17 @@ public class ExamController {
     public class ExamResultHistory{
         public ExamResult examResult;
         public List<History> histories;
+        public List<ExamResultCheating> examResultCheatings;
 
         public ExamResultHistory(ExamResult examResult, List<History> histories) {
             this.examResult = examResult;
             this.histories = histories;
+        }
+
+        public ExamResultHistory(ExamResult examResult, List<History> histories, List<ExamResultCheating> examResultCheatings) {
+            this.examResult = examResult;
+            this.histories = histories;
+            this.examResultCheatings = examResultCheatings;
         }
     }
 

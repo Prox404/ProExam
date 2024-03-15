@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +42,7 @@ public class ExamResult {
     private Exam exam;
 
     @OneToMany(mappedBy = "examResult")
+    @JsonManagedReference
     private Set<ExamResultCheating> examResultCheatings = new HashSet<ExamResultCheating>();
 
     // Constructors, getters, and setters
