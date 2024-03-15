@@ -37,3 +37,11 @@ BEGIN
         UPDATE question SET question_type = 'SINGLE_CHOICE' WHERE question_id = (SELECT question_id FROM inserted)
     END
 END
+
+insert into cheating(cheating_code, cheating_type) values 
+(1004, 'noise detected'),
+(1005, 'muti faces detected'),
+(1003, 'devtools detected'),
+(1000, 'copy detected'),
+(1001, 'screenshot detected'),
+(1002, 'tab change detected')

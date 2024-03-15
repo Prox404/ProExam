@@ -197,7 +197,7 @@ const ViewScoreExam = () => {
                                         Exam start time:
                                     </TableCell>
                                     <TableCell>
-                                        {format(new Date(examResult?.exam?.examStartTime || new Date()), 'dd/MM/yyyy HH:mm')}
+                                        {ddMMyyyy(examResult?.exam?.examStartTime) && format(ddMMyyyy(examResult?.exam?.examStartTime), 'dd/MM/yyyy HH:mm')}
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
@@ -205,7 +205,7 @@ const ViewScoreExam = () => {
                                         Exam end time:
                                     </TableCell>
                                     <TableCell>
-                                        {examResult?.exam?.examEndTime ? format(new Date(examResult?.exam?.examEndTime), 'dd/MM/yyyy HH:mm') : 'Infinity'}
+                                        {ddMMyyyy(examResult?.exam?.examEndTime) ? format(ddMMyyyy(examResult?.exam?.examEndTime), 'dd/MM/yyyy HH:mm') : 'Infinity'}
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>

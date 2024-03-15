@@ -3,6 +3,8 @@ package com.dtu.proexam.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -20,6 +22,7 @@ public class Cheating {
     private String cheatingType;
 
     @OneToMany(mappedBy = "cheating")
+    @JsonManagedReference
     private Set<ExamResultCheating> examResultCheatings = new HashSet<ExamResultCheating>() {
         
     };

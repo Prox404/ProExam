@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
@@ -22,9 +23,11 @@ public class ExamResultCheating {
 
     @ManyToOne
     @JoinColumn(name = "exam_result_id")
+    @JsonBackReference
     private ExamResult examResult;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "cheating_code")
     private Cheating cheating;
 
