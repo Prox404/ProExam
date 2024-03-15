@@ -245,7 +245,7 @@ const SetTime = () => {
                             <Autocomplete
                                 freeSolo
                                 options={options}
-                                value={options.find(option => option.minute === examTime) || null}
+                                value={options.find(option => option.minute === examTime) || {label: '', minute: examTime}}
                                 getOptionLabel={(option) => option.minute}
                                 onChange={(event, newValue) => { (newValue) ? setExamTime(newValue.minute) : setExamTime('0') }}
                                 renderInput={(params) => (
@@ -380,7 +380,7 @@ const SetTime = () => {
                             <Autocomplete
                                 freeSolo
                                 options={submitOptions}
-                                value={submitOptions.find(option => option.times === numberSubmit) || null}
+                                value={submitOptions.find(option => option.times === numberSubmit) || {label: '', times: numberSubmit}}
                                 getOptionLabel={(option) => option.times}
                                 onChange={(event, newValue) => { (newValue) ? setNumberSubmit(newValue.times) : setNumberSubmit('1') }}
                                 renderInput={(params) => (

@@ -48,21 +48,22 @@ function ExamList() {
 
     useEffect(() => {
         const fetchData = async () => {
-            console.log(user);
-            const response = await getExams(user.userId);
-            if (response.status === 200) {
-                const updatedExams = await Promise.all(response.data.map(async (exam) => {
-                    const response2 = await getQuestions(exam.examId);
-                    if (response2.status === 200) {
-                        return {
-                            ...exam,
-                            countQuestion: response2.data
-                        };
-                    }
-                    return exam;
-                }));
-                setExamList(updatedExams);
-                setExamListTemp(updatedExams);
+            if(user.userId != null) {
+                const response = await getExams(user.userId);
+                if (response.status === 200) {
+                    const updatedExams = await Promise.all(response.data.map(async (exam) => {
+                        const response2 = await getQuestions(exam.examId);
+                        if (response2.status === 200) {
+                            return {
+                                ...exam,
+                                countQuestion: response2.data
+                            };
+                        }
+                        return exam;
+                    }));
+                    setExamList(updatedExams);
+                    setExamListTemp(updatedExams);
+                }
             }
         };
 
@@ -127,7 +128,7 @@ function ExamList() {
     }
 
     return (
-        <Box>
+        <Box sx={{width: '100%', height: '100%'}}>
             <Box className="set-time-container animate__animated animate__backInRight"
                 sx={{
                     backgroundColor: "#f2f2f2",
@@ -136,7 +137,7 @@ function ExamList() {
                     height: {
                         xs: 'auto',
                         sm: '100%'
-                    }
+                    },
                 }}
             >
                 {examList.length === 0 ? (
@@ -173,9 +174,10 @@ function ExamList() {
                         </Button>
                     </Box>
                 ) : (
-                    <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center'}}>
                         <Box sx={{
-                            margin: "15px 15px 15px 30px",
                             display: {
                                 xs: 'none',
                                 xl: 'flex'
@@ -229,7 +231,7 @@ function ExamList() {
                             <Box sx={{
                                 height: {
                                     xs: 'auto',
-                                    sm: 'calc(100vh - var(--header-height) - 160px)'
+                                    sm: 'calc(100vh - var(--header-height) - 100px)'
                                 },
                                 overflowY: "scroll",
                                 scrollbarWidth: "none",
@@ -320,81 +322,6 @@ function ExamList() {
                                     </Box>
                                 ))}
                             </Box>
-                            {/*<TableContainer sx={{*/}
-                            {/*    boxShadow: '5px 3px 8px rgba(0, 0, 0, 0.15)'*/}
-                            {/*}}>*/}
-                            {/*    <Table>*/}
-                            {/*        <TableHead>*/}
-                            {/*            <TableRow sx={{backgroundColor: "#dae1fd"}}>*/}
-                            {/*                <TableCell width="1%" align="center"><b>No.</b></TableCell>*/}
-                            {/*                <TableCell align="center"><b>Exam name</b></TableCell>*/}
-                            {/*                <TableCell align="center"><b>Start time</b></TableCell>*/}
-                            {/*                <TableCell align="center"><b>End time</b></TableCell>*/}
-                            {/*                <TableCell align="center"><b>Key Exam</b></TableCell>*/}
-                            {/*                <TableCell width="1%" align="center"><b></b></TableCell>*/}
-                            {/*            </TableRow>*/}
-                            {/*        </TableHead>*/}
-                            {/*        <TableBody>*/}
-                            {/*            {examListTemp.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((exam, index) => (*/}
-                            {/*                <TableRow key={exam.examId} sx={{*/}
-                            {/*                    '&:hover': {*/}
-                            {/*                        backgroundColor: "#f0f3ff",*/}
-                            {/*                        cursor: "pointer"*/}
-                            {/*                    },*/}
-                            {/*                    '& .css-1yhpg23-MuiTableCell-root': {*/}
-                            {/*                        padding: 0*/}
-                            {/*                    }*/}
-                            {/*                }}>*/}
-                            {/*                    <TableCell onClick={detailExam(exam)} align="center">*/}
-                            {/*                        <Box style={{backgroundColor: colors[exam.keyCode.toString().charAt(0)]}}>*/}
-                            {/*                            <img src={img_q}  alt={'img'} style={{width: '80px'}}/>*/}
-                            {/*                        </Box>*/}
-                            {/*                    </TableCell>*/}
-                            {/*                    <TableCell onClick={detailExam(exam)} align="center">{exam.examName}</TableCell>*/}
-                            {/*                    <TableCell onClick={detailExam(exam)} align="center">{formatDate(exam.examStartTime)}</TableCell>*/}
-                            {/*                    <TableCell onClick={detailExam(exam)} align="center">{formatDate(exam.examEndTime)}</TableCell>*/}
-                            {/*                    <TableCell onClick={detailExam(exam)} align="center"><b>{exam.keyCode}</b></TableCell>*/}
-                            {/*                    <TableCell width="1%" align="center">*/}
-                            {/*                        <div>*/}
-                            {/*                            <IconButton*/}
-                            {/*                                onClick={(event) => {*/}
-                            {/*                                    setOpenMenu(index);*/}
-                            {/*                                    setAnchorEl(event.currentTarget);*/}
-                            {/*                                }}><MoreVertIcon/>*/}
-                            {/*                            </IconButton>*/}
-                            {/*                            <Menu open={(openMenu === index)}*/}
-                            {/*                                  anchorEl={anchorEl}*/}
-                            {/*                                  onClose={() => setOpenMenu(-1)}*/}
-                            {/*                                  transformOrigin={{horizontal: 'right', vertical: 'top'}}*/}
-                            {/*                                  anchorOrigin={{horizontal: 'left', vertical: 'top'}}*/}
-                            {/*                                  MenuListProps={{*/}
-                            {/*                                      'aria-labelledby': 'basic-button',*/}
-                            {/*                                  }}>*/}
-                            {/*                                <MenuItem onClick={detailExam(exam)}>Edit</MenuItem>*/}
-                            {/*                                <MenuItem onClick={() => handleDelete(index)}>Delete</MenuItem>*/}
-                            {/*                            </Menu>*/}
-                            {/*                        </div>*/}
-                            {/*                    </TableCell>*/}
-                            {/*                </TableRow>*/}
-                            {/*            ))}*/}
-                            {/*        </TableBody>*/}
-                            {/*    </Table>*/}
-                            {/*    <TablePagination*/}
-                            {/*        rowsPerPageOptions={[5, 10, 15, 20]}*/}
-                            {/*        component={"div"}*/}
-                            {/*        colSpan={5}*/}
-                            {/*        count={examListTemp.length}*/}
-                            {/*        rowsPerPage={rowsPerPage}*/}
-                            {/*        page={page}*/}
-                            {/*        onPageChange={handleChangePage}*/}
-                            {/*        onRowsPerPageChange={handleChangeRowsPerPage}*/}
-                            {/*        sx={{*/}
-                            {/*            '& p': {*/}
-                            {/*                marginBottom: 0*/}
-                            {/*            }*/}
-                            {/*        }}*/}
-                            {/*    />*/}
-                            {/*</TableContainer>*/}
                         </Box>
                     </Box>
                 )}

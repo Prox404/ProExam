@@ -4,12 +4,14 @@ import {
     TextField,
     Typography,
     Autocomplete,
-    Switch
+    Switch,
+    IconButton
 } from "@mui/material";
 import { ThemeContext } from '~/App';
+import { KeyboardArrowLeft } from '@mui/icons-material';
 
 // eslint-disable-next-line react/display-name
-const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
+const ExamInformation = forwardRef(({ timeOfExam: time, onTurnOff }, ref) => {
 
     const [examName, setExamName] = useState('');
     const [duration, setDuration] = useState('');
@@ -92,9 +94,18 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
         ((new Date().getMonth() > 8) ? (new Date().getMonth() + 1) : '0' + (new Date().getMonth() + 1))
         + '-' + ((new Date().getDate() > 9) ? (new Date().getDate()) : '0' + (new Date().getDate()));
     const now = ((new Date().getHours() > 9) ? new Date().getHours() : '0' + new Date().getHours()) + ':' + ((new Date().getMinutes() > 9) ? new Date().getMinutes() : '0' + new Date().getMinutes());
-
     return (
         <>
+        <Box 
+            sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'end'
+        }}>
+            <IconButton onClick={onTurnOff}>
+                <KeyboardArrowLeft/>
+            </IconButton>
+        </Box>
             <Typography sx={{
                 fontSize: '21px',
                 fontWeight: '500',

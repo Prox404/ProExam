@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Item from "@mui/material/Grid";
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import styles from "./UploadExam.module.scss"
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -20,10 +20,11 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import not_file from '~/assets/file_empty.svg';
 import EditIcon from '@mui/icons-material/Edit';
-import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
-import { upLoadQuestion, getExamById } from "~/services/examService";
+import {useNavigate} from "react-router-dom";
+import {useParams} from "react-router-dom";
+import {upLoadQuestion, getExamById} from "~/services/examService";
 import Download from "@mui/icons-material/Download";
+
 // import template from "~/assets/files/TEMPLATE.docx";
 
 function UploadExam() {
@@ -35,7 +36,7 @@ function UploadExam() {
     const [severity, setSeverity] = useState('error');
     const [submitDisabled, setSubmitDisabled] = useState(false);
     const navigate = useNavigate();
-    const { id } = useParams();
+    const {id} = useParams();
     const [openEdit, setOpenEdit] = useState(false);
     const [indexEdit, setIndexEdit] = useState(false);
     const [onChangeText, setOnChangeText] = useState(false);
@@ -65,24 +66,37 @@ function UploadExam() {
             setSelectFile(event.target.files[0]);
             const file = event.target.files[0];
 
+            // Kiểm tra định dạng của file
+            if (!file.name.toLowerCase().endsWith('.docx')) {
+                removeFile();
+                handleShowSnackBar('File format is incorrect, please try again!', 'error');
+                return;
+            }
+
             const fileReader = new FileReader();
             fileReader.onload = async (data) => {
                 const content = data.target.result;
-                const result = await mammoth.extractRawText({ arrayBuffer: content });
+                const result = await mammoth.extractRawText({arrayBuffer: content});
                 const lines = result.value.split('\n');
+                var key = -1;
+                var indexAnswer = -1;
                 for (const value of lines) {
                     const index = lines.indexOf(value);
                     const question = value.match(/^Question:(.+)/);
                     const answer = value.match(/^Answer:(.+)/);
+                    const text = value.trim();
                     if (question) {
                         if (questionObject)
                             listTemp.push(questionObject)
+                        key = 0;
+                        indexAnswer = -1;
                         questionObject = {
                             questionText: question[1].trim(),
                             answers: []
                         }
                     } else if (answer) {
                         if (questionObject && questionObject.answers) {
+                            key = 1;
                             const cleanedAnswerText = answer[1].replace('*', '').trim().toLowerCase();
                             if (!questionObject.answers.find((a) => (a.answerText.toLowerCase() === cleanedAnswerText))) {
                                 const isCorrect = answer[1].trim().endsWith('*');
@@ -92,7 +106,16 @@ function UploadExam() {
                                     isCorrect: isCorrect
                                 }
                                 questionObject.answers.push(answerRow);
+                                indexAnswer += 1;
                                 await new Promise(resolve => setTimeout(resolve, 1));
+                            }
+                        }
+                    } else {
+                        if (key === 0 && text !== '') {
+                            questionObject.questionText += `\n${text}`;
+                        } else if (key === 1 && text !== '') {
+                            if (questionObject.answers[indexAnswer]) {
+                                questionObject.answers[indexAnswer].answerText += `\n${text}`;
                             }
                         }
                     }
@@ -100,11 +123,44 @@ function UploadExam() {
                     if (index === lines.length - 1 && questionObject)
                         listTemp.push(questionObject)
                 }
-                setQuestions(listTemp)
+                if (listTemp.length != 0)
+                    setQuestions(listTemp)
+                else {
+                    removeFile();
+                    handleShowSnackBar('File has no data or is invalid, please enter again!', 'warning');
+                }
             }
             fileReader.readAsArrayBuffer(file);
+        } else {
+            handleShowSnackBar('Data must not be empty!', 'warning');
         }
     }
+
+    const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Xử lý các sự kiện kéo và thả ở đây (nếu cần)
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const droppedFiles = e.dataTransfer.files;
+        // event.target.files = a;
+        if (droppedFiles.length > 0) {
+            const file = droppedFiles[0];
+            // Thêm một đối tượng sự kiện giả mạo với thuộc tính target.files để truyền vào handleOnChange
+            const fakeEvent = {
+                target: {
+                    files: [file]
+                }
+            };
+            handleOnChange(fakeEvent);
+            setSelectFile(file);
+        }
+    };
+
 
     const chooseFile = () => {
         inputRef.current.click();
@@ -134,7 +190,7 @@ function UploadExam() {
     }
 
     const editQuestion = (event) => {
-        const updatedQuestion = { ...questions[indexEdit] };
+        const updatedQuestion = {...questions[indexEdit]};
         updatedQuestion.questionText = event.target.value;
         setOnChangeText(event.target.value !== questions[indexEdit].questionText);
         setNewQuestion(updatedQuestion);
@@ -142,16 +198,16 @@ function UploadExam() {
 
     const editAnswer = (index, event) => {
         const updatedAnswers = [...newQuestion.answers];
-        updatedAnswers[index] = { ...updatedAnswers[index], answerText: event.target.value };
+        updatedAnswers[index] = {...updatedAnswers[index], answerText: event.target.value};
         setOnChangeText(event.target.value !== newQuestion.answers[index].answerText);
-        setNewQuestion({ ...newQuestion, answers: updatedAnswers });
+        setNewQuestion({...newQuestion, answers: updatedAnswers});
     };
 
     const removeAnswer = (index) => {
         const updatedAnswers = [...newQuestion.answers];
         updatedAnswers.splice(index, 1);
         setOnChangeText(updatedAnswers !== newQuestion.answers);
-        setNewQuestion({ ...newQuestion, answers: updatedAnswers });
+        setNewQuestion({...newQuestion, answers: updatedAnswers});
     }
 
     const addNewAnswer = async () => {
@@ -162,7 +218,7 @@ function UploadExam() {
                 isCorrect: false
             });
             setOnChangeText(updatedAnswers !== newQuestion.answers);
-            setNewQuestion({ ...newQuestion, answers: updatedAnswers });
+            setNewQuestion({...newQuestion, answers: updatedAnswers});
         } else {
             handleShowSnackBar('Maximum number of answers reached!', 'warning');
         }
@@ -220,7 +276,7 @@ function UploadExam() {
                     removeFile();
                     handleShowSnackBar('Upload successfully', 'success');
                     setSubmitDisabled(false);
-                    navigate('/dashboard');
+                    navigate('/exams');
                 } else {
                     handleShowSnackBar('Upload failed, please try again!');
                     setSubmitDisabled(false);
@@ -250,7 +306,7 @@ function UploadExam() {
     }
 
     const removeQuestion = (async (index) => {
-        if ((newQuestion.questionText !== '' || newQuestion.answers.some(value => value.answerText !== '')) && openEdit){
+        if ((newQuestion.questionText !== '' || newQuestion.answers.some(value => value.answerText !== '')) && openEdit) {
             console.log(indexEdit, index);
             handleShowSnackBar('You are in the editing process, please complete it!');
         } else {
@@ -293,13 +349,13 @@ function UploadExam() {
                         }
                     }}>
                         <Grid item xs={12} sm={5} md={4}
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-around",
-                                alignItems: "center",
-                                padding: "20px",
+                              style={{
+                                  display: "flex",
+                                  justifyContent: "space-around",
+                                  alignItems: "center",
+                                  padding: "20px",
 
-                            }}>
+                              }}>
                             <Item sx={{
                                 width: "100%",
                                 display: "flex",
@@ -312,6 +368,9 @@ function UploadExam() {
                                     flex: 1,
                                 }}></Box>
                                 <div
+                                    onDragOver={handleDrag}
+                                    onDrop={handleDrop}
+                                    onDragLeave={handleDrag}
                                     className={styles['file']}
                                     style={{
                                         display: "flex",
@@ -325,11 +384,11 @@ function UploadExam() {
                                         type={"file"}
                                         ref={inputRef}
                                         onChange={handleOnChange}
-                                        style={{ display: "none" }}
-                                        accept=".docx" />
+                                        style={{display: "none"}}
+                                        accept=".docx"/>
 
                                     <button className={styles['file-btn']} onClick={chooseFile}>
-                                        <UploadFileIcon /> Upload File
+                                        <UploadFileIcon/> Upload File
                                     </button>
 
 
@@ -337,7 +396,7 @@ function UploadExam() {
                                         <div className={styles["selected-file"]}>
                                             <p>{selectFile.name}</p>
                                             <button onClick={removeFile}>
-                                                <DeleteIcon />
+                                                <DeleteIcon/>
                                             </button>
                                         </div>
                                     )}
@@ -386,8 +445,9 @@ function UploadExam() {
                                     <Button variant="contained" sx={{
                                         textTransform: 'none',
                                         marginTop: '10px',
-                                    }} startIcon={<Download />}
-                                        href={new URL(`~/assets/files/template.docx`, import.meta.url).href} download="template.docx"
+                                    }} startIcon={<Download/>}
+                                            href={new URL(`~/assets/files/template.docx`, import.meta.url).href}
+                                            download="template.docx"
                                     >
                                         Download template
                                     </Button>
@@ -397,10 +457,10 @@ function UploadExam() {
 
                         <Grid item xs={12} sm={7} md={8}>
                             <Item>{questions.length != 0
-                                ? (<Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                ? (<Box sx={{height: '100%', display: 'flex', flexDirection: 'column'}}>
                                     <Box
                                         className={styles['img-empty']}
-                                        sx={{ flex: '1', padding: '10px' }}>
+                                        sx={{flex: '1', padding: '10px'}}>
                                         <Box sx={{
                                             height: {
                                                 xs: 'auto',
@@ -422,68 +482,77 @@ function UploadExam() {
                                                         {(openEdit && index === indexEdit)
                                                             ? <ListItemText>{`${index + 1}. `}<Input
                                                                 value={newQuestion.questionText}
-                                                                onChange={editQuestion} />
+                                                                multiline={true}
+                                                                onChange={editQuestion}/>
                                                             </ListItemText>
                                                             : <ListItemText
                                                                 primary={<span
                                                                     style={{
-                                                                        fontWeight: 'bold'
+                                                                        fontWeight: 'bold',
+                                                                        maxWidth: '600px',
+                                                                        overflow: "hidden"
                                                                     }}
                                                                 >{`${index + 1}. ${value.questionText}`}</span>
-                                                                } />
+                                                                }/>
                                                         }
                                                         <ListItemSecondaryAction
-                                                            style={{ top: 43, display: "flex", flexDirection: "column" }}>
+                                                            style={{top: 43, display: "flex", flexDirection: "column"}}>
                                                             {(onChangeText && index === indexEdit)
                                                                 ?
                                                                 <IconButton><CheckRoundedIcon
-                                                                    onClick={handleEditQuestion} /></IconButton>
+                                                                    onClick={handleEditQuestion}/></IconButton>
                                                                 : ((openEdit && index === indexEdit)
                                                                     ? <IconButton edge="end" aria-label="edit"
-                                                                        onClick={endEdit(index)}>
-                                                                        <CloseRoundedIcon />
+                                                                                  onClick={endEdit(index)}>
+                                                                        <CloseRoundedIcon/>
                                                                     </IconButton>
                                                                     : <IconButton edge="end" aria-label="edit"
-                                                                        onClick={async () => {
-                                                                            if (indexEdit !== index && openEdit) {
-                                                                                handleShowSnackBar('You are in the editing process, please complete it!', 'warning');
-                                                                            } else {
-                                                                                setOpenEdit(!openEdit)
-                                                                                setIndexEdit(index);
-                                                                                setNewQuestion(questions[index]);
-                                                                            }
-                                                                        }}>
-                                                                        <EditIcon />
+                                                                                  onClick={async () => {
+                                                                                      if (indexEdit !== index && openEdit) {
+                                                                                          handleShowSnackBar('You are in the editing process, please complete it!', 'warning');
+                                                                                      } else {
+                                                                                          setOpenEdit(!openEdit)
+                                                                                          setIndexEdit(index);
+                                                                                          setNewQuestion(questions[index]);
+                                                                                      }
+                                                                                  }}>
+                                                                        <EditIcon/>
                                                                     </IconButton>)
                                                             }
                                                             <IconButton edge="end" aria-label="edit"
-                                                                onClick={() => removeQuestion(index)}>
-                                                                <RemoveIcon />
+                                                                        onClick={() => removeQuestion(index)}>
+                                                                <RemoveIcon/>
                                                             </IconButton>
                                                         </ListItemSecondaryAction>
-                                                        <div style={{ display: "flex", flexDirection: 'column' }}>
-                                                            <List style={{ padding: 0 }}>
+                                                        <div style={{display: "flex", flexDirection: 'column'}}>
+                                                            <List style={{padding: 0}}>
                                                                 {((openEdit && index === indexEdit)
                                                                     ? (newQuestion.answers.map((answer, indexA) => (
                                                                         <ListItem key={indexA}>
                                                                             {`${alphabet[indexA]}. `}
                                                                             <Input value={answer.answerText}
-                                                                                onChange={(event) => editAnswer(indexA, event)} />
+                                                                                   multiline={true}
+                                                                                   onChange={(event) => editAnswer(indexA, event)}/>
                                                                             <IconButton
-                                                                                onClick={() => removeAnswer(indexA)}><RemoveIcon /></IconButton>
+                                                                                onClick={() => removeAnswer(indexA)}><RemoveIcon/></IconButton>
                                                                         </ListItem>
                                                                     )))
                                                                     : (value.answers.map((answer, indexA) => (
-                                                                        <ListItem
-                                                                            key={indexA}
-                                                                            className={styles['answer']}
-                                                                            sx={{ backgroundColor: answer.isCorrect ? "#CDFFC8 !important" : "white" }}
-                                                                            onClick={() => handleChooseAnswer(index, indexA)}
-                                                                        >
-                                                                            <ListItemText
-                                                                                primary={`${alphabet[indexA]}. ${answer.answerText}`} />
-                                                                        </ListItem>
-                                                                    ))
+                                                                            <ListItem
+                                                                                key={indexA}
+                                                                                className={styles['answer']}
+                                                                                sx={{backgroundColor: answer.isCorrect ? "#CDFFC8 !important" : "white"}}
+                                                                                onClick={() => handleChooseAnswer(index, indexA)}
+                                                                            >
+                                                                                <ListItemText
+                                                                                    sx={{
+                                                                                        maxWidth: '600px',
+                                                                                        overflow: "hidden",
+                                                                                        whiteSpace: "pre-line"
+                                                                                    }}
+                                                                                    primary={`${alphabet[indexA]}. ${answer.answerText}`}/>
+                                                                            </ListItem>
+                                                                        ))
                                                                     ))}
                                                             </List>
                                                             {(openEdit && index === indexEdit) && (
@@ -502,7 +571,7 @@ function UploadExam() {
                                                                         backgroundColor: "#757575"
                                                                     }}></div>
                                                                     <IconButton
-                                                                        onClick={addNewAnswer}><AddIcon /></IconButton>
+                                                                        onClick={addNewAnswer}><AddIcon/></IconButton>
                                                                 </ListItem>)}
 
                                                         </div>
@@ -523,18 +592,18 @@ function UploadExam() {
                                                         backgroundColor: "#757575"
                                                     }}></div>
                                                     <IconButton
-                                                        onClick={addNewQuestion}><AddIcon /></IconButton>
+                                                        onClick={addNewQuestion}><AddIcon/></IconButton>
                                                 </ListItem>
                                             </List>
                                         </Box>
                                     </Box>
-                                    <Box sx={{ margin: 0, padding: '0 10px 10px 10px' }}
-                                        style={{
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            justifyItems: "center"
-                                        }}>
+                                    <Box sx={{margin: 0, padding: '0 10px 10px 10px'}}
+                                         style={{
+                                             display: "flex",
+                                             justifyContent: "center",
+                                             alignItems: "center",
+                                             justifyItems: "center"
+                                         }}>
                                         <button
                                             type={"submit"}
                                             disabled={submitDisabled}
@@ -550,7 +619,7 @@ function UploadExam() {
                                         display: "flex",
                                         justifyContent: "center"
                                     }}>
-                                    <img className={styles['file-empty']} src={not_file} alt="My SVG Image" />
+                                    <img className={styles['file-empty']} src={not_file} alt="My SVG Image"/>
                                 </div>
                             }
                             </Item>
@@ -565,8 +634,9 @@ function UploadExam() {
                         justifyItems: "center",
                         alignItems: "center"
                     }}>
-                        <img src={not_file} alt={"img empty"} style={{ width: '30%', marginBottom: "10px" }} />
-                        <Typography variant={"h5"} style={{ marginBottom: "10px", color: "#757575" }}>This test does not exist!</Typography>
+                        <img src={not_file} alt={"img empty"} style={{width: '30%', marginBottom: "10px"}}/>
+                        <Typography variant={"h5"} style={{marginBottom: "10px", color: "#757575"}}>This test does not
+                            exist!</Typography>
                         <Button
                             className={styles['search-form']}
                             style={{
@@ -579,20 +649,20 @@ function UploadExam() {
                                 justifyContent: "center"
                             }}
                             onClick={() => {
-                                navigate({ pathname: "/exams" })
+                                navigate({pathname: "/exams"})
                             }}
                         >
-                            <ArrowBackIosIcon />
+                            <ArrowBackIosIcon/>
                             {'Back'}
                         </Button>
                     </Box>)}
             </Box>
-            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar} >
+            <Snackbar open={snackbarOpen} autoHideDuration={1000} onClose={handleCloseSnackBar}>
                 <Alert
                     onClose={handleCloseSnackBar}
                     severity={severity}
                     variant="filled"
-                    sx={{ width: '100%' }}
+                    sx={{width: '100%'}}
                 >
                     {content ? content : 'Invalid input'}
                 </Alert>
