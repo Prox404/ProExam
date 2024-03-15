@@ -12,7 +12,7 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
-import { createQuestionManually, getQuestionList } from "~/services/examService";
+import { createQuestionManually, getQuestionList, setPrivacy } from "~/services/examService";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { v4 as uuidv4 } from "uuid";
 import 'animate.css';
@@ -25,7 +25,7 @@ function ParseQuestions() {
   const [messageA, setMessageA] = useState("");
   const [deleteEnabled, setDeleteEnabled] = useState(true);
   const { id } = useParams();
-  
+
   const [questions, setQuestions] = useState([
     {
       id: uuidv4(),
@@ -51,7 +51,7 @@ function ParseQuestions() {
       if (res?.status === 400) {
         navigate("/404");
       }
-      if (res?.status === 200 && res?.data.length > 0){
+      if (res?.status === 200 && res?.data.length > 0) {
         setQuestions(res.data);
       }
     }
@@ -193,18 +193,59 @@ function ParseQuestions() {
   };
   const handleFinish = async () => {
     if (checkisValid()) {
-      setIsOpenA(true);
-      setStatusA("success");
-      setMessageA("Exam Has Created!");
-      await createQuestionManually({ questions, examId: id });
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
+      let res = await createQuestionManually({ questions, examId: id });
+      console.log(res);
+      if (res && res?.length > 0) {
+        setIsOpenA(true);
+        setStatusA("success");
+        setMessageA("Exam Has Created!");
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      }else{
+        setIsOpenA(true);
+        setStatusA("error");
+        setMessageA("Store question failed!");
+      }
+      
     } else {
       setIsOpenA(true);
       setStatusA("error");
     }
   };
+
+  const handlePublicExam = async () => {
+    if (checkisValid()) {
+      let questionRes = await createQuestionManually({ questions, examId: id });
+      console.log(questionRes);
+      if (questionRes && questionRes?.length > 0) {
+        setIsOpenA(true);
+        setStatusA("success");
+        setMessageA("Exam Has Created!");
+        
+        let examRes = await setPrivacy({ examId: id, isPublic: true });
+        if (examRes?.status === 200) {
+          setIsOpenA(true);
+          setStatusA("success");
+          setMessageA("Exam Has Public!");
+          setTimeout(() => {
+            navigate("/");
+          }, 1000);
+        }else{
+          setIsOpenA(true);
+          setStatusA("error");
+          setMessageA("Public exam failed!");
+        }
+      }else{
+        setIsOpenA(true);
+        setStatusA("error");
+        setMessageA("Store question failed!");
+      }
+    } else {
+      setIsOpenA(true);
+      setStatusA("error");
+    }
+  }
 
   return (
     <>
@@ -324,7 +365,7 @@ function ParseQuestions() {
               >
                 Add answer
               </Button>
-  
+
               <IconButton
                 color="error"
                 onClick={() => handleDeleteQuestion(question.id)}
@@ -349,19 +390,46 @@ function ParseQuestions() {
           + Create new question
         </Button>
 
-        <Button
-          variant="contained"
-          onClick={handleFinish}
-          sx={{
-            borderRadius: "10px",
-            padding: "13px 26px",
-            lineHeight: "20px",
-            float: "right",
-            textTransform: "none",
-          }}
-        >
-          Finish
-        </Button>
+        <Box sx={{
+          display: "flex",
+          justifyContent: "end",
+          width: "100%",
+          gap: "10px",
+        }}>
+
+          <Button
+            variant="contained"
+            onClick={handleFinish}
+            sx={{
+              borderRadius: "10px",
+              padding: "13px 26px",
+              lineHeight: "20px",
+              float: "right",
+              textTransform: "none",
+            }}
+          >
+            Finish
+          </Button>
+
+          <Button variant="contained"
+            sx={{
+              borderRadius: "10px",
+              padding: "13px 26px",
+              lineHeight: "20px",
+              float: "right",
+              textTransform: "none",
+              color: theme.palette.textColorSecondary,
+              bgcolor: theme.palette.cardBackground,
+              '&:hover': {
+                bgcolor: theme.palette.cardSecondaryBackground,
+              }
+            }}
+            onClick={handlePublicExam}
+            >
+            Finish and public
+          </Button>
+
+        </Box>
       </Box>
       <Snackbar
         open={isOpenA}

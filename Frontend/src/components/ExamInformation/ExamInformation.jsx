@@ -1,10 +1,12 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react'
+import { useEffect, useContext, useState, forwardRef, useImperativeHandle } from 'react'
 import {
     Box,
     TextField,
     Typography,
-    Autocomplete
+    Autocomplete,
+    Switch
 } from "@mui/material";
+import { ThemeContext } from '~/App';
 
 // eslint-disable-next-line react/display-name
 const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
@@ -16,6 +18,8 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
     const [closeDate, setCloseDate] = useState('');
     const [closeTime, setCloseTime] = useState('');
     const [numberSubmit, setNumberSubmit] = useState('');
+    const [publicExam, setPubliExam] = useState(false);
+    const { mode } = useContext(ThemeContext);
     useEffect(() => {
         setDuration(time.duration + '');
         setExamName(time.examName);
@@ -24,6 +28,7 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
         setCloseDate(time.closeDate);
         setCloseTime(time.closeTime);
         setNumberSubmit(time.numberSubmit);
+        setPubliExam(time.isPublic);
     }, [time])
     useImperativeHandle(ref, () => ({
         getData: () => {
@@ -36,7 +41,7 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
                 closeTime,
                 numberSubmit,
                 keyCode: time.examCode,
-                isPublic: time.isPublic
+                isPublic: publicExam ? 1 : 0
             };
         },
     }));
@@ -93,8 +98,9 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
             <Typography sx={{
                 fontSize: '21px',
                 fontWeight: '500',
-                textAlign: 'center',
-                marginBottom: '15px'
+                textAlign: 'start',
+                marginBottom: '15px',
+                width: '90%'
             }}>
                 Set Exam Time
             </Typography>
@@ -109,9 +115,9 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
                     setExamName(e.target.value)
                 }}
                 sx={{
-                    width: '80%',
+                    width: '90%',
                     '& input': {
-                        textAlign: 'center'
+                        textAlign: 'start'
                     }
                 }}
                 InputLabelProps={{
@@ -121,7 +127,7 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
 
             <Autocomplete
                 freeSolo sx={{
-                    width: '80%',
+                    width: '90%',
                 }}
 
                 options={options}
@@ -138,8 +144,7 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
                         onChange={(e) => { setDuration(e.target.value) }}
                         sx={{
                             '& input': {
-                                textAlign: 'center',
-                                marginLeft: '28px',
+                                textAlign: 'start',
                             }
                         }} />
                 )}
@@ -156,10 +161,14 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
                 value={openDate}
                 onChange={(e) => (new Date(today) <= new Date(e.target.value)) && setOpenDate(e.target.value)}
                 sx={{
-                    width: '80%',
+                    width: '90%',
                     '& input': {
-                        textAlign: 'center',
+                        textAlign: 'start',
+                    },
+                    '& input::-webkit-calendar-picker-indicator': {
+                        filter: mode ? 'invert(1)' : 'invert(0)'
                     }
+
                 }}
                 InputLabelProps={{
                     shrink: true,
@@ -172,9 +181,12 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
                 value={openTime}
                 onChange={(event) => (new Date(`${today}T${now}:00`) < new Date(`${openDate}T${event.target.value}:00`)) && setOpenTime(event.target.value)}
                 sx={{
-                    width: '80%',
+                    width: '90%',
                     '& input': {
-                        textAlign: 'center',
+                        textAlign: 'start',
+                    },
+                    '& input::-webkit-calendar-picker-indicator': {
+                        filter: mode ? 'invert(1)' : 'invert(0)'
                     }
                 }}
                 InputLabelProps={{
@@ -188,9 +200,12 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
                 value={closeDate}
                 onChange={(event) => (new Date(openDate) <= new Date(event.target.value)) && setCloseDate(event.target.value)}
                 sx={{
-                    width: '80%',
+                    width: '90%',
                     '& input': {
-                        textAlign: 'center'
+                        textAlign: 'start'
+                    },
+                    '& input::-webkit-calendar-picker-indicator': {
+                        filter: mode ? 'invert(1)' : 'invert(0)'
                     }
                 }}
                 InputLabelProps={{
@@ -204,9 +219,12 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
                 value={closeTime}
                 onChange={(event) => (new Date(`${openDate}T${openTime}:00`) < new Date(`${closeDate}T${event.target.value}:00`)) && setCloseTime(event.target.value)}
                 sx={{
-                    width: '80%',
+                    width: '90%',
                     '& input': {
-                        textAlign: 'center'
+                        textAlign: 'start'
+                    },
+                    '& input::-webkit-calendar-picker-indicator': {
+                        filter: mode ? 'invert(1)' : 'invert(0)'
                     }
                 }}
                 InputLabelProps={{
@@ -219,9 +237,9 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
                 value={numberSubmit}
                 onChange={(event) => setNumberSubmit(event.target.value)}
                 sx={{
-                    width: '80%',
+                    width: '90%',
                     '& input': {
-                        textAlign: 'center',
+                        textAlign: 'start',
                         minWidth: {
                             xs: '100px !important'
                         }
@@ -232,15 +250,34 @@ const ExamInformation = forwardRef(({ timeOfExam: time }, ref) => {
                 }}
             />
             <Box sx={{
-                width: '80%',
+                width: '90%',
                 display: 'flex',
                 flexDirection: 'row',
+                justifyContent: 'space-between',
                 gap: '10%',
                 alignItems: 'center'
             }}>
                 <Typography sx={{
                     marginLeft: '5px',
-                    color: '#00000099'
+                }}>
+                    Public:
+                </Typography>
+                <Switch
+                    checked={publicExam}
+                    onChange={() => setPubliExam(!publicExam)}
+                    inputProps={{ 'aria-label': 'controlled' }}
+                />
+            </Box>
+            <Box sx={{
+                width: '90%',
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                gap: '10%',
+                alignItems: 'center'
+            }}>
+                <Typography sx={{
+                    marginLeft: '5px',
                 }}>
                     Exam Code:
                 </Typography>

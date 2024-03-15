@@ -266,3 +266,13 @@ export const deleteAnwser = (answerId) => {
         return false;
     }
 }
+
+export const setPrivacy = ({examId, isPublic}) => {
+    try {
+        const res = request.get(`/exam/publicExam?examId=${examId}&isPublic=${isPublic}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}

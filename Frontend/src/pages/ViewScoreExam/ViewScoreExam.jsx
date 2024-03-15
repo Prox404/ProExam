@@ -15,6 +15,7 @@ import { Avatar } from '@mui/material';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import ExamResult from './ExamResult';
+import { ddMMyyyy } from '~/utils/timeUtils';
 
 const ViewScoreExam = () => {
     const theme = useTheme();
@@ -153,7 +154,7 @@ const ViewScoreExam = () => {
                                         Start time
                                     </TableCell>
                                     <TableCell>
-                                        {format(new Date(examResult?.startTime || new Date()), 'dd/MM/yyyy HH:mm')}
+                                        { ddMMyyyy(examResult?.startTime) ? format(ddMMyyyy(examResult?.startTime), 'dd/MM/yyyy HH:mm') : ''}
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
@@ -161,7 +162,7 @@ const ViewScoreExam = () => {
                                         End time:
                                     </TableCell>
                                     <TableCell>
-                                        {format(new Date(examResult?.startTime || new Date()), 'dd/MM/yyyy HH:mm')}
+                                        {ddMMyyyy(examResult?.startTime) ? format(ddMMyyyy(examResult?.endTime), 'dd/MM/yyyy HH:mm') : ''}
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
