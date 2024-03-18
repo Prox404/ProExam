@@ -6,7 +6,7 @@ import {
     Alert,
     IconButton
 } from "@mui/material";
-import {KeyboardArrowRight} from '@mui/icons-material';
+import { KeyboardArrowRight } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import { createQuestionManually, getExamAndTime, update } from '../../services/examService';
 import Question from '~/components/Question';
@@ -92,20 +92,20 @@ const ExamDetail = () => {
         }]);
     }
     const onValidateQuestion = (questions) => {
-        for(let i = 0; i < questions.length; i += 1) {
-            if(questions[i].questionText.trim() === '') {
+        for (let i = 0; i < questions.length; i += 1) {
+            if (questions[i].questionText.trim() === '') {
                 handleShowSnackBar('Question Text Is Not Null !');
                 return false;
             }
-            for(let j = 0; j < questions[i].answers.length; j += 1) {
-                if(questions[i].answers[j].answerText.trim() === '') {
+            for (let j = 0; j < questions[i].answers.length; j += 1) {
+                if (questions[i].answers[j].answerText.trim() === '') {
                     handleShowSnackBar('Answer Text Is Not Null !');
                     return false;
                 }
             }
         }
         return true;
-    }   
+    }
     const onUpdateExam = async () => {
         const examTime = examTimeRef.current.getData();
         const user = localStorage.getItem('user');
@@ -137,18 +137,18 @@ const ExamDetail = () => {
         });
         const listQuestion = newQuestionRef.map((ref) => {
             let question = ref.getData();
-            return {...question, exam: {examId: id}};
+            return { ...question, exam: { examId: id } };
         });
         //validate question
-        if(onValidateQuestion(listQuestion)) {
-            const questionRes = await createQuestionManually({questions: listQuestion, examId: id});
-        if (questionRes && questionRes.length > 0) {
-            handleShowSnackBar('Update question success !', 'success');
-        }else {
-            handleShowSnackBar('Update question failed !');
-            return
+        if (onValidateQuestion(listQuestion)) {
+            const questionRes = await createQuestionManually({ questions: listQuestion, examId: id });
+            if (questionRes && questionRes.length > 0) {
+                handleShowSnackBar('Update question success !', 'success');
+            } else {
+                handleShowSnackBar('Update question failed !');
+                return
+            }
         }
-    }
     };
     const onTurnOff = () => {
         const examInfo = document.querySelector(`.${styles.ExamInfoIn}`);
@@ -157,10 +157,10 @@ const ExamDetail = () => {
         examInfo.classList.remove(`${styles.ExamInfoIn}`);
         examInfo.classList.add(`${styles.ExamInfoOut}`);
         arrowRight.style.visibility = 'visible';
-        setTimeout(()=>{
+        setTimeout(() => {
             examInfo.style.display = 'none';
             questionsComponent.style.paddingLeft = '0px';
-        },300);
+        }, 300);
     }
     const onTurnOn = () => {
         const examInfo = document.querySelector(`.${styles.ExamInfoOut}`);
@@ -171,9 +171,9 @@ const ExamDetail = () => {
         arrowRight.style.visibility = 'hidden';
         examInfo.style.display = 'flex';
         questionsComponent.style.paddingLeft = '300px';
-        
+
     }
-    
+
     return (
         <div>
             <Box sx={{
@@ -220,32 +220,32 @@ const ExamDetail = () => {
                 <Box
                     className={`${styles.ExamInfoIn}`}
                     sx={{
-                    width: {
-                        xs: '100%',
-                        md: '300px'
-                    },
-                    background: theme.palette.cardBackground,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '20px',
-                    position: {
-                        xs: 'static',
-                        md: 'fixed'
-                    },
-                    top: '0',
-                    left: 'var(--sidebar-size)',
-                    height: {
-                        xs: 'auto',
-                        md: '100vh'
-                    },
-                    borderRadius: {
-                        xs: '20px',
-                        md: '0'
-                    },
-                    padding: '20px 0',
-                    overflow: 'auto'
-                }}>
+                        width: {
+                            xs: '100%',
+                            md: '300px'
+                        },
+                        background: theme.palette.cardBackground,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '20px',
+                        position: {
+                            xs: 'static',
+                            md: 'fixed'
+                        },
+                        top: '0',
+                        left: 'var(--sidebar-size)',
+                        height: {
+                            xs: 'auto',
+                            md: '100vh'
+                        },
+                        borderRadius: {
+                            xs: '20px',
+                            md: '0'
+                        },
+                        padding: '20px 0',
+                        overflow: 'auto'
+                    }}>
                     <ExamInformation timeOfExam={time} onTurnOff={onTurnOff} ref={examTimeRef} />
                     <Button
                         onClick={() => onUpdateExam()}
@@ -255,10 +255,10 @@ const ExamDetail = () => {
                         Update
                     </Button>
                 </Box>
-                
-                    <IconButton
-                     className='ArrowRight'
-                     sx={{
+
+                <IconButton
+                    className='ArrowRight'
+                    sx={{
                         position: 'fixed',
                         top: 'calc(50% - 50px)',
                         marginLeft: '-20px',
@@ -267,16 +267,16 @@ const ExamDetail = () => {
                         visibility: 'hidden',
                         borderRadius: '0 5px 5px 0',
                         backgroundColor: '#fff',
-                        '&:hover':{
+                        '&:hover': {
                             backgroundColor: '#efefef'
                         }
                     }}
-                        onClick={onTurnOn}
-                    >
-                        <KeyboardArrowRight sx={{fontSize: '25px'}}/>
-                    </IconButton>
-                
-                
+                    onClick={onTurnOn}
+                >
+                    <KeyboardArrowRight sx={{ fontSize: '25px' }} />
+                </IconButton>
+
+
             </Box>
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar} >
                 <Alert
