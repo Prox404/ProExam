@@ -12,6 +12,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "exam_result_cheating")
@@ -27,7 +28,8 @@ public class ExamResultCheating {
     private ExamResult examResult;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonIgnoreProperties("examResultCheatings")
+
     @JoinColumn(name = "cheating_code")
     private Cheating cheating;
 

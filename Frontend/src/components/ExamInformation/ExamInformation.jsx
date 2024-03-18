@@ -11,7 +11,7 @@ import { ThemeContext } from '~/App';
 import { KeyboardArrowLeft } from '@mui/icons-material';
 
 // eslint-disable-next-line react/display-name
-const ExamInformation = forwardRef(({ timeOfExam: time, onTurnOff }, ref) => {
+const ExamInformation = forwardRef(({ timeOfExam: time, onTurnOff=false }, ref) => {
 
     const [examName, setExamName] = useState('');
     const [duration, setDuration] = useState('');

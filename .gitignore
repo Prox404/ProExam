@@ -1,3 +1,4 @@
 
 Backend/hs_err_pid15364.log
 Frontend/.env
+Backend/src/main/resources/application.properties

@@ -6,6 +6,7 @@ import {
     Button,
     Typography,
 } from "@mui/material";
+import { useMemo } from "react";
 
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
@@ -22,6 +23,8 @@ const Question = forwardRef(({ question, index, setQuestions, listQuestion }, re
     const [statusA, setStatusA] = useState('success');
     const [messageA, setMessageA] = useState('');
     const answerRefs = useRef([]);
+
+    console.log("re-render");
 
     const showAlert = (status, message) => {
         setStatusA(status);
@@ -74,6 +77,20 @@ const Question = forwardRef(({ question, index, setQuestions, listQuestion }, re
 
     }
 
+    const memoizedAnswers = useMemo(() => {
+        return detailQuestion.answers?.map((answer, answerIndex) => (
+            <Answer
+                key={answerIndex + Math.random(10000)}
+                index={answerIndex}
+                contentQ={content}
+                ref={(ref) => (answerRefs.current[answerIndex] = ref)}
+                detailQuestion={detailQuestion}
+                setDetailQuestion={setDetailQuestion}
+                answer={answer}
+            />
+        ));
+    }, [detailQuestion.answers, content]);
+
     return (
         <>
             <Box className='Question'
@@ -107,9 +124,7 @@ const Question = forwardRef(({ question, index, setQuestions, listQuestion }, re
                         gap: '10px',
                         alignItems: 'center'
                     }} >
-                    {detailQuestion.answers?.map((answer, answerIndex) => (
-                        <Answer key={answerIndex + Math.random(10000) } index={answerIndex} contentQ={content} ref={(ref) => (answerRefs.current[answerIndex] = ref)} detailQuestion={detailQuestion} setDetailQuestion={setDetailQuestion} answer={answer} />
-                    ))}
+                    {memoizedAnswers}
 
                 </Box>
                 <Box className='QuestionButton'
