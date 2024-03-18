@@ -1,4 +1,4 @@
-import { Box, Typography, Dialog, DialogContent, DialogActions, Button } from "@mui/material";
+import { Box, Typography, Dialog, DialogContent, DialogActions, Button, Chip } from "@mui/material";
 import styles from './DetailedReport.module.scss'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -12,6 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useParams } from "react-router-dom";
 import { getExamById, getExamDetail } from "~/services/examService";
 import Loading from "~/components/Loading";
+import { getCheatingType } from "~/utils/cheatingUtils";
 function DetailedReport() {
     const [data, setData] = useState({});
     const [averageScores, setAverageScores] = useState([]);
@@ -46,9 +47,10 @@ function DetailedReport() {
                         name: result.examResult.userAnswer.userAnswerName,
                         result: checkAnswers(res.data.questions, result.histories),
                         endTime: result.examResult.endTime,
-
                         accuracy: getTotalCorrectAnswers(res.data.questions, result.histories),
                         score: result.examResult.score,
+                        cheating: result.examResult.examResultCheatings,
+                        cheatingCodes: getDistinctCheatingCodes(result.examResult.examResultCheatings)
                     };
                 });
                 setresultData(examResult);
@@ -57,6 +59,16 @@ function DetailedReport() {
         }
         fetchData();
     }, [examId]);
+
+    function getDistinctCheatingCodes(examResultCheatings) {
+        const uniqueCheatingCodes = new Set();
+
+        examResultCheatings.forEach(cheating => {
+            uniqueCheatingCodes.add(cheating.cheating.cheatingCode);
+        });
+
+        return [...uniqueCheatingCodes];
+    }
 
     function getTotalCorrectAnswers(questions, examResultHistories) {
         let checkedAnswers = checkAnswers(questions, examResultHistories);
@@ -184,6 +196,7 @@ function DetailedReport() {
                                         <th className={styles['item_row_title_2']} style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>Name</th>
                                         <th>Result</th>
                                         <th>Accuracy</th>
+                                        <th>Cheating</th>
                                         <th>Score</th>
 
                                     </tr>
@@ -210,6 +223,11 @@ function DetailedReport() {
                                                 </Box>
                                             </td>
                                             <td>{row.accuracy}</td>
+                                            <td>{
+                                                row?.cheatingCodes?.length > 0 && row?.cheatingCodes?.map(cheatingCode => {
+                                                    return <Chip key={cheatingCode} size="small" label={getCheatingType(cheatingCode).replace('detected', '')} color="error" />
+                                                }
+                                                )}</td>
                                             <td>{row.score}</td>
                                         </tr>
                                     ))}
@@ -291,7 +309,54 @@ function DetailedReport() {
                                         </div>
                                     </div>
                                 ))}
+                                {
+                                    selectedResult.cheating?.length > 0 && (
+                                        <Box>
+                                            <Typography variant="h6" sx={{
+                                                marginBottom: 0,
+                                                fontWeight: '500'
+                                            }}>
+                                                <Typography variant="span" sx={{
+                                                    fontSize: '16px',
+                                                    fontWeight: 'bold',
+                                                }}>
+                                                    Cheating
+                                                </Typography>
+                                            </Typography>
+                                            <ul style={{
+                                                listStyleType: 'none',
+                                                padding: 0,
+                                                margin: 0
+                                            }}>
+                                                {selectedResult.cheating.map(cheating => (
+                                                    <li key={cheating.examResultCheatingId} style={{
+                                                        display: 'flex',
+                                                        alignItems: 'start',
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center',
+                                                        padding: '10px',
+                                                        border: '0.1px solid rgba(128, 128, 128, 0.3)',
+                                                        borderRadius: '4px',
+                                                        marginTop: '12px',
 
+                                                    }}>
+                                                        <Typography variant="span" sx={{
+                                                            marginRight: '5px',
+                                                            color: 'red'
+                                                        }}>
+                                                            {getCheatingType(cheating.cheating.cheatingCode)}
+                                                        </Typography>
+                                                        <Typography variant="span" sx={{
+                                                            color: 'red'
+                                                        }}>
+                                                            {cheating.cheatingTime}
+                                                        </Typography>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </Box>
+                                    )
+                                }
                             </div>
                         </div>
                     )}
@@ -301,7 +366,7 @@ function DetailedReport() {
                 </DialogActions>
             </Dialog>
             <Loading isOpen={loading} />
-        </div>
+        </div >
     );
 }
 

@@ -747,8 +747,7 @@ public class ExamController {
             examResult.setExam(null);
             List<History> histories = jdbcTemplate.query("SELECT * FROM History WHERE exam_result_id = '" + examResult.getExamResultId() + "'",
                     (rs, rowNum) -> new History(rs.getString("exam_result_id"), rs.getString("selected_answer_id"), rs.getString("question_id")));
-            List<ExamResultCheating> examResultCheatings =  examResultCheatingRepository.findByExamResultExamResultId(examResult.getExamResultId());
-                    examResultHistories.add(new ExamResultHistory(examResult, histories, examResultCheatings));
+                    examResultHistories.add(new ExamResultHistory(examResult, histories));
         });
         
         ExamDetailResponseData examDetailResponseData = new ExamDetailResponseData(exam, questions, examResultHistories);
@@ -908,18 +907,12 @@ public class ExamController {
     public class ExamResultHistory{
         public ExamResult examResult;
         public List<History> histories;
-        public List<ExamResultCheating> examResultCheatings;
 
         public ExamResultHistory(ExamResult examResult, List<History> histories) {
             this.examResult = examResult;
             this.histories = histories;
         }
 
-        public ExamResultHistory(ExamResult examResult, List<History> histories, List<ExamResultCheating> examResultCheatings) {
-            this.examResult = examResult;
-            this.histories = histories;
-            this.examResultCheatings = examResultCheatings;
-        }
     }
 
     public class ExamDetailResponseData {

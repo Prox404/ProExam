@@ -1,4 +1,4 @@
-function getCheatingType(cheatingCode) {
+export function getCheatingType(cheatingCode) {
     switch (cheatingCode) {
         case 1004:
             return 'Noise detected';

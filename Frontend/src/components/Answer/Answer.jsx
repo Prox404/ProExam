@@ -57,7 +57,7 @@ const Answer = forwardRef(({ answer, index, contentQ, detailQuestion, setDetailQ
                 //remove by index
                 console.log(index);
                 newAnswerList =  detailQuestion.answers.filter((item, answerIndex) => {
-                    return answerIndex !== index;
+                    return answerIndex !== index - 1;
                 });
             }
             
@@ -84,19 +84,25 @@ const Answer = forwardRef(({ answer, index, contentQ, detailQuestion, setDetailQ
         return 'SINGLE_CHOICE';
     }
 
-    const onChecked = (id) => {
+    const onChecked = (index) => {
         if (answer.isCorrect) {
             if (detailQuestion.questionType === 'SINGLE_CHOICE') {
                 showAlert('error', 'The answer requires at least one correct answer');
                 return;
             }
         }
-        const newAnswerList = detailQuestion.answers.filter(item => {
-            if (item.answerId === id) {
-                item.isCorrect = !item.isCorrect;
+        let newAnswerList = detailQuestion.answers.map((item, answerIndex) => {
+            if (answerIndex === index -1) {
+                return {
+                    ...item,
+                    isCorrect: !item.isCorrect,
+                    answerText: content
+                }
             }
             return item;
         });
+
+        console.log(newAnswerList);
 
         const newQuestion = {
             questionId: detailQuestion.questionId,
@@ -104,6 +110,27 @@ const Answer = forwardRef(({ answer, index, contentQ, detailQuestion, setDetailQ
             answers: newAnswerList,
             questionType: isType(newAnswerList)
         }
+        setDetailQuestion(newQuestion);
+    }
+
+    const handleAnwserChange = (value) => {
+        setContent(value);
+        const newAnswerList = detailQuestion.answers.map((item, answerIndex) => {
+            if (answerIndex === index -1) {
+                return {
+                    ...item,
+                    answerText: value
+                }
+            }
+            return item;
+        });
+        const newQuestion = {
+            questionId: detailQuestion.questionId,
+            questionText: contentQ,
+            answers: newAnswerList,
+            questionType: isType(newAnswerList)
+        }
+
         setDetailQuestion(newQuestion);
     }
 
@@ -134,8 +161,8 @@ const Answer = forwardRef(({ answer, index, contentQ, detailQuestion, setDetailQ
                     }} />
                 </button>
                 <Checkbox
-                    checked={(answer.isCorrect) ? true : false}
-                    onChange={() => onChecked(answer.answerId)}
+                    checked={answer.isCorrect}
+                    onChange={() => onChecked(index)}
                     sx={{
                         height: '75%',
                         width: '5.215%',
@@ -149,6 +176,9 @@ const Answer = forwardRef(({ answer, index, contentQ, detailQuestion, setDetailQ
                     value={content}
                     onChange={(e) => {
                         setContent(e.target.value)
+                    }}
+                    onBlur={(e) => {
+                        handleAnwserChange(e.target.value);
                     }}
                     sx={{
                         width: '85.57%',
