@@ -4,6 +4,5 @@ export const ddMMyyyy = (date) => {
     const [day, month, year] = dateString.split('/')
     const [hour, minute, second] = timeString.split(':')
     const newDate = new Date(+year, +month - 1, +day, +hour, +minute, +second)
-    console.log(newDate);
     return newDate
 }

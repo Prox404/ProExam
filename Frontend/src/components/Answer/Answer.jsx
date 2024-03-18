@@ -11,12 +11,12 @@ import { deleteAnwser } from "~/services/examService";
 
 
 // eslint-disable-next-line react/display-name
-const Answer = forwardRef(({ answer, index, contentQ, detailQuestion, setDetailQuestion },ref) => {
+const Answer = forwardRef(({ answer, index, answerText, isCorrect:status, getQuestion, updateQuestion },ref) => {
     const [isOpenA, setIsOpenA] = useState(false);
     const [statusA, setStatusA] = useState('success');
     const [messageA, setMessageA] = useState('');
-    const [content, setContent] = useState(answer.answerText);
-
+    const [content, setContent] = useState(answerText);
+    const [isCorrect, setIsCorrect] = useState(status);
     const showAlert = (status, message) => {
         setStatusA(status);
         setMessageA(message);
@@ -26,53 +26,29 @@ const Answer = forwardRef(({ answer, index, contentQ, detailQuestion, setDetailQ
     useImperativeHandle(ref, () => ({
         getData: () => {
           return {
-                ...answer,
-                answerText: content
+                answerId: answer.answerId,
+                answerText: content,
+                isCorrect: isCorrect
             };
         },
       }));
     const onDeleteAnswer = async (id) => {
-        if (answer.isCorrect) {
-            if (detailQuestion.questionType === 'SINGLE_CHOICE') {
+        const question = getQuestion();
+        if (isCorrect) {
+            if (question.questionType === 'SINGLE_CHOICE') {
                 showAlert('error', 'The answer requires at least one correct answer');
                 return;
             }
         }
-        if (detailQuestion.answers.length > 2) {
-            let newAnswerList = detailQuestion?.answers;
-            if(id) {
-                const res = await deleteAnwser(id);
-                if (res.status === 200) {
-                    newAnswerList = detailQuestion.answers.filter(item => {
-                        if (item.answerId !== id) {
-                            return item;
-                        }
-                        
-                    });
-                }else{
-                    showAlert('error', 'Delete failed');
-                    return;
-                }
-            }else{
-                //remove by index
-                console.log(index);
-                newAnswerList =  detailQuestion.answers.filter((item, answerIndex) => {
-                    return answerIndex !== index;
-                });
-            }
-            
-            setDetailQuestion({
-                questionId: detailQuestion.questionId,
-                questionText: contentQ,
-                answers: newAnswerList,
-                questionType: isType(newAnswerList)
-
-            });
+        
+        if (question.answers.length > 2) {
+            const newListAnswer = question.answers.filter(item => item.answerId !== id);
+            updateQuestion(question.questionText, newListAnswer, isType(newListAnswer));
         } else {
             showAlert('error', 'There must be at least 2 answers')
         }
     }
-    
+
     const isType = (answerList) => {
         let numberCorrect = 0;
         answerList.forEach(item => {
@@ -85,28 +61,23 @@ const Answer = forwardRef(({ answer, index, contentQ, detailQuestion, setDetailQ
     }
 
     const onChecked = (id) => {
-        if (answer.isCorrect) {
-            if (detailQuestion.questionType === 'SINGLE_CHOICE') {
+        const question = getQuestion();
+        if (isCorrect) {
+            if (question.questionType === 'SINGLE_CHOICE') {
                 showAlert('error', 'The answer requires at least one correct answer');
                 return;
             }
         }
-        const newAnswerList = detailQuestion.answers.filter(item => {
-            if (item.answerId === id) {
+        const newListAnswer = question.answers.filter(item => {
+            if(item.answerId === id) {
                 item.isCorrect = !item.isCorrect;
+                return item;
             }
             return item;
-        });
-
-        const newQuestion = {
-            questionId: detailQuestion.questionId,
-            questionText: contentQ,
-            answers: newAnswerList,
-            questionType: isType(newAnswerList)
-        }
-        setDetailQuestion(newQuestion);
-    }
-
+        })
+        updateQuestion(question.questionText, newListAnswer, isType(newListAnswer));
+        setIsCorrect(!isCorrect);
+}
     return (
         <>
             <Box className='Answer' sx={{
@@ -134,7 +105,7 @@ const Answer = forwardRef(({ answer, index, contentQ, detailQuestion, setDetailQ
                     }} />
                 </button>
                 <Checkbox
-                    checked={(answer.isCorrect) ? true : false}
+                    checked={isCorrect}
                     onChange={() => onChecked(answer.answerId)}
                     sx={{
                         height: '75%',

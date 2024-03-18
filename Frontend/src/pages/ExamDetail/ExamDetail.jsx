@@ -17,7 +17,6 @@ import styles from './ExamDetails.module.scss';
 import { ddMMyyyy } from '~/utils/timeUtils';
 import { useTheme } from '@mui/material';
 const ExamDetail = () => {
-
     const { id } = useParams();
     const [questionsTime, setQuestionsTime] = useState({});
     const [questions, setQuestions] = useState([]);
@@ -73,24 +72,40 @@ const ExamDetail = () => {
         }
         fetchData();
     }, [])
-
     const handleAddNewQuestion = () => {
         setQuestions([...questions, {
             questionId: uuidv4(),
             questionText: '',
+            questionType: 'SINGLE_CHOICE',
             answers: [
                 {
-                    answerText: '',
-                    isCorrect: false,
-                },
-                {
+                    answerId: uuidv4(),
                     answerText: '',
                     isCorrect: true,
+                },
+                {
+                    answerId: uuidv4(),
+                    answerText: '',
+                    isCorrect: false,
                 }
             ],
         }]);
     }
-
+    const onValidateQuestion = (questions) => {
+        for(let i = 0; i < questions.length; i += 1) {
+            if(questions[i].questionText.trim() === '') {
+                handleShowSnackBar('Question Text Is Not Null !');
+                return false;
+            }
+            for(let j = 0; j < questions[i].answers.length; j += 1) {
+                if(questions[i].answers[j].answerText.trim() === '') {
+                    handleShowSnackBar('Answer Text Is Not Null !');
+                    return false;
+                }
+            }
+        }
+        return true;
+    }   
     const onUpdateExam = async () => {
         const examTime = examTimeRef.current.getData();
         const user = localStorage.getItem('user');
@@ -124,13 +139,16 @@ const ExamDetail = () => {
             let question = ref.getData();
             return {...question, exam: {examId: id}};
         });
-        const questionRes = await createQuestionManually({questions: listQuestion, examId: id});
+        //validate question
+        if(onValidateQuestion(listQuestion)) {
+            const questionRes = await createQuestionManually({questions: listQuestion, examId: id});
         if (questionRes && questionRes.length > 0) {
             handleShowSnackBar('Update question success !', 'success');
         }else {
             handleShowSnackBar('Update question failed !');
             return
         }
+    }
     };
     const onTurnOff = () => {
         const examInfo = document.querySelector(`.${styles.ExamInfoIn}`);
@@ -155,6 +173,7 @@ const ExamDetail = () => {
         questionsComponent.style.paddingLeft = '300px';
         
     }
+    
     return (
         <div>
             <Box sx={{
@@ -190,7 +209,7 @@ const ExamDetail = () => {
                         alignItems: 'center',
                     }}>
                         {questions?.map((question, questionIndex) => (
-                            <Question key={`${question.questionId}`} ref={(ref) => (questionRefs.current[questionIndex] = ref)} listQuestion={questions} index={questionIndex} setQuestions={setQuestions} question={question} />
+                            <Question key={question?.questionId} ref={(ref) => (questionRefs.current[questionIndex] = ref)} listQuestion={questions} index={questionIndex} setQuestions={setQuestions} question={question} questionText={question.questionText} answers={question.answers} questionType={question.questionType} />
                         ))}
 
                         <Button variant='contained' onClick={handleAddNewQuestion} >

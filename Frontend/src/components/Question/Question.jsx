@@ -14,24 +14,32 @@ import { v4 as uuidv4 } from "uuid";
 import { Add, Delete } from "@mui/icons-material";
 
 // eslint-disable-next-line react/display-name
-const Question = forwardRef(({ question, index, setQuestions, listQuestion }, ref) => {
-
-    const [content, setContent] = useState();
-    const [detailQuestion, setDetailQuestion] = useState(question);
+const Question = forwardRef(({ question, index, setQuestions, listQuestion, questionText, answers, questionType:type }, ref) => {
+    const [content, setContent] = useState(questionText);
+    const [listAnswers, setListAnswers] = useState(answers);
+    const [questionType, setQuestionType] = useState(type);
     const [isOpenA, setIsOpenA] = useState(false);
     const [statusA, setStatusA] = useState('success');
     const [messageA, setMessageA] = useState('');
     const answerRefs = useRef([]);
-
     const showAlert = (status, message) => {
         setStatusA(status);
         setMessageA(message);
         setIsOpenA(true);
     };
-
-    useEffect(() => {
-        setContent(detailQuestion.questionText);
-    }, [detailQuestion]);
+    const updateQuestion = (content,answers,type) => {
+        setContent(content);
+        setListAnswers(answers);
+        setQuestionType(type);
+    }
+    const getQuestion = () => {
+        return {
+            questionId: question.questionId,
+            questionText: content,
+            questionType,
+            answers: getAnswers()
+        }
+    }
     const getAnswers = () => {
         let newAnswerRefs = answerRefs.current.filter(item => {
             if (item !== null) {
@@ -44,26 +52,22 @@ const Question = forwardRef(({ question, index, setQuestions, listQuestion }, re
     useImperativeHandle(ref, () => ({
         getData: () => {
             return {
-                ...detailQuestion,
+                questionId: question.questionId,
                 questionText: content,
+                questionType,
                 answers: getAnswers()
             };
         },
     }));
     const onCreateAnswer = () => {
-        const newAnswer = {
-            answerText: "",
-            isCorrect: false
-        }
-        const newQuestion = {
-            ...detailQuestion,
-            questionText: content,
-            answers: [
-                ...detailQuestion.answers,
-                newAnswer
-            ]
-        }
-        setDetailQuestion(newQuestion);
+        setListAnswers([
+            ...listAnswers,
+            {
+                answerId: uuidv4(),
+                answerText: "",
+                isCorrect: false
+            }
+        ]);
     }
     const onDeleteQuestion = (id) => {
         if (listQuestion.length > 1) {
@@ -107,8 +111,8 @@ const Question = forwardRef(({ question, index, setQuestions, listQuestion }, re
                         gap: '10px',
                         alignItems: 'center'
                     }} >
-                    {detailQuestion.answers?.map((answer, answerIndex) => (
-                        <Answer key={answerIndex + Math.random(10000) } index={answerIndex} contentQ={content} ref={(ref) => (answerRefs.current[answerIndex] = ref)} detailQuestion={detailQuestion} setDetailQuestion={setDetailQuestion} answer={answer} />
+                    {listAnswers.map((answer, answerIndex) => (
+                        <Answer key={answer.answerId } index={answerIndex} ref={(ref) => (answerRefs.current[answerIndex] = ref)} answer={answer} answerText={answer.answerText} isCorrect={answer.isCorrect} getQuestion={getQuestion} updateQuestion={updateQuestion} />
                     ))}
 
                 </Box>
