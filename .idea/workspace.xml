@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e8e4915c-68eb-4bc9-8a64-f55f19a74e29" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Frontend/src/assets/BoxSearch.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/assets/Check.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/assets/Close.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/assets/user-img.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/components/CheatingAlert/CheatingAlert.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/components/CheatingAlert/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/components/DevtoolsDetected/DevtoolsDetected.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/components/DevtoolsDetected/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/components/ScreenshotDetected/ScreenshotDetected.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/components/ScreenshotDetected/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ExamDetail/ExamDetail.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ExamDetail/ExamDetails.module.scss" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ExamDetail/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ParseQuestions/ParseQuestions.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ParseQuestions/ParseQuestions.module.scss" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ParseQuestions/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/TakeExam/CountdownTimer.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ThangDzvcl/ThangDzvcl.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ThangDzvcl/ThangDzvcl.module.scss" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ThangDzvcl/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ViewScoreExam-Test/ViewScoreExam.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ViewScoreExam-Test/ViewScoreExam.module.scss" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/pages/ViewScoreExam-Test/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Frontend/src/utils/authUtils.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ProExam" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/.bin/uuid" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/.bin/uuid.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/.bin/uuid.ps1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/CHANGELOG.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/CONTRIBUTING.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/LICENSE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/bin/uuid" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/md5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/native.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/nil.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/parse.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/regex.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/rng.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/sha1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/stringify.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/v1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/v3.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/v35.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/v4.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/v5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/validate.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/commonjs-browser/version.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/md5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/native.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/nil.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/parse.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/regex.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/rng.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/sha1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/stringify.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/v1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/v3.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/v35.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/v4.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/v5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/validate.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-browser/version.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/md5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/native.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/nil.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/parse.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/regex.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/rng.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/sha1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/stringify.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/v1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/v3.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/v35.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/v4.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/v5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/validate.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/esm-node/version.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/md5-browser.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/md5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/native-browser.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/native.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/nil.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/parse.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/regex.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/rng-browser.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/rng.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/sha1-browser.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/sha1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/stringify.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/uuid-bin.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/v1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/v3.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/v35.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/v4.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/v5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/validate.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/dist/version.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uuid/wrapper.mjs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/createOrAlter.sql" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/createOrAlter.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/config/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/controller/ExamController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/controller/ExamController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/model/Answer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/model/Answer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/model/ExamResultCheating.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/model/ExamResultCheating.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/model/Question.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/model/Question.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/model/UserAnswer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/model/UserAnswer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/model/Users.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/dtu/proexam/model/Users.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/test/java/com/dtu/proexam/ProexamApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/test/java/com/dtu/proexam/ProexamApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/.env.example" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/components/AntiCopy/AntiCopy.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/AntiCopy/AntiCopy.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/components/FaceDetectionCam/FaceDetectionCam.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/FaceDetectionCam/FaceDetectionCam.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/components/Header/Header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/Header/Header.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/components/Modal/ReactModal.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/Modal/ReactModal.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/components/NoiseAlert/NoiseAlert.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/NoiseAlert/NoiseAlert.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/config/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/config/routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/layouts/DefaultLayout/DefaultLayout.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/layouts/DefaultLayout/DefaultLayout.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/SetTime/SetTime.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/SetTime/SetTime.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/StartedExam/StartedExam.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/StartedExam/StartedExam.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/TakeExam/TakeExam.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/TakeExam/TakeExam.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/UploadExam/UploadExam.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/UploadExam/UploadExam.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routes/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routes/routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/services/examService.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/services/examService.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JSX File" />
+        <option value="CSS File" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Use Maven wrapper" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2bcT2EsbKUDvKkmZeNGyute7bww" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Node.js.main.jsx.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Merging Dong&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/JavaSpring/BaiHocDuongDoiDauTien/ProExam&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;http.proxy&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.3.2\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;sqlserver&quot;
+    ]
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="ProexamApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="proexam" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.dtu.proexam.ProexamApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e8e4915c-68eb-4bc9-8a64-f55f19a74e29" name="Changes" comment="" />
+      <created>1706513157815</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1706513157815</updated>
+      <workItem from="1706513166231" duration="519000" />
+      <workItem from="1706514184663" duration="1304000" />
+      <workItem from="1706515570484" duration="594000" />
+      <workItem from="1706594685445" duration="1892000" />
+      <workItem from="1708481303601" duration="21258000" />
+      <workItem from="1708564424561" duration="22387000" />
+      <workItem from="1709016909699" duration="100000" />
+      <workItem from="1709692359762" duration="324000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="Dong" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
