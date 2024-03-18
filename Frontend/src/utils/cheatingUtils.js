@@ -1,3 +1,4 @@
+
 export function getCheatingType(cheatingCode) {
     switch (cheatingCode) {
         case 1004:

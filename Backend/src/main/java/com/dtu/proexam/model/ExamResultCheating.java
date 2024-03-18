@@ -28,8 +28,8 @@ public class ExamResultCheating {
     private ExamResult examResult;
 
     @ManyToOne
-    // @JsonBackReference
     @JsonIgnoreProperties("examResultCheatings")
+
     @JoinColumn(name = "cheating_code")
     private Cheating cheating;
 
