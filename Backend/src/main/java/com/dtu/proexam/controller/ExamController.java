@@ -546,7 +546,7 @@ public class ExamController {
             numberOfUnattemptedQuestions = questions.stream().filter(
                 question -> histories.stream().noneMatch(history -> history.getQuestionId().equals(question.getQuestionId()))
             ).count();
-
+            examResult.getExam().setUser(null);
             loggingUntil.info("getExamResult", "END_TIME: " + exam.getExamEndTime() + " CURRENT_TIME: " + new Date());
             if (exam.getExamEndTime() == null || new Date().after(exam.getExamEndTime())) {
 
