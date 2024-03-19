@@ -16,6 +16,7 @@ import CheatingAlert from "~/components/CheatingAlert";
 import DevtoolsDetected from "~/components/DevtoolsDetected/DevtoolsDetected";
 import ShortCutDetected from "~/components/ShortCutDetected";
 import { useNavigate } from "react-router-dom";
+import LeaveTabDetected from "~/components/LeaveTabDetected";
 
 function QuestionPanelItem({ label = '', selected = false, onClick, onChange, value, ...props }) {
 
@@ -296,14 +297,7 @@ function TakeExam() {
 
     }
 
-    const handleCheatingDetection = async (cheatingCode) => {
-        await examServices.cheatingDetection({
-            cheatingCode: cheatingCode,
-            examResultId: examInfo.ExamResultId
-        });
-        setCheatingCode(cheatingCode);
-        setIsCheatingOpen(true);
-    }
+    
 
     const handleMultipleFaces = async () => {
         console.log(examInfo);
@@ -327,11 +321,27 @@ function TakeExam() {
         }
     }
 
+    const handleLeaveTabDetected = async () => {
+        if (!isCheatingOpen && examInfo?.ExamResultId) {
+            await handleCheatingDetection(1002);
+            console.log('tab change detected' + isCheatingOpen);
+        }
+    }
+
     const handlesCreenshotDetected = async () => {
         if (!isCheatingOpen && examInfo?.ExamResultId) {
             await handleCheatingDetection(1001);
             console.log('screenshot detected');
         }
+    }
+
+    const handleCheatingDetection = async (cheatingCode) => {
+        await examServices.cheatingDetection({
+            cheatingCode: cheatingCode,
+            examResultId: examInfo.ExamResultId
+        });
+        setCheatingCode(cheatingCode);
+        setIsCheatingOpen(true);
     }
 
     return (
@@ -471,7 +481,8 @@ function TakeExam() {
                 {/* <ScreenshotDetected handlesCreenshotDetected={handlesCreenshotDetected}/> */}
                 {/* <DevtoolsDetected handleDevtoolsDetected={handleDevtoolsDetected} /> */}
                 {/* <NoiseAlert handleNoiseDetection={handleNoiseDetection} /> */}
-                <FaceDetectionCam handleMultipleFaces={handleMultipleFaces} />
+                <LeaveTabDetected onLeaveTabDetected={handleLeaveTabDetected} />
+                {/* <FaceDetectionCam handleMultipleFaces={handleMultipleFaces} /> */}
                 <CheatingAlert cheatingCode={cheatingCode} isOpen={isCheatingOpen} handleClose={() => setIsCheatingOpen(false)} />
                 <SwipeableDrawer
                     anchor={'left'}
