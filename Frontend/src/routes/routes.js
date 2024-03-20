@@ -19,6 +19,8 @@ import Library from '~/pages/Library';
 import DetailedReport from '~/pages/DetailedReport';
 import ExamList from '~/pages/ExamList';
 import ExamDetail from '~/pages/ExamDetail';
+import QuestionBank from '~/pages/QuestionBank';
+import SelectFromQuestionBank from '~/pages/SelectFromQuestionBank';
 
 // Public routes
 const publicRoutes = [
@@ -36,7 +38,8 @@ const publicRoutes = [
     { path: config.routes.reportDetail, component: DetailedReport, layout: DashboardLayout },
     { path: config.routes.library, component: ExamList, layout: DashboardLayout },
     { path: config.routes.examDetail, component: ExamDetail, layout: DashboardLayout },
-
+    { path: config.routes.questionBank, component: QuestionBank, layout: DashboardLayout },
+    { path: config.routes.selectFromBank, component: SelectFromQuestionBank, layout: DashboardLayout },
 ];
 
 const privateRoutes = [];

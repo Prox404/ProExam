@@ -4,7 +4,13 @@ package com.dtu.proexam.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "Users")
@@ -21,6 +27,10 @@ public class Users {
 
     @Column(name = "user_email", unique = true)
     private String userEmail;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnoreProperties("user")
+    private List<QuestionBank> questionBanks = new ArrayList<>();
 
     // Constructors, getters, and setters
 
@@ -40,6 +50,13 @@ public class Users {
         this.userEmail = userEmail;
     }
 
+    public Users(String userId, String userName, String userPassword, String userEmail, List<QuestionBank> questionBanks) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.userEmail = userEmail;
+        this.questionBanks = questionBanks;
+    }
 
     /**
      * @return String return the userId
