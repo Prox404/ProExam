@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dtu.proexam.model.Users;
 import com.dtu.proexam.util.GlobalUtil;
+import com.dtu.proexam.util.JwtUtil;
 import com.dtu.proexam.util.LoggingUntil;
 import com.dtu.proexam.util.UserUtil;
 
@@ -22,11 +23,13 @@ import com.dtu.proexam.util.UserUtil;
 public class AuthController {
     private JdbcTemplate jdbcTemplate;
     LoggingUntil loggingUntil;
+    JwtUtil jwtUtil;
 
     public AuthController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         loggingUntil = new LoggingUntil();
         UserUtil.setJdbcTemplate(jdbcTemplate);
+        jwtUtil = new JwtUtil();
     }
 
     @GetMapping("/")
@@ -58,7 +61,7 @@ public class AuthController {
 
         int result = jdbcTemplate.update(sql, user.getUserId(), user.getUserName(), user.getUserPassword(),
                 user.getUserEmail());
-        
+
         if (result > 0) {
             user.setUserPassword(null);
             // return user json
@@ -66,7 +69,7 @@ public class AuthController {
             simpleResponse.message = "User stored";
             simpleResponse.data = user;
             return ResponseEntity.ok(simpleResponse);
-        } else{
+        } else {
             simpleResponse.status = 400;
             simpleResponse.message = "Failed to store user";
             return ResponseEntity.badRequest().body(simpleResponse);
@@ -100,6 +103,7 @@ public class AuthController {
                 simpleResponse.status = 200;
                 simpleResponse.message = "Login success";
                 simpleResponse.data = result;
+                simpleResponse.token = jwtUtil.generateToken(result);
                 return ResponseEntity.ok(simpleResponse);
             } else {
                 SimpleResponse simpleResponse = new SimpleResponse();
@@ -115,10 +119,21 @@ public class AuthController {
         public int status;
         public String message;
         public Object data;
+        public String token;
 
         public SimpleResponse(int status,
-        String message,
-        Object data) {
+                String message,
+                Object data,
+                String token) {
+            this.status = status;
+            this.message = message;
+            this.data = data;
+            this.token = token;
+        }
+
+        public SimpleResponse(int status,
+                String message,
+                Object data) {
             this.status = status;
             this.message = message;
             this.data = data;

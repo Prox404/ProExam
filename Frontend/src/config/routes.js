@@ -12,6 +12,8 @@ const routes = {
     library: '/exams',
     reportDetail: '/report/detail/:examId',
     examDetail: '/exams/detail/:id',
+    questionBank: '/question-bank',
+    selectFromBank: '/select-from-bank/:examId',
 };
 
 export default routes;

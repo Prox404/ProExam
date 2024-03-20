@@ -7,6 +7,7 @@ import { useContext } from "react";
 import { ThemeContext } from '~/App';
 import { format, set } from 'date-fns';
 import 'animate.css'
+import { Add, ArrowBack, FileUpload, Folder } from "@mui/icons-material";
 
 const SetTime = () => {
     const theme = useTheme();
@@ -245,7 +246,7 @@ const SetTime = () => {
                             <Autocomplete
                                 freeSolo
                                 options={options}
-                                value={options.find(option => option.minute === examTime) || {label: '', minute: examTime}}
+                                value={options.find(option => option.minute === examTime) || { label: '', minute: examTime }}
                                 getOptionLabel={(option) => option.minute}
                                 onChange={(event, newValue) => { (newValue) ? setExamTime(newValue.minute) : setExamTime('0') }}
                                 renderInput={(params) => (
@@ -254,7 +255,7 @@ const SetTime = () => {
                                         label="Minute"
                                         size="small"
                                         value={examTime}
-                                        onChange={(event) => { Number(event.target.value) >= 0 ? setExamTime(event.target.value) : setExamTime('-1')}}
+                                        onChange={(event) => { Number(event.target.value) >= 0 ? setExamTime(event.target.value) : setExamTime('-1') }}
                                         sx={{
                                             width: '200px'
                                         }} />
@@ -380,7 +381,7 @@ const SetTime = () => {
                             <Autocomplete
                                 freeSolo
                                 options={submitOptions}
-                                value={submitOptions.find(option => option.times === numberSubmit) || {label: '', times: numberSubmit}}
+                                value={submitOptions.find(option => option.times === numberSubmit) || { label: '', times: numberSubmit }}
                                 getOptionLabel={(option) => option.times}
                                 onChange={(event, newValue) => { (newValue) ? setNumberSubmit(newValue.times) : setNumberSubmit('1') }}
                                 renderInput={(params) => (
@@ -447,27 +448,91 @@ const SetTime = () => {
                 </>
             }
             {
-                !isEditExam && <>
+                !isEditExam && 
+                <>
                     <Box className="input-method-container animate__animated animate__backInRight" sx={{
                         width: 'fit-content',
                         background: theme.palette.cardBackground,
                         margin: '7vh auto',
                         borderRadius: '15px',
-                        padding: '30px 50px'
+                        padding: '20px 30px',
+                        minWidth: {
+                            xs: '300px',
+                            sm: '500px',
+                            lg: '700px',
+                        }
                     }}>
-                        <Typography sx={{
-                            fontSize: '21px',
-                            fontWeight: '500'
-                        }}>Choosing Method For Inputting Questions !</Typography>
-                        <Button sx={{ display: 'block' }} onClick={onBack}>
-                            Edit exam information
-                        </Button>
-                        <Button sx={{ display: 'block' }} onClick={() => handleNavigate('upload-question')}>
-                            Import questions via file
-                        </Button>
-                        <Button sx={{ display: 'block' }} onClick={() => handleNavigate('add-question')}>
-                            Import questions manually
-                        </Button>
+                        <Box sx={{
+                            display: 'flex',
+                            justifyContent: 'start',
+                            alignItems: 'center',
+                            marginBottom: '20px'
+                        }}>
+                            <Button sx={{ display: 'flex', alignItems: 'center' }} onClick={onBack}>
+                                <ArrowBack fontSize="small"/>
+                            </Button>
+                            <Typography sx={{
+                                fontSize: '21px',
+                                fontWeight: '500'
+                            }}>Choosing Method !</Typography>
+
+                        </Box>
+
+                        <Box display={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px',
+                            justifyContent: 'center',
+                        }}>
+                            <Button sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                textTransform: 'none',
+                                padding: '10px 20px',
+                                backgroundColor: theme.palette.cardSecondaryBackground,
+                                '&:hover': {
+                                    backgroundColor: 'var(--primary-color)',
+                                    color: 'white'
+                                }
+                            }}
+                                onClick={() => handleNavigate('upload-question')}>
+                                <FileUpload />
+                                Import questions via file
+                            </Button>
+                            <Button sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                textTransform: 'none',
+                                padding: '10px 20px',
+                                backgroundColor: theme.palette.cardSecondaryBackground,
+                                '&:hover': {
+                                    backgroundColor: 'var(--primary-color)',
+                                    color: 'white'
+                                }
+                            }}
+                                onClick={() => handleNavigate('add-question')}>
+                                <Add />
+                                Add questions manually
+                            </Button>
+                            <Button sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                textTransform: 'none',
+                                padding: '10px 20px',
+                                backgroundColor: theme.palette.cardSecondaryBackground,
+                                '&:hover': {
+                                    backgroundColor: 'var(--primary-color)',
+                                    color: 'white'
+                                }
+                            }}
+                                onClick={() => handleNavigate('select-from-bank')}>
+                                <Folder />
+                                Select from question bank
+                            </Button>
+                        </Box>
                     </Box>
                 </>
             }

@@ -1,4 +1,4 @@
-import { Brightness4, Close, Face, Logout, Map, Menu, MenuBook, QueryStats, Settings } from '@mui/icons-material';
+import { Brightness4, Close, Face, Folder, Logout, Map, Menu, MenuBook, QueryStats, Settings } from '@mui/icons-material';
 import { Avatar, Box, Button, IconButton, List, ListItem, ListItemIcon, ListItemText, Typography, Menu as SidebarMenu, MenuItem } from '@mui/material';
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,7 @@ function Sidebar({ isActive = true, onActive }) {
         { name: 'Discover', icon: <Map />, link: '/discovery' },
         { name: 'Exams', icon: <MenuBook />, link: '/exams' },
         { name: 'Report', icon: <QueryStats />, link: '/report' },
+        { name: 'Question bank', icon: <Folder />, link: '/question-bank' },
         { name: 'Settings', icon: <Settings />, link: '/settings' },
     ];
 
@@ -87,8 +88,11 @@ function Sidebar({ isActive = true, onActive }) {
         else if (location.includes('report')) {
             setclickItem(2);
         }
-        else if (location.includes('settings')) {
+        else if (location.includes('question-bank')) {
             setclickItem(3);
+        }
+        else if (location.includes('settings')) {
+            setclickItem(4);
         } else {
             setclickItem(-1);
         }

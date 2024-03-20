@@ -200,7 +200,7 @@ function ParseQuestions() {
         setStatusA("success");
         setMessageA("Exam Has Created!");
         setTimeout(() => {
-          navigate("/");
+          navigate("/exams");
         }, 1000);
       }else{
         setIsOpenA(true);
@@ -229,7 +229,7 @@ function ParseQuestions() {
           setStatusA("success");
           setMessageA("Exam Has Public!");
           setTimeout(() => {
-            navigate("/");
+            navigate("/exams");
           }, 1000);
         }else{
           setIsOpenA(true);

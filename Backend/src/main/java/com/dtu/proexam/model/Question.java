@@ -40,6 +40,10 @@ public class Question {
     @JoinColumn(name = "exam_id")
     private Exam exam;
 
+    @ManyToOne
+    @JoinColumn(name = "bank_id")
+    private QuestionBank questionBank;
+
     @OneToMany(mappedBy = "question")
     @JsonManagedReference
     private List<Answer> answers = new ArrayList<>();
@@ -77,6 +81,36 @@ public class Question {
         this.questionText = questionText;
         this.exam = exam;
         this.questionType = QuestionType.SINGLE_CHOICE;
+        if (answers != null) {
+            this.answers = answers;
+        }
+    }
+
+    public Question(String questionId, String questionText, QuestionBank questionBank, QuestionType questionType, List<Answer> answers) {
+        this.questionId = questionId;
+        this.questionText = questionText;
+        this.questionBank = questionBank;
+        this.questionType = questionType;
+        if (answers != null) {
+            this.answers = answers;
+        }
+    }
+
+    public Question(String questionText, QuestionBank questionBank, QuestionType questionType, List<Answer> answers) {
+        this.questionText = questionText;
+        this.questionBank = questionBank;
+        this.questionType = questionType;
+        if (answers != null) {
+            this.answers = answers;
+        }
+    }
+
+    public Question(String questionId, String questionText, Exam exam, QuestionBank questionBank, QuestionType questionType, List<Answer> answers) {
+        this.questionId = questionId;
+        this.questionText = questionText;
+        this.exam = exam;
+        this.questionBank = questionBank;
+        this.questionType = questionType;
         if (answers != null) {
             this.answers = answers;
         }
@@ -156,6 +190,21 @@ public class Question {
      */
     public void setQuestionType(QuestionType questionType) {
         this.questionType = questionType;
+    }
+
+
+    /**
+     * @return QuestionBank return the questionBank
+     */
+    public QuestionBank getQuestionBank() {
+        return questionBank;
+    }
+
+    /**
+     * @param questionBank the questionBank to set
+     */
+    public void setQuestionBank(QuestionBank questionBank) {
+        this.questionBank = questionBank;
     }
 
 }
