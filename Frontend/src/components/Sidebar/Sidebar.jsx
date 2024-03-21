@@ -6,7 +6,7 @@ import { useTheme } from '@mui/material/styles';
 import Add from '@mui/icons-material/Add';
 import { ThemeContext } from '~/App';
 import Brightness7 from '@mui/icons-material/Brightness7';
-
+import prox___ from '~/assets/prox___.svg';
 
 function Sidebar({ isActive = true, onActive }) {
 
@@ -147,94 +147,117 @@ function Sidebar({ isActive = true, onActive }) {
             }}>
                 <IconButton onClick={onActive} sx={{}}>
                     {
-                        isActive ?  <Close/> : <Menu />
+                        isActive ? <Close /> : <Menu />
                     }
                 </IconButton>
 
                 <IconButton color="inherit" onClick={handleChange}>
-                    {mode ? <Brightness7 /> : <Brightness4/>}
+                    {mode ? <Brightness7 /> : <Brightness4 />}
                 </IconButton>
             </Box>
-            <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-                    <Button onClick={() => navigate('/create-exam')}
-                        sx={{
-                            textTransform: 'none',
-                            borderRadius: '5px',
-                            width: '100%',
-                            boxShadow: 'none',
-                            '&:hover': {
-                                boxShadow: '0px 2px 0px 2px #d8d8d8',
-                            },
-                            padding: isActive ? '8px 16px' : '8px 0',
-                            minWidth: {
-                                xs: '56px',
-                                md: isActive ? '56px' : '100%',
-                            },
-                        }} variant="contained">
-                        <Add sx={{
-                            marginRight: {
-                                xs: '0',
-                                md: isActive ? '10px' : '0',
-                            }
-                        }} />
-                        {
-                            isActive && <Typography variant='body1' sx={{
-                                display: {
-                                    xs: 'none',
-                                    md: 'block'
-                                }
-                            }}>
-                                Create Exam
-                            </Typography>
-                        }
-                    </Button>
-                </Box>
-                <List disablePadding sx={{
-                    color: 'black', marginTop: {
-                        xs: '5px', // Cho thiết bị có kích thước màn hình nhỏ hơn 600px
-                        sm: '10px', // Cho thiết bị có kích thước màn hình từ 600px trở lên
-                        md: '15px',
+            <Box sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+
+            }}>
+                <Box sx={{
+                    flex: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    '& img': {
+                        width: {
+                            xs: '50px',
+                            md: isActive ? '90px' : '50px',
+                        },
+                        height: 'auto',
+                        objectFit: 'contain',
                     }
+                }}><img src={prox___} alt="logo"/></Box>
+                <Box sx={{
+                    flex: 3,
                 }}>
-                    {listItem.map((item, index) => (
-                        <ListItem key={index} sx={{
-                            '&:hover': { backgroundColor: mode ? '#2b2b2b' : '#f3f3f3', cursor: 'pointer'},
-                            color: index === clickItem ? '#364c98' : '#c0c0c0',
-                            borderRadius: '5px',
-                            padding: {
-                                xs: '8px 0',
-                                md: isActive ? '8px 16px' : '8px 0',
-                            },
-                            '& div:nth-child(1)': {
-                                display: 'flex',
-                                justifyContent: {
-                                    xs: 'center',
-                                    md: isActive ? 'flex-start' : 'center',
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+                        <Button onClick={() => navigate('/create-exam')}
+                            sx={{
+                                textTransform: 'none',
+                                borderRadius: '5px',
+                                width: '100%',
+                                boxShadow: 'none',
+                                '&:hover': {
+                                    boxShadow: '0px 2px 0px 2px #d8d8d8',
                                 },
+                                padding: isActive ? '8px 16px' : '8px 0',
                                 minWidth: {
-                                    xs: '40px',
-                                    md: isActive ? '56px' : '40px',
-                                },
-                                width: {
-                                    xs: '100%',
+                                    xs: '56px',
                                     md: isActive ? '56px' : '100%',
                                 },
-                            }
-                        }}
-                            onClick={() => handleClickItem(index)}>
-                            <ListItemIcon sx={{ color: index === clickItem ? '#364c98' : '#c0c0c0' }} >{item.icon}</ListItemIcon>
+                            }} variant="contained">
+                            <Add sx={{
+                                marginRight: {
+                                    xs: '0',
+                                    md: isActive ? '10px' : '0',
+                                }
+                            }} />
                             {
-                                isActive && <ListItemText primary={item.name} sx={{
+                                isActive && <Typography variant='body1' sx={{
                                     display: {
                                         xs: 'none',
                                         md: 'block'
-                                    },
-                                }} />
+                                    }
+                                }}>
+                                    Create Exam
+                                </Typography>
                             }
-                        </ListItem>
-                    ))}
-                </List>
+                        </Button>
+                    </Box>
+                    <List disablePadding sx={{
+                        color: 'black', marginTop: {
+                            xs: '5px', // Cho thiết bị có kích thước màn hình nhỏ hơn 600px
+                            sm: '10px', // Cho thiết bị có kích thước màn hình từ 600px trở lên
+                            md: '15px',
+                        }
+                    }}>
+                        {listItem.map((item, index) => (
+                            <ListItem key={index} sx={{
+                                '&:hover': { backgroundColor: mode ? '#2b2b2b' : '#f3f3f3', cursor: 'pointer' },
+                                color: index === clickItem ? '#364c98' : '#c0c0c0',
+                                borderRadius: '5px',
+                                padding: {
+                                    xs: '8px 0',
+                                    md: isActive ? '8px 16px' : '8px 0',
+                                },
+                                '& div:nth-child(1)': {
+                                    display: 'flex',
+                                    justifyContent: {
+                                        xs: 'center',
+                                        md: isActive ? 'flex-start' : 'center',
+                                    },
+                                    minWidth: {
+                                        xs: '40px',
+                                        md: isActive ? '56px' : '40px',
+                                    },
+                                    width: {
+                                        xs: '100%',
+                                        md: isActive ? '56px' : '100%',
+                                    },
+                                }
+                            }}
+                                onClick={() => handleClickItem(index)}>
+                                <ListItemIcon sx={{ color: index === clickItem ? '#364c98' : '#c0c0c0' }} >{item.icon}</ListItemIcon>
+                                {
+                                    isActive && <ListItemText primary={item.name} sx={{
+                                        display: {
+                                            xs: 'none',
+                                            md: 'block'
+                                        },
+                                    }} />
+                                }
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
             </Box>
             <Box sx={{
                 display: 'flex',
