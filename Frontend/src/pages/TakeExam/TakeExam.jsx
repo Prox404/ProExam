@@ -79,7 +79,7 @@ function TakeExam() {
         }
     }, [])
 
-
+    console.info('examInfo', examInfo);
 
     console.log(examInfo);
     const handleShowSnackBar = (content, severity = 'error') => {
@@ -403,7 +403,7 @@ function TakeExam() {
                                 fontWeight: '500',
                                 textAlign: 'right',
                             }}>
-                                {examInfo?.userAnswerName ? examInfo.userAnswerName : 'User Name'}
+                                {examInfo?.userAnswer?.userAnswerName ? examInfo?.userAnswer.userAnswerName : 'User Name'}
                             </Typography>
                         </Box>
                     </Box>

@@ -322,7 +322,7 @@ public class ExamController {
 
             takeExamResponse.message = "Invalid Account";
             takeExamResponse.questions = questions;
-            takeExamResponse.status = 200;
+            takeExamResponse.status = 201;
             takeExamResponse.userAnswer = userAnswer;
 
         }
