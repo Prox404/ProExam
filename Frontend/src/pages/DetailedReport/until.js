@@ -1,3 +1,5 @@
+import { ddMMyyyy } from "~/utils/timeUtils";
+
 export function parseTimeString(dateTimeString) {
     const dateObj = new Date(dateTimeString);
     const hours = dateObj.getHours(); // Lấy giờ (0 - 23)
@@ -9,7 +11,7 @@ export function parseTimeString(dateTimeString) {
     return `${hoursStr}:${minutesStr}`;
 }
 export function parseDateString(dateTimeString) {
-    const dateObj = new Date(dateTimeString);
+    const dateObj = ddMMyyyy(dateTimeString);
     const dayOfMonth = dateObj.getDate(); // Lấy ngày trong tháng (1 - 31)
     const month = dateObj.getMonth(); // Lấy tháng (0 - 11)
     const year = dateObj.getFullYear(); // Lấy năm (4 chữ số)
@@ -25,7 +27,7 @@ export function parseDateString(dateTimeString) {
 }
  export function convertDateFormat(dateString) {
     // Chuyển đổi chuỗi ngày tháng thành đối tượng Date
-    var date = new Date(dateString);
+    var date = ddMMyyyy(dateString);
     // Lấy các thành phần của ngày tháng
     var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
