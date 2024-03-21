@@ -10,7 +10,6 @@ function LeaveTabDetected({onLeaveTabDetected}) {
     });
 
     return <>
-        <h1>LeaveTabDetected</h1>
     </>
 }
 
