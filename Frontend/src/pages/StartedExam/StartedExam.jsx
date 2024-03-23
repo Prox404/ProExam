@@ -154,9 +154,6 @@ export default function StartedExam() {
         if (!examInfo) {
             navigate('/')
         }
-        if (!isLogin()) {
-            navigate('/')
-        }
         setExamInfo(JSON.parse(localStorage.getItem('examInfo')));
     }, [navigate]);
 
