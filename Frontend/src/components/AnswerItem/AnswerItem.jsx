@@ -17,6 +17,14 @@ function AnswerItem({ answer = '', selected = false, onChange, value, ...props }
                 padding: '15px',
                 justifyContent: 'flex-start',
                 textTransform: 'none',
+                '&.Mui-selected': {
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                },
+                '&.Mui-selected:hover': {
+                    backgroundColor: '#106cc8',
+                    color: theme.palette.primary.contrastText,
+                },
             }}
                 selected={selected}
                 value={value}

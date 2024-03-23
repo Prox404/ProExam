@@ -478,11 +478,10 @@ function TakeExam() {
                     </Box>
                 </Box>
                 <ShortCutDetected handleCopyDetection={handleCopyDetection} handlesCreenshotDetected={handlesCreenshotDetected}/>
-                {/* <ScreenshotDetected handlesCreenshotDetected={handlesCreenshotDetected}/> */}
-                {/* <DevtoolsDetected handleDevtoolsDetected={handleDevtoolsDetected} /> */}
-                {/* <NoiseAlert handleNoiseDetection={handleNoiseDetection} /> */}
+                <DevtoolsDetected handleDevtoolsDetected={handleDevtoolsDetected} />
+                <NoiseAlert handleNoiseDetection={handleNoiseDetection} />
                 <LeaveTabDetected onLeaveTabDetected={handleLeaveTabDetected} />
-                {/* <FaceDetectionCam handleMultipleFaces={handleMultipleFaces} /> */}
+                <FaceDetectionCam handleMultipleFaces={handleMultipleFaces} />
                 <CheatingAlert cheatingCode={cheatingCode} isOpen={isCheatingOpen} handleClose={() => setIsCheatingOpen(false)} />
                 <SwipeableDrawer
                     anchor={'left'}

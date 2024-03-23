@@ -6,10 +6,11 @@ import Grid from '@mui/material/Grid';
 import Item from '@mui/material/Grid';
 import home_cover from '~/assets/home_cover.svg';
 import styles from './Home.module.scss';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import 'animate.css';
 import * as examService from '~/services/examService';
 import { useNavigate } from 'react-router-dom';
+import { ArrowBack, ArrowForward } from '@mui/icons-material';
 
 function Home() {
     const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,7 @@ function Home() {
     const [content, setContent] = useState('');
     const navigate = useNavigate();
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const user = JSON.parse(localStorage.getItem('user'));
 
     const handleShowSnackBar = (content) => {
         setContent(content);
@@ -65,6 +67,13 @@ function Home() {
         }
     }
 
+    useEffect(() => {
+        if (user) {
+            setName(user.userName);
+            setEmail(user.userEmail);
+        }
+    }, []);
+
     return <>
 
         <Box height={'calc(100vh - var(--header-height))'} sx={{
@@ -76,7 +85,7 @@ function Home() {
             }
         }}>
             <Grid container height={'100%'} spacing={0}>
-                    <Grid height={'100%'} item xs={12} sm={7}>
+                <Grid height={'100%'} item xs={12} sm={7}>
                     <Item className='animate__animated animate__zoomIn' sx={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -222,26 +231,42 @@ function Home() {
                             background: 'linear-gradient(to right, #3D5AF1, #22D1EE)',
                             color: '#fff',
                             padding: '7px 10px',
-                            borderRadius: '10px',
+                            borderRadius: '6px',
                             marginTop: '20px',
-                            textTransform: 'none'
+                            textTransform: 'none',
+                            '& svg': {
+                                transition: 'margin-left 0.3s'
+                            },
+                            '&:hover svg':{
+                                marginLeft: '5px'
+                            }
                         }}
                         size='small'
                         onClick={handleEnterExam}
-                    >Enter The Exam
+                    >
+                        Enter The Exam
+                        <ArrowForward fontSize='small' sx={{ color: '#fff' }} />
                     </Button>
                     <Button
+                        variant='outlined'
                         sx={{
-                            background: 'linear-gradient(to right, #3D5AF1, #22D1EE)',
-                            color: '#fff',
                             padding: '7px 10px',
-                            borderRadius: '10px',
+                            borderRadius: '6px',
                             marginTop: '15px',
-                            textTransform: 'none'
+                            textTransform: 'none',
+                            '& svg': {
+                                transition: 'margin-right 0.3s'
+                            },
+                            '&:hover svg':{
+                                marginRight: '5px'
+                            }
                         }}
                         onClick={() => { setIsOpen(false) }}
                         size='small'
-                    >Back</Button>
+                    >
+                        <ArrowBack fontSize='small' sx={{ color: '#364B98' }} />
+                        Back
+                    </Button>
                 </Box>
             </Box>
             <Box

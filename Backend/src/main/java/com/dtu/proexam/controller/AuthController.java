@@ -92,6 +92,7 @@ public class AuthController {
             u.setUserName(rs.getString("user_name"));
             return u;
         }, user.getUserEmail());
+        
         if (result == null)
             return ResponseEntity.badRequest().body(new SimpleResponse(400, "Failed to login", null));
         else {
@@ -99,6 +100,7 @@ public class AuthController {
             sql = "select user_password from users where user_email = (?)";
             String password = jdbcTemplate.queryForObject(sql, String.class, user.getUserEmail());
             if (BCrypt.checkpw(user.getUserPassword(), password)) {
+                result.setUserEmail(user.getUserEmail());
                 SimpleResponse simpleResponse = new SimpleResponse();
                 simpleResponse.status = 200;
                 simpleResponse.message = "Login success";
