@@ -170,20 +170,9 @@ function DataTable({ data, handleRowClick }) {
                                             <ListItemIcon>
                                                 <DownloadIcon fontSize="inherit" />
                                             </ListItemIcon>
-                                            <ListItemText><Typography sx={{ fontSize: '13px' }}>Download Excel</Typography></ListItemText>
+                                            <ListItemText><Typography sx={{ fontSize: '13px' }}>Export Excel</Typography></ListItemText>
                                         </MenuItem>
-                                        <MenuItem onClick={handleClose}>
-                                            <ListItemIcon>
-                                                <EditIcon fontSize="inherit" />
-                                            </ListItemIcon>
-                                            <ListItemText><Typography sx={{ fontSize: '13px' }}>Rename report</Typography></ListItemText>
-                                        </MenuItem>
-                                        <MenuItem onClick={handleClose}>
-                                            <ListItemIcon>
-                                                <DeleteIcon fontSize="inherit"  />
-                                            </ListItemIcon>
-                                            <ListItemText><Typography sx={{ fontSize: '13px' }}>Delete report</Typography></ListItemText>
-                                        </MenuItem>
+                                        
                                     </Menu>
                                 </div>
                             </td>

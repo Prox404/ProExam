@@ -15,4 +15,7 @@ public interface ExamResultRepository extends JpaRepository<ExamResult, String> 
     List<ExamResult> findByExam(String examid);
     @Query("SELECT AVG(er.score) FROM ExamResult er WHERE er.exam.examId = ?1")
     Double findAverageScoreByExamId(String examId);
+    void deleteExamResultsByExamExamId(String examId);
+    List<ExamResult> findByUserAnswerUserAnswerId(String userAnswerId);
+    List<ExamResult> findByUserAnswerUserAnswerIdAndExamExamId(String userAnswerId, String examId);
 }

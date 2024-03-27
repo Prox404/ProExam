@@ -108,7 +108,9 @@ function QuestionBank() {
     }
 
     const handleCorrectAnswerChange = (questionIndex, answerIndex) => {
-        if (selectedBank.question[questionIndex].answers.filter(answer => answer.isCorrect).length <= 1) {
+        
+        if (selectedBank.question[questionIndex].answers[answerIndex].isCorrect &&
+            selectedBank.question[questionIndex].answers.filter(answer => answer.isCorrect).length <= 1) {
             handleShowSnackBar('The question requires at least one correct answer !', 'error');
             return;
         } else {

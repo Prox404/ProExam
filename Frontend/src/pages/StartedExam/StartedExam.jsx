@@ -25,6 +25,7 @@ import {
     TableHead,
     TableRow
 } from '@mui/material';
+import { secondToMinute } from '~/utils/timeUtils';
 
 
 const steps = [
@@ -333,7 +334,7 @@ export default function StartedExam() {
                                 </TableRow>
                                 <TableRow>
                                     <TableCell align='left'>Duration</TableCell>
-                                    <TableCell align='right'>{exam?.duration || 'Infinity'}</TableCell>
+                                    <TableCell align='right'>{exam?.duration ? secondToMinute(exam?.duration) : 'Infinity'}</TableCell>
     
                                 </TableRow>
                                 <TableRow>

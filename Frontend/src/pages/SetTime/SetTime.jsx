@@ -47,6 +47,11 @@ const SetTime = () => {
             }
         }
     }, [examTime]);
+    useEffect(()=>{
+        if(new Date(openDate) > new Date(closeDate)) {
+            setCloseDate(openDate);
+        }
+    },[openDate]);
     useEffect(() => {
         const randomFraction = Math.random();
         const randomNumber = Math.floor(randomFraction * (999999 - 100000 + 1)) + 100000;

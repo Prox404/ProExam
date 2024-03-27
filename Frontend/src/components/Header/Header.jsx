@@ -301,6 +301,7 @@ export default function Header({ ...props }) {
         if (res.status === 200) {
             handleShowSnackBar('Login successfully', 'success');
             localStorage.setItem('user', JSON.stringify(res.data));
+            localStorage.setItem('token', res?.token);
             setIsLogin(true);
             setUser(res.data);
             setModalIsOpen(false);

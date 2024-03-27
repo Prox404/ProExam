@@ -7,3 +7,7 @@ export const ddMMyyyy = (date) => {
     console.log(newDate);
     return newDate
 }
+
+export const secondToMinute = (second) => {
+    return second / 60 + ' minutes'
+}
