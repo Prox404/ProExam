@@ -171,7 +171,6 @@ const ExamDetail = () => {
         arrowRight.style.visibility = 'hidden';
         examInfo.style.display = 'flex';
         questionsComponent.style.paddingLeft = '300px';
-
     }
 
     return (

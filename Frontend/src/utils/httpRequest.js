@@ -41,11 +41,10 @@ export const del = async (path, options = {}) => {
 };
 
 httpRequest.interceptors.request.use(function (config) {
-    // const token =
-    //     "Bearer " + JSON.parse(localStorage.getItem("token"))?.token;
-    // if (token) {
-    //     config.headers.Authorization = token;
-    // }
+    const token = "Bearer " + JSON.parse(localStorage.getItem("token"))?.token;
+    if (token) {
+        config.headers.Authorization = token;
+    }
     config.headers = {
         "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
         "Access-Control-Allow-Origin": "*",
