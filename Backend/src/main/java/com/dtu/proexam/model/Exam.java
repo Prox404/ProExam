@@ -18,7 +18,7 @@ public class Exam {
     @Column(name = "exam_id")
     private String examId;
 
-    @Column(name = "exam_name")
+    @Column(name = "exam_name", columnDefinition = "nvarchar(255)")
     private String examName;
 
     @Column(name = "exam_start_time")

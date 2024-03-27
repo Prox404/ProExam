@@ -269,6 +269,18 @@ public class ExamController {
             return ResponseEntity.badRequest().body(new BasicResponse("Exam not found !", 400));
         }
 
+        // get number of result
+        loggingUntil.info("takeExam", "exam.getNumberSubmit(): " + exam.getNumberSubmit() + "-" + userEmail);
+        UserAnswer userAnswer__ = userAnswerRepository.findByUserAnswerEmail(userEmail);
+        if (userAnswer__ != null) {
+            List<ExamResult> examResults = examResultRepository
+                    .findByUserAnswerUserAnswerIdAndExamExamId(userAnswer__.getUserAnswerId(), exam.getExamId());
+            if (exam.getNumberSubmit() != 0 && examResults.size() >= exam.getNumberSubmit()) {
+                return ResponseEntity.badRequest()
+                        .body(new BasicResponse("You have reached the maximum number of submissions !", 400));
+            }
+        }
+
         if (exam.getIsPublic() == 0) {
             return ResponseEntity.badRequest().body(new BasicResponse("Exam is not public !", 400));
         }
@@ -301,13 +313,11 @@ public class ExamController {
         // random question
         Collections.shuffle(questions);
 
-        List<UserAnswer> userAnswers = userAnswerRepository.findByUserAnswerEmail(userEmail);
+        UserAnswer userAnswer = userAnswerRepository.findByUserAnswerEmail(userEmail);
 
         TakeExamResponse takeExamResponse = new TakeExamResponse();
-        UserAnswer userAnswer = new UserAnswer();
 
-        if (userAnswers.size() > 0) {
-            userAnswer = userAnswers.get(0);
+        if (userAnswer != null) {
 
             takeExamResponse.message = "Valid Account";
             takeExamResponse.questions = questions;
@@ -315,6 +325,7 @@ public class ExamController {
             takeExamResponse.userAnswer = userAnswer;
 
         } else {
+            userAnswer = new UserAnswer();
             userAnswer.setUserAnswerEmail(userEmail);
             userAnswer.setUserAnswerName(userName);
             userAnswer.setUserAnswerId(GlobalUtil.getUUID());
@@ -540,12 +551,17 @@ public class ExamController {
             long numberOfUnattemptedQuestions = questions.size();
             int numberOfQuestion = questions.size();
             numberOfWrongAnswers = questions.stream().filter(
-                question -> histories.stream().anyMatch(history -> history.getQuestionId().equals(question.getQuestionId())
-                    && question.getAnswers().stream().anyMatch(answer -> answer.isIsCorrect() == false && answer.getAnswerId().equals(history.getSelectedAnswerId())))).count();
+                    question -> histories.stream()
+                            .anyMatch(history -> history.getQuestionId().equals(question.getQuestionId())
+                                    && question.getAnswers().stream()
+                                            .anyMatch(answer -> answer.isIsCorrect() == false
+                                                    && answer.getAnswerId().equals(history.getSelectedAnswerId()))))
+                    .count();
             numberOfCorrectAnswers = numberOfQuestion - numberOfWrongAnswers;
             numberOfUnattemptedQuestions = questions.stream().filter(
-                question -> histories.stream().noneMatch(history -> history.getQuestionId().equals(question.getQuestionId()))
-            ).count();
+                    question -> histories.stream()
+                            .noneMatch(history -> history.getQuestionId().equals(question.getQuestionId())))
+                    .count();
             examResult.getExam().setUser(null);
             loggingUntil.info("getExamResult", "END_TIME: " + exam.getExamEndTime() + " CURRENT_TIME: " + new Date());
             if (exam.getExamEndTime() == null || new Date().after(exam.getExamEndTime())) {
@@ -794,6 +810,26 @@ public class ExamController {
                         answerRepository.deleteAnswersByQuestion(question);
                     }
                 }
+                List<ExamResult> examResults = examResultRepository.findByExam(examId);
+                if (examResults != null && !examResults.isEmpty()) {
+                    for (ExamResult examResult : examResults) {
+                        List<History> histories = jdbcTemplate.query(
+                                "SELECT * FROM History WHERE exam_result_id = '" + examResult.getExamResultId() + "'",
+                                (rs, rowNum) -> new History(rs.getString("exam_result_id"),
+                                        rs.getString("selected_answer_id"),
+                                        rs.getString("question_id")));
+                        if (histories != null && !histories.isEmpty()) {
+                            for (History history : histories) {
+                                jdbcTemplate.execute(
+                                        "DELETE FROM History WHERE exam_result_id = '" + history.getExamResultId()
+                                                + "' AND question_id = '" + history.getQuestionId() + "'");
+                            }
+                        }
+                        examResultCheatingRepository
+                                .deleteExamResultCheatingByExamResultExamResultId(examResult.getExamResultId());
+                    }
+                }
+                examResultRepository.deleteExamResultsByExamExamId(examId);
 
                 questionRepository.deleteQuestionsByExam_ExamId(examId);
                 examRepository.deleteById(examId);

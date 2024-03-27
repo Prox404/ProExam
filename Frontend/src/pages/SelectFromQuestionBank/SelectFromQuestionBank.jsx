@@ -173,6 +173,7 @@ export default function SelectAllTransferList() {
                 sx={{
                     width: '100%',
                     bgcolor: theme.palette.cardBackground,
+                    height: 'calc(100vh - 170px)',
                     overflow: 'auto',
                 }}
                 dense
@@ -257,7 +258,6 @@ export default function SelectAllTransferList() {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     flex: 1,
-                    // overflowY: 'auto',
                     paddingTop: '10px',
                 }}>
                     <Box sx={{
